@@ -1,0 +1,267 @@
+/* App */
+"app.name" = "NextTime";
+
+/* Tabs */
+"tab.home" = "Home";
+"tab.programs" = "Programs";
+"tab.history" = "History";
+"tab.learn" = "Learn";
+"tab.settings" = "Settings";
+
+/* Difficulty Levels */
+"difficulty.beginner" = "Beginner";
+"difficulty.elementary" = "Elementary";
+"difficulty.intermediate" = "Intermediate";
+"difficulty.advanced" = "Advanced";
+"difficulty.expert" = "Expert";
+
+/* Home */
+"home.quickStart" = "Quick Start";
+"home.tips" = "Tips";
+"tip.consistency" = "Consistency is key - practice daily for best results";
+"tip.anytime" = "You can practice anywhere - sitting, standing, or lying down";
+"tip.noScreen" = "No need to watch the screen - use vibration and voice guidance";
+
+/* Statistics */
+"stats.totalSessions" = "Total Sessions";
+"stats.totalMinutes" = "Total Minutes";
+"stats.currentStreak" = "Current Streak";
+"stats.thisWeek" = "This Week";
+"stats.longestStreak" = "Longest Streak";
+"stats.days" = "days";
+
+/* Programs */
+"programs.title" = "Training Programs";
+"program.sets" = "sets";
+"program.courses" = "courses";
+
+/* Program Names */
+"program.beginner.quickstart" = "Quick Start";
+"program.beginner.quickstart.desc" = "Perfect for absolute beginners. Short contractions with equal rest.";
+"program.beginner.basic" = "Basic Training";
+"program.beginner.basic.desc" = "Build your foundation with simple exercises.";
+"program.beginner.gentle" = "Gentle Practice";
+"program.beginner.gentle.desc" = "Slow and steady approach for gradual improvement.";
+
+"program.elementary.standard" = "Standard Training";
+"program.elementary.standard.desc" = "Well-balanced training for developing strength.";
+"program.elementary.endurance" = "Endurance Builder";
+"program.elementary.endurance.desc" = "Focus on holding contractions longer.";
+"program.elementary.rhythm" = "Rhythm Training";
+"program.elementary.rhythm.desc" = "Quick pulses mixed with sustained holds.";
+
+"program.intermediate.strength" = "Strength Focus";
+"program.intermediate.strength.desc" = "Build muscle strength with longer holds.";
+"program.intermediate.intensive" = "Intensive Training";
+"program.intermediate.intensive.desc" = "Higher repetitions for serious improvement.";
+"program.intermediate.variety" = "Variety Mix";
+"program.intermediate.variety.desc" = "Diverse exercises for all-round development.";
+
+"program.advanced.power" = "Power Breakthrough";
+"program.advanced.power.desc" = "Push your limits with extended holds.";
+"program.advanced.marathon" = "Marathon Session";
+"program.advanced.marathon.desc" = "Extended training for maximum endurance.";
+"program.advanced.challenge" = "Challenge Mode";
+"program.advanced.challenge.desc" = "Are you ready for a real challenge?";
+
+"program.expert.ultimate" = "Ultimate Training";
+"program.expert.ultimate.desc" = "The ultimate test of your abilities.";
+"program.expert.master" = "Master Level";
+"program.expert.master.desc" = "Only for the most dedicated practitioners.";
+
+/* Training Actions */
+"action.contract" = "Contract";
+"action.relax" = "Relax";
+"action.rest" = "Rest";
+
+/* Voice Prompts */
+"voice.contract" = "Contract";
+"voice.relax" = "Relax";
+"voice.rest" = "Rest";
+"voice.nextSet %lld" = "Set %lld";
+"voice.complete" = "Training complete! Great job!";
+"voice.getReady" = "Get ready";
+
+/* Training View */
+"training.elapsedTime %@" = "Elapsed: %@";
+"training.completed" = "Training Complete!";
+"training.greatJob" = "Great job! You've completed your training.";
+"training.getReady" = "Get Ready";
+"training.startingSoon" = "Training will start in a moment...";
+
+/* Progress */
+"progress.description %lld %lld %lld %lld" = "Set %lld/%lld · Rep %lld/%lld";
+
+/* History */
+"history.title" = "Training History";
+"history.empty" = "No Training Records";
+"history.emptyDescription" = "Complete your first training session to see your history here.";
+
+/* Date */
+"date.today" = "Today";
+"date.yesterday" = "Yesterday";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.privacyMode" = "Privacy Mode";
+"settings.privacySection" = "Privacy";
+"settings.privacyFooter" = "Enables dark screen by default during training for discretion.";
+"settings.vibration" = "Vibration";
+"settings.vibrationSection" = "Haptic Feedback";
+"settings.vibrationFooter" = "Continuous vibration during contraction phase.";
+"settings.hapticIntensity" = "Intensity";
+"settings.haptic.light" = "Light";
+"settings.haptic.medium" = "Medium";
+"settings.haptic.heavy" = "Heavy";
+"settings.voice" = "Voice Guidance";
+"settings.voiceSection" = "Voice Prompts";
+"settings.voiceFooter" = "Voice guidance tells you when to contract and relax.";
+"settings.volume" = "Volume";
+"settings.dataSection" = "Data";
+"settings.clearData" = "Clear All Data";
+"settings.clearDataFooter" = "This will delete all your training records.";
+"settings.about" = "About";
+"settings.version" = "Version";
+
+/* Alerts */
+"alert.exitTraining.title" = "Exit Training?";
+"alert.exitTraining.message" = "Your progress will be saved but marked as incomplete.";
+"alert.cancel" = "Cancel";
+"alert.exit" = "Exit";
+"alert.clearData.title" = "Clear All Data?";
+"alert.clearData.message" = "This action cannot be undone. All your training records will be deleted.";
+"alert.clear" = "Clear";
+
+/* Buttons */
+"button.done" = "Done";
+"button.skipRest" = "Skip Rest";
+
+/* Learn */
+"learn.title" = "Learn";
+"learn.whatIsKegel" = "What is Kegel Exercise?";
+"learn.whatIsKegel.subtitle" = "Understanding the basics";
+"learn.benefits" = "Benefits";
+"learn.benefits.subtitle" = "Why you should practice";
+"learn.howTo" = "How to Practice";
+"learn.howTo.subtitle" = "Step by step guide";
+"learn.faq" = "FAQ";
+"learn.faq.subtitle" = "Common questions answered";
+"learn.tips" = "Practice Tips";
+"learn.tips.subtitle" = "Get the most from your training";
+
+/* Articles */
+"article.whatIsKegel.intro" = "Kegel exercises are simple clench-and-release exercises that strengthen the pelvic floor muscles, which support the uterus, bladder, small intestine, and rectum.";
+"article.whatIsKegel.origin.title" = "Origin";
+"article.whatIsKegel.origin.content" = "These exercises were developed by Dr. Arnold Kegel in the late 1940s as a non-surgical treatment for urinary incontinence.";
+"article.whatIsKegel.muscles.title" = "Target Muscles";
+"article.whatIsKegel.muscles.content" = "The pelvic floor muscles are like a hammock stretching from the pubic bone to the tailbone. These muscles support your pelvic organs and control bladder and bowel function.";
+
+"article.benefits.intro" = "Regular Kegel exercises can provide many benefits for both men and women:";
+"article.benefits.1.title" = "Better Bladder Control";
+"article.benefits.1.desc" = "Strengthening pelvic floor muscles can help prevent urinary incontinence.";
+"article.benefits.2.title" = "Improved Core Stability";
+"article.benefits.2.desc" = "A strong pelvic floor contributes to overall core strength and posture.";
+"article.benefits.3.title" = "Enhanced Intimacy";
+"article.benefits.3.desc" = "Stronger pelvic muscles can improve sensation and satisfaction.";
+"article.benefits.4.title" = "Post-Pregnancy Recovery";
+"article.benefits.4.desc" = "Helps restore muscle tone after childbirth.";
+"article.benefits.5.title" = "Prostate Health";
+"article.benefits.5.desc" = "For men, can help manage symptoms after prostate surgery.";
+
+"article.howTo.intro" = "Follow these steps to perform Kegel exercises correctly:";
+"article.howTo.step1.title" = "Find Your Muscles";
+"article.howTo.step1.content" = "Imagine you're trying to stop urinating midstream or prevent passing gas. The muscles you use are your pelvic floor muscles.";
+"article.howTo.step2.title" = "Contract";
+"article.howTo.step2.content" = "Tighten your pelvic floor muscles and hold the contraction. Keep your breathing normal.";
+"article.howTo.step3.title" = "Relax";
+"article.howTo.step3.content" = "Release the muscles completely. Rest before the next contraction.";
+"article.howTo.step4.title" = "Repeat";
+"article.howTo.step4.content" = "Aim for 10-15 repetitions, 3 times daily. Gradually increase hold time as muscles strengthen.";
+
+"article.faq.1.q" = "How long until I see results?";
+"article.faq.1.a" = "Most people notice improvement within 4-6 weeks of regular practice. Full benefits may take 3-6 months.";
+"article.faq.2.q" = "Can I do Kegels while doing other activities?";
+"article.faq.2.a" = "Yes! Once you've mastered the technique, you can do Kegels while sitting, standing, or even walking.";
+"article.faq.3.q" = "Can men do Kegel exercises?";
+"article.faq.3.a" = "Absolutely! Men can benefit from Kegels for bladder control and prostate health.";
+"article.faq.4.q" = "How do I know if I'm doing them correctly?";
+"article.faq.4.a" = "You should feel a squeezing sensation. Your stomach, buttocks, and thighs should stay relaxed.";
+
+"article.tips.intro" = "Get the most from your practice with these tips:";
+"article.tips.1" = "Practice at the same time each day to build a habit";
+"article.tips.2" = "Try different positions: sitting, lying down, or standing";
+"article.tips.3" = "Don't hold your breath - keep breathing normally";
+"article.tips.4" = "Focus on the pelvic floor only - don't tighten abs or buttocks";
+"article.tips.5" = "Be patient - strength builds gradually over weeks";
+
+/* Pro */
+"pro.title" = "Upgrade to Pro";
+"pro.upgradeTitle" = "Unlock Full Potential";
+"pro.upgradeSubtitle" = "One-time purchase, lifetime access to all features";
+"pro.oneTimePurchase" = "One-time purchase, no subscription";
+"pro.buyButton %@" = "Upgrade for %@";
+"pro.restore" = "Restore Purchase";
+"pro.restoreComplete" = "Restore Complete";
+"pro.restoreSuccess" = "Your Pro purchase has been restored!";
+"pro.restoreNoPurchase" = "No previous purchase found.";
+
+"pro.feature.courses" = "All Training Courses";
+"pro.feature.courses.desc" = "Unlock 8 advanced courses for intermediate to expert levels";
+"pro.feature.custom" = "Custom Training";
+"pro.feature.custom.desc" = "Create your own training program";
+"pro.feature.reminder" = "Daily Reminders";
+"pro.feature.reminder.desc" = "Set reminders to maintain your training habit";
+"pro.feature.stats" = "Detailed Statistics";
+"pro.feature.stats.desc" = "View charts and track your progress over time";
+"pro.feature.support" = "Support Development";
+"pro.feature.support.desc" = "Help us keep improving the app";
+
+/* Settings Pro */
+"settings.upgradePro" = "Upgrade to Pro";
+"settings.upgradePro.desc" = "Unlock all features";
+"settings.proActive" = "Pro Activated";
+"settings.reminder" = "Daily Reminder";
+"settings.reminderSection" = "Reminders";
+"settings.reminderFooter" = "Get a daily notification to remind you to practice.";
+"settings.reminderTime" = "Reminder Time";
+
+/* Alert */
+"alert.ok" = "OK";
+
+/* Custom Training */
+"program.custom" = "Custom Training";
+"program.custom.desc" = "Create your own training program";
+"custom.contractDuration" = "Contract Duration";
+"custom.contractDuration.footer" = "How long to hold each contraction";
+"custom.relaxDuration" = "Relax Duration";
+"custom.relaxDuration.footer" = "Rest time between contractions";
+"custom.repetitions" = "Repetitions per Set";
+"custom.repetitions.footer" = "Number of contract-relax cycles per set";
+"custom.sets" = "Number of Sets";
+"custom.sets.footer" = "Total number of sets";
+"custom.restBetweenSets" = "Rest Between Sets";
+"custom.preview" = "Training Preview";
+"custom.totalDuration" = "Total Duration";
+"custom.totalRepetitions" = "Total Repetitions";
+"custom.startTraining" = "Start Training";
+
+/* Home */
+"home.viewDetailedStats" = "View Detailed Statistics";
+
+/* Detailed Stats */
+"stats.detail.title" = "Statistics";
+"stats.range.week" = "Week";
+"stats.range.month" = "Month";
+"stats.range.year" = "Year";
+"stats.trainingHistory" = "Training History";
+"stats.summary" = "Summary";
+"stats.avgPerSession" = "Avg/Session";
+"stats.completionRate" = "Completion";
+"stats.achievements" = "Achievements";
+"achievement.streak" = "Current Streak";
+"achievement.longestStreak" = "Longest Streak";
+"achievement.totalSessions" = "Total Sessions";
+
+/* Reminder */
+"reminder.title" = "Time to Train!";
+"reminder.body" = "Take a few minutes to strengthen your pelvic floor.";

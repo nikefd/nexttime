@@ -1,0 +1,188 @@
+//
+//  ProgramListView.swift
+//  NextTime
+//
+//  训练课程列表
+//
+
+import SwiftUI
+
+struct ProgramListView: View {
+    @State private var completedProgramIds: Set<UUID> = []
+    @State private var selectedProgram: TrainingProgram?
+    @State private var showProUpgrade = false
+    @ObservedObject private var proManager = ProManager.shared
+
+    var body: some View {
+        NavigationStack {
+            List {
+                // 自定义训练入口（Pro 功能）
+                Section {
+                    NavigationLink {
+                        if proManager.canUseCustomTraining {
+                            CustomTrainingView()
+                        } else {
+                            ProUpgradeView()
+                        }
+                    } label: {
+                        HStack(spacing: 12) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.purple.opacity(0.15))
+                                    .frame(width: 44, height: 44)
+                                Image(systemName: "slider.horizontal.3")
+                                    .foregroundStyle(.purple)
+                                    .font(.title3)
+                            }
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(String(localized: "program.custom"))
+                                        .font(.headline)
+                                    if !proManager.canUseCustomTraining {
+                                        Image(systemName: "crown.fill")
+                                            .font(.caption)
+                                            .foregroundStyle(.yellow)
+                                    }
+                                }
+                                Text(String(localized: "program.custom.desc"))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+
+                // 预设课程
+                ForEach(DifficultyLevel.allCases, id: \.rawValue) { difficulty in
+                    Section {
+                        ForEach(TrainingData.programs(for: difficulty)) { program in
+                            let isLocked = proManager.isProgramLocked(program)
+
+                            ProgramRow(
+                                program: program,
+                                isCompleted: completedProgramIds.contains(program.id),
+                                isLocked: isLocked
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                if isLocked {
+                                    showProUpgrade = true
+                                } else {
+                                    selectedProgram = program
+                                }
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Text(difficulty.localizedName)
+                            if difficulty != .beginner && difficulty != .elementary {
+                                Image(systemName: "crown.fill")
+                                    .font(.caption2)
+                                    .foregroundStyle(.yellow)
+                            }
+                            Spacer()
+                            Text("\(TrainingData.programs(for: difficulty).count) \(String(localized: "program.courses"))")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+            .listStyle(.insetGrouped)
+            .navigationTitle(String(localized: "programs.title"))
+            .onAppear {
+                completedProgramIds = DataService.shared.loadCompletedProgramIds()
+            }
+            .fullScreenCover(item: $selectedProgram) { program in
+                TrainingView(program: program)
+            }
+            .sheet(isPresented: $showProUpgrade) {
+                ProUpgradeView()
+            }
+        }
+    }
+}
+
+// MARK: - 课程行
+struct ProgramRow: View {
+    let program: TrainingProgram
+    let isCompleted: Bool
+    let isLocked: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // 完成状态图标
+            ZStack {
+                Circle()
+                    .fill(difficultyColor.opacity(isLocked ? 0.08 : 0.15))
+                    .frame(width: 44, height: 44)
+
+                if isLocked {
+                    Image(systemName: "lock.fill")
+                        .foregroundStyle(.gray)
+                        .font(.title3)
+                } else if isCompleted {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.title2)
+                } else {
+                    Image(systemName: "figure.strengthtraining.traditional")
+                        .foregroundStyle(difficultyColor)
+                        .font(.title3)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(NSLocalizedString(program.localizedNameKey, comment: ""))
+                        .font(.headline)
+                        .foregroundStyle(isLocked ? .secondary : .primary)
+
+                    if isLocked {
+                        Image(systemName: "crown.fill")
+                            .font(.caption2)
+                            .foregroundStyle(.yellow)
+                    }
+                }
+
+                Text(NSLocalizedString(program.localizedDescriptionKey, comment: ""))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                HStack(spacing: 12) {
+                    Label("\(program.sets.count)", systemImage: "square.stack.fill")
+                    Label(program.formattedDuration, systemImage: "clock")
+                    Label("\(program.totalRepetitions)", systemImage: "arrow.counterclockwise")
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var difficultyColor: Color {
+        switch program.difficulty {
+        case .beginner: return .green
+        case .elementary: return .blue
+        case .intermediate: return .orange
+        case .advanced: return .red
+        case .expert: return .purple
+        }
+    }
+}
+
+#Preview {
+    ProgramListView()
+}

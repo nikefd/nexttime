@@ -1,0 +1,3 @@
+/* App Display Name */
+CFBundleDisplayName = "NextTime";
+CFBundleName = "NextTime";

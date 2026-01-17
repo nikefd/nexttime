@@ -1,0 +1,267 @@
+/* App */
+"app.name" = "下一次";
+
+/* Tabs */
+"tab.home" = "首页";
+"tab.programs" = "课程";
+"tab.history" = "历史";
+"tab.learn" = "学习";
+"tab.settings" = "设置";
+
+/* Difficulty Levels */
+"difficulty.beginner" = "入门";
+"difficulty.elementary" = "基础";
+"difficulty.intermediate" = "中级";
+"difficulty.advanced" = "高级";
+"difficulty.expert" = "专家";
+
+/* Home */
+"home.quickStart" = "快速开始";
+"home.tips" = "小贴士";
+"tip.consistency" = "坚持是关键 - 每天练习效果最佳";
+"tip.anytime" = "随时随地 - 坐着、站着、躺着都可以练";
+"tip.noScreen" = "无需看屏幕 - 使用震动和语音提示即可";
+
+/* Statistics */
+"stats.totalSessions" = "总训练次数";
+"stats.totalMinutes" = "总训练时长";
+"stats.currentStreak" = "连续天数";
+"stats.thisWeek" = "本周训练";
+"stats.longestStreak" = "最长连续";
+"stats.days" = "天";
+
+/* Programs */
+"programs.title" = "训练课程";
+"program.sets" = "组";
+"program.courses" = "个课程";
+
+/* Program Names */
+"program.beginner.quickstart" = "快速入门";
+"program.beginner.quickstart.desc" = "适合完全新手，短时间收缩配合等时间放松。";
+"program.beginner.basic" = "基础训练";
+"program.beginner.basic.desc" = "用简单的练习打好基础。";
+"program.beginner.gentle" = "温和练习";
+"program.beginner.gentle.desc" = "慢节奏稳步提升。";
+
+"program.elementary.standard" = "标准训练";
+"program.elementary.standard.desc" = "均衡的训练组合，发展肌肉力量。";
+"program.elementary.endurance" = "耐力训练";
+"program.elementary.endurance.desc" = "专注于更长时间的收缩保持。";
+"program.elementary.rhythm" = "节奏训练";
+"program.elementary.rhythm.desc" = "快速脉冲与持续保持相结合。";
+
+"program.intermediate.strength" = "力量强化";
+"program.intermediate.strength.desc" = "通过更长的保持时间增强肌肉力量。";
+"program.intermediate.intensive" = "强化训练";
+"program.intermediate.intensive.desc" = "更多重复次数，显著提升。";
+"program.intermediate.variety" = "综合训练";
+"program.intermediate.variety.desc" = "多样化练习，全面发展。";
+
+"program.advanced.power" = "力量突破";
+"program.advanced.power.desc" = "通过延长保持时间突破极限。";
+"program.advanced.marathon" = "马拉松训练";
+"program.advanced.marathon.desc" = "加长训练，最大化耐力提升。";
+"program.advanced.challenge" = "挑战模式";
+"program.advanced.challenge.desc" = "准备好迎接真正的挑战了吗？";
+
+"program.expert.ultimate" = "终极训练";
+"program.expert.ultimate.desc" = "对你能力的终极考验。";
+"program.expert.master" = "大师级";
+"program.expert.master.desc" = "只为最专注的练习者准备。";
+
+/* Training Actions */
+"action.contract" = "收缩";
+"action.relax" = "放松";
+"action.rest" = "休息";
+
+/* Voice Prompts */
+"voice.contract" = "收缩";
+"voice.relax" = "放松";
+"voice.rest" = "休息";
+"voice.nextSet %lld" = "第%lld组";
+"voice.complete" = "训练完成！做得好！";
+"voice.getReady" = "准备开始";
+
+/* Training View */
+"training.elapsedTime %@" = "已用时：%@";
+"training.completed" = "训练完成！";
+"training.greatJob" = "太棒了！你已完成本次训练。";
+"training.getReady" = "准备好";
+"training.startingSoon" = "训练即将开始...";
+
+/* Progress */
+"progress.description %lld %lld %lld %lld" = "第%lld/%lld组 · 第%lld/%lld次";
+
+/* History */
+"history.title" = "训练历史";
+"history.empty" = "暂无训练记录";
+"history.emptyDescription" = "完成你的第一次训练，记录会显示在这里。";
+
+/* Date */
+"date.today" = "今天";
+"date.yesterday" = "昨天";
+
+/* Settings */
+"settings.title" = "设置";
+"settings.privacyMode" = "隐私模式";
+"settings.privacySection" = "隐私";
+"settings.privacyFooter" = "训练时默认使用黑色屏幕，更加隐蔽。";
+"settings.vibration" = "震动提示";
+"settings.vibrationSection" = "触觉反馈";
+"settings.vibrationFooter" = "收缩时持续震动提醒。";
+"settings.hapticIntensity" = "震动强度";
+"settings.haptic.light" = "轻";
+"settings.haptic.medium" = "中";
+"settings.haptic.heavy" = "重";
+"settings.voice" = "语音提示";
+"settings.voiceSection" = "语音播报";
+"settings.voiceFooter" = "语音告诉你何时收缩和放松。";
+"settings.volume" = "音量";
+"settings.dataSection" = "数据";
+"settings.clearData" = "清除所有数据";
+"settings.clearDataFooter" = "这将删除你所有的训练记录。";
+"settings.about" = "关于";
+"settings.version" = "版本";
+
+/* Alerts */
+"alert.exitTraining.title" = "退出训练？";
+"alert.exitTraining.message" = "你的进度会被保存，但会标记为未完成。";
+"alert.cancel" = "取消";
+"alert.exit" = "退出";
+"alert.clearData.title" = "清除所有数据？";
+"alert.clearData.message" = "此操作无法撤销。你所有的训练记录都将被删除。";
+"alert.clear" = "清除";
+
+/* Buttons */
+"button.done" = "完成";
+"button.skipRest" = "跳过休息";
+
+/* Learn */
+"learn.title" = "学习";
+"learn.whatIsKegel" = "什么是凯格尔运动？";
+"learn.whatIsKegel.subtitle" = "了解基础知识";
+"learn.benefits" = "训练好处";
+"learn.benefits.subtitle" = "为什么要练习";
+"learn.howTo" = "如何练习";
+"learn.howTo.subtitle" = "分步指南";
+"learn.faq" = "常见问题";
+"learn.faq.subtitle" = "解答你的疑惑";
+"learn.tips" = "练习提示";
+"learn.tips.subtitle" = "让训练更有效";
+
+/* Articles */
+"article.whatIsKegel.intro" = "凯格尔运动是简单的收缩-放松练习，可以增强盆底肌肉。这些肌肉支撑着子宫、膀胱、小肠和直肠。";
+"article.whatIsKegel.origin.title" = "起源";
+"article.whatIsKegel.origin.content" = "这些练习由阿诺德·凯格尔医生在20世纪40年代末开发，作为尿失禁的非手术治疗方法。";
+"article.whatIsKegel.muscles.title" = "目标肌肉";
+"article.whatIsKegel.muscles.content" = "盆底肌像一张吊床，从耻骨延伸到尾骨。这些肌肉支撑着盆腔器官，控制膀胱和肠道功能。";
+
+"article.benefits.intro" = "定期进行凯格尔运动可以为男性和女性带来多种好处：";
+"article.benefits.1.title" = "更好的膀胱控制";
+"article.benefits.1.desc" = "增强盆底肌可以帮助预防尿失禁。";
+"article.benefits.2.title" = "改善核心稳定性";
+"article.benefits.2.desc" = "强壮的盆底有助于整体核心力量和姿势。";
+"article.benefits.3.title" = "提升亲密体验";
+"article.benefits.3.desc" = "更强的盆底肌可以改善感觉和满足感。";
+"article.benefits.4.title" = "产后恢复";
+"article.benefits.4.desc" = "帮助分娩后恢复肌肉张力。";
+"article.benefits.5.title" = "前列腺健康";
+"article.benefits.5.desc" = "对于男性，可以帮助管理前列腺手术后的症状。";
+
+"article.howTo.intro" = "按照以下步骤正确进行凯格尔运动：";
+"article.howTo.step1.title" = "找到肌肉";
+"article.howTo.step1.content" = "想象你正在中途停止排尿或阻止放屁。你使用的肌肉就是盆底肌。";
+"article.howTo.step2.title" = "收缩";
+"article.howTo.step2.content" = "收紧盆底肌并保持收缩。保持正常呼吸。";
+"article.howTo.step3.title" = "放松";
+"article.howTo.step3.content" = "完全放松肌肉。在下一次收缩前休息。";
+"article.howTo.step4.title" = "重复";
+"article.howTo.step4.content" = "目标是每次10-15次重复，每天3次。随着肌肉增强，逐渐增加保持时间。";
+
+"article.faq.1.q" = "多久能看到效果？";
+"article.faq.1.a" = "大多数人在规律练习4-6周内会注意到改善。完全的效果可能需要3-6个月。";
+"article.faq.2.q" = "可以边做其他事边做凯格尔运动吗？";
+"article.faq.2.a" = "可以！一旦掌握了技巧，你可以在坐着、站着甚至走路时做凯格尔运动。";
+"article.faq.3.q" = "男性可以做凯格尔运动吗？";
+"article.faq.3.a" = "当然可以！男性可以从凯格尔运动中获得膀胱控制和前列腺健康方面的好处。";
+"article.faq.4.q" = "怎么知道做对了？";
+"article.faq.4.a" = "你应该感到挤压感。你的腹部、臀部和大腿应该保持放松。";
+
+"article.tips.intro" = "通过这些提示让你的练习更有效：";
+"article.tips.1" = "每天在固定时间练习，养成习惯";
+"article.tips.2" = "尝试不同姿势：坐着、躺着或站着";
+"article.tips.3" = "不要憋气 - 保持正常呼吸";
+"article.tips.4" = "只收紧盆底肌 - 不要收紧腹部或臀部";
+"article.tips.5" = "要有耐心 - 力量会在几周内逐渐增强";
+
+/* Pro */
+"pro.title" = "升级 Pro";
+"pro.upgradeTitle" = "解锁全部功能";
+"pro.upgradeSubtitle" = "一次购买，终身使用所有功能";
+"pro.oneTimePurchase" = "一次性购买，无需订阅";
+"pro.buyButton %@" = "升级 %@";
+"pro.restore" = "恢复购买";
+"pro.restoreComplete" = "恢复完成";
+"pro.restoreSuccess" = "你的 Pro 购买已恢复！";
+"pro.restoreNoPurchase" = "未找到之前的购买记录。";
+
+"pro.feature.courses" = "全部训练课程";
+"pro.feature.courses.desc" = "解锁8个中级到专家级进阶课程";
+"pro.feature.custom" = "自定义训练";
+"pro.feature.custom.desc" = "创建你自己的训练计划";
+"pro.feature.reminder" = "每日提醒";
+"pro.feature.reminder.desc" = "设置提醒保持训练习惯";
+"pro.feature.stats" = "详细统计";
+"pro.feature.stats.desc" = "查看图表追踪训练进度";
+"pro.feature.support" = "支持开发";
+"pro.feature.support.desc" = "帮助我们持续改进应用";
+
+/* Settings Pro */
+"settings.upgradePro" = "升级 Pro";
+"settings.upgradePro.desc" = "解锁全部功能";
+"settings.proActive" = "Pro 已激活";
+"settings.reminder" = "每日提醒";
+"settings.reminderSection" = "提醒";
+"settings.reminderFooter" = "每天收到通知提醒你练习。";
+"settings.reminderTime" = "提醒时间";
+
+/* Alert */
+"alert.ok" = "好的";
+
+/* Custom Training */
+"program.custom" = "自定义训练";
+"program.custom.desc" = "创建你自己的训练计划";
+"custom.contractDuration" = "收缩时长";
+"custom.contractDuration.footer" = "每次收缩保持的时间";
+"custom.relaxDuration" = "放松时长";
+"custom.relaxDuration.footer" = "两次收缩之间的休息时间";
+"custom.repetitions" = "每组重复次数";
+"custom.repetitions.footer" = "每组收缩-放松的循环次数";
+"custom.sets" = "组数";
+"custom.sets.footer" = "总共的训练组数";
+"custom.restBetweenSets" = "组间休息";
+"custom.preview" = "训练预览";
+"custom.totalDuration" = "总时长";
+"custom.totalRepetitions" = "总重复次数";
+"custom.startTraining" = "开始训练";
+
+/* Home */
+"home.viewDetailedStats" = "查看详细统计";
+
+/* Detailed Stats */
+"stats.detail.title" = "统计";
+"stats.range.week" = "本周";
+"stats.range.month" = "本月";
+"stats.range.year" = "本年";
+"stats.trainingHistory" = "训练历史";
+"stats.summary" = "摘要";
+"stats.avgPerSession" = "平均时长";
+"stats.completionRate" = "完成率";
+"stats.achievements" = "成就";
+"achievement.streak" = "当前连续";
+"achievement.longestStreak" = "最长连续";
+"achievement.totalSessions" = "总训练次数";
+
+/* Reminder */
+"reminder.title" = "该训练了！";
+"reminder.body" = "花几分钟时间锻炼一下盆底肌吧。";

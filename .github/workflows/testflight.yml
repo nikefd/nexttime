@@ -63,7 +63,7 @@ jobs:
       - name: Build and publish
         run: bundle exec fastlane ios beta
       - name: Upload IPA artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: NextTime-${{ env.APP_VERSION }}
           path: artifacts/*.ipa

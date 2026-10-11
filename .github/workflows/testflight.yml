@@ -57,7 +57,7 @@ jobs:
           MATCH_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
         run: |
           install -d -m 700 "$RUNNER_TEMP/match-ssh"
-          printf '%s' "$MATCH_KEY" > "$RUNNER_TEMP/match-ssh/id_ed25519"
+          printf '%s\n' "$MATCH_KEY" > "$RUNNER_TEMP/match-ssh/id_ed25519"
           chmod 600 "$RUNNER_TEMP/match-ssh/id_ed25519"
           echo "MATCH_GIT_PRIVATE_KEY_PATH=$RUNNER_TEMP/match-ssh/id_ed25519" >> "$GITHUB_ENV"
       - name: Build and publish

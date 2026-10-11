@@ -1,0 +1,69 @@
+name: Publish TestFlight
+
+on:
+  push:
+    tags: ["beta-v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: App version, for example 1.1.0
+        required: true
+        type: string
+      release_notes:
+        description: TestFlight release notes
+        required: false
+        type: string
+
+concurrency:
+  group: publish-testflight
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: macos-26
+    timeout-minutes: 45
+    environment: testflight
+    env:
+      APP_IDENTIFIER: com.zhangyangbin.NextTime
+      APPLE_TEAM_ID: V59XFX9635
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      RELEASE_NOTES: ${{ inputs.release_notes }}
+      MANUAL_VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve version
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "APP_VERSION=$MANUAL_VERSION" >> "$GITHUB_ENV"
+          else
+            echo "APP_VERSION=${GITHUB_REF_NAME#beta-v}" >> "$GITHUB_ENV"
+          fi
+      - name: Select Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Prepare Match SSH key
+        shell: bash
+        env:
+          MATCH_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
+        run: |
+          install -d -m 700 "$RUNNER_TEMP/match-ssh"
+          printf '%s' "$MATCH_KEY" > "$RUNNER_TEMP/match-ssh/id_ed25519"
+          chmod 600 "$RUNNER_TEMP/match-ssh/id_ed25519"
+          echo "MATCH_GIT_PRIVATE_KEY_PATH=$RUNNER_TEMP/match-ssh/id_ed25519" >> "$GITHUB_ENV"
+      - name: Build and publish
+        run: bundle exec fastlane ios beta
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NextTime-${{ env.APP_VERSION }}
+          path: artifacts/*.ipa

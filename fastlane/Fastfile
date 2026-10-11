@@ -1,0 +1,121 @@
+require "json"
+
+default_platform(:ios)
+
+PROJECT = "NextTime/NextTime.xcodeproj"
+SCHEME = "NextTime"
+APP_IDENTIFIER = ENV.fetch("APP_IDENTIFIER", "com.zhangyangbin.NextTime")
+TEAM_ID = ENV.fetch("APPLE_TEAM_ID", "V59XFX9635")
+
+def app_store_api_key
+  app_store_connect_api_key(
+    key_id: ENV.fetch("ASC_KEY_ID"),
+    issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+    key_content: ENV.fetch("ASC_KEY_CONTENT"),
+    is_key_content_base64: true
+  )
+end
+
+def available_iphone_destination
+  devices = JSON.parse(`xcrun simctl list devices available --json`).fetch("devices").values.flatten
+  iphone = devices.find { |device| device["name"].start_with?("iPhone") && device["isAvailable"] }
+  UI.user_error!("No available iPhone simulator was found") unless iphone
+  "platform=iOS Simulator,id=#{iphone.fetch("udid")}"
+end
+platform :ios do
+  desc "Create or repair the encrypted App Store signing assets in Match"
+  lane :bootstrap_signing do
+    api_key = app_store_api_key
+    match(
+      type: "appstore",
+      readonly: false,
+      api_key: api_key,
+      app_identifier: APP_IDENTIFIER,
+      team_id: TEAM_ID,
+      git_url: ENV.fetch("MATCH_GIT_URL"),
+      git_private_key: ENV.fetch("MATCH_GIT_PRIVATE_KEY_PATH")
+    )
+  end
+
+  desc "Run unit and UI tests on an available iPhone simulator"
+  lane :test do
+    scan(
+      project: PROJECT,
+      scheme: SCHEME,
+      destination: available_iphone_destination,
+      clean: true,
+      xcargs: "CODE_SIGNING_ALLOWED=NO",
+      output_types: "junit",
+      output_files: "tests.xml"
+    )
+  end
+
+  private_lane :prepare_release do |options|
+    api_key = options.fetch(:api_key)
+    version = ENV["APP_VERSION"]
+
+    increment_version_number(xcodeproj: PROJECT, version_number: version) if version && !version.empty?
+    version ||= get_version_number(xcodeproj: PROJECT, target: SCHEME)
+
+    build_number = latest_testflight_build_number(
+      api_key: api_key,
+      app_identifier: APP_IDENTIFIER,
+      version: version,
+      initial_build_number: 0
+    ) + 1
+    increment_build_number(xcodeproj: PROJECT, build_number: build_number)
+
+    setup_ci if ENV["CI"]
+    match(
+      type: "appstore",
+      readonly: ENV["CI"] == "true",
+      api_key: api_key,
+      app_identifier: APP_IDENTIFIER,
+      team_id: TEAM_ID,
+      git_url: ENV.fetch("MATCH_GIT_URL"),
+      git_private_key: ENV.fetch("MATCH_GIT_PRIVATE_KEY_PATH")
+    )
+
+    build_app(
+      project: PROJECT,
+      scheme: SCHEME,
+      clean: true,
+      export_method: "app-store",
+      output_directory: "artifacts",
+      output_name: "NextTime-#{version}-#{build_number}.ipa"
+    )
+  end
+
+  desc "Build, sign, and upload the next build to TestFlight"
+  lane :beta do
+    api_key = app_store_api_key
+    prepare_release(api_key: api_key)
+    upload_to_testflight(
+      api_key: api_key,
+      app_identifier: APP_IDENTIFIER,
+      changelog: ENV["RELEASE_NOTES"],
+      distribute_external: false,
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Build, submit for App Review, and release automatically after approval"
+  lane :release do
+    UI.user_error!("APP_VERSION is required for an App Store release") if ENV["APP_VERSION"].to_s.empty?
+
+    api_key = app_store_api_key
+    prepare_release(api_key: api_key)
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: APP_IDENTIFIER,
+      app_version: ENV.fetch("APP_VERSION"),
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
+      precheck_include_in_app_purchases: false
+    )
+  end
+end
+

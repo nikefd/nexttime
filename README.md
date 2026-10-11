@@ -34,6 +34,10 @@
 - [Privacy Policy](https://nikefd.github.io/nexttime/privacy.html)
 - [Support](https://nikefd.github.io/nexttime/support.html)
 
+## Automated releases / 自动发布
+
+GitHub Actions and Fastlane run tests, publish tagged builds to TestFlight, and submit protected production releases to App Review. See [release pipeline setup](docs/RELEASE_PIPELINE.md).
+
 ## License / 许可
 
 Copyright © 2025. All rights reserved.

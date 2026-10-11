@@ -1,0 +1,54 @@
+name: Submit App Store Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New App Store version, for example 1.1.0
+        required: true
+        type: string
+
+concurrency:
+  group: publish-app-store
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: macos-26
+    timeout-minutes: 60
+    environment: app-store-production
+    env:
+      APP_IDENTIFIER: com.zhangyangbin.NextTime
+      APPLE_TEAM_ID: V59XFX9635
+      APP_VERSION: ${{ inputs.version }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Prepare Match SSH key
+        shell: bash
+        env:
+          MATCH_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
+        run: |
+          install -d -m 700 "$RUNNER_TEMP/match-ssh"
+          printf '%s' "$MATCH_KEY" > "$RUNNER_TEMP/match-ssh/id_ed25519"
+          chmod 600 "$RUNNER_TEMP/match-ssh/id_ed25519"
+          echo "MATCH_GIT_PRIVATE_KEY_PATH=$RUNNER_TEMP/match-ssh/id_ed25519" >> "$GITHUB_ENV"
+      - name: Build and submit for review
+        run: bundle exec fastlane ios release
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NextTime-${{ inputs.version }}
+          path: artifacts/*.ipa

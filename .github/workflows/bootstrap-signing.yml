@@ -1,0 +1,43 @@
+name: Bootstrap iOS Signing
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: bootstrap-ios-signing
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    runs-on: macos-26
+    timeout-minutes: 30
+    environment: testflight
+    env:
+      APP_IDENTIFIER: com.zhangyangbin.NextTime
+      APPLE_TEAM_ID: V59XFX9635
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Prepare Match SSH key
+        shell: bash
+        env:
+          MATCH_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
+        run: |
+          install -d -m 700 "$RUNNER_TEMP/match-ssh"
+          printf '%s' "$MATCH_KEY" > "$RUNNER_TEMP/match-ssh/id_ed25519"
+          chmod 600 "$RUNNER_TEMP/match-ssh/id_ed25519"
+          echo "MATCH_GIT_PRIVATE_KEY_PATH=$RUNNER_TEMP/match-ssh/id_ed25519" >> "$GITHUB_ENV"
+      - name: Create signing certificate and profile
+        run: bundle exec fastlane ios bootstrap_signing

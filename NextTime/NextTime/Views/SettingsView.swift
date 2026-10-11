@@ -74,10 +74,10 @@ struct SettingsView: View {
                 Section {
                     if proManager.canUseReminders {
                         Toggle(String(localized: "settings.reminder"), isOn: $reminderEnabled)
-                            .onChange(of: reminderEnabled) { _, newValue in
+                            .onChange(of: reminderEnabled) { newValue in
                                 Task {
                                     if newValue {
-                                        await ReminderService.shared.setDailyReminder(at: reminderTime)
+                                        _ = await ReminderService.shared.setDailyReminder(at: reminderTime)
                                     } else {
                                         await ReminderService.shared.cancelReminder()
                                     }
@@ -90,9 +90,9 @@ struct SettingsView: View {
                                 selection: $reminderTime,
                                 displayedComponents: .hourAndMinute
                             )
-                            .onChange(of: reminderTime) { _, newValue in
+                            .onChange(of: reminderTime) { newValue in
                                 Task {
-                                    await ReminderService.shared.setDailyReminder(at: newValue)
+                                    _ = await ReminderService.shared.setDailyReminder(at: newValue)
                                 }
                             }
                         }
@@ -119,7 +119,7 @@ struct SettingsView: View {
                 // 训练反馈设置
                 Section {
                     Toggle(String(localized: "settings.vibration"), isOn: $settings.vibrationEnabled)
-                        .onChange(of: settings.vibrationEnabled) { _, newValue in
+                        .onChange(of: settings.vibrationEnabled) { newValue in
                             HapticService.shared.isEnabled = newValue
                             saveSettings()
                         }
@@ -130,7 +130,7 @@ struct SettingsView: View {
                                 Text(intensity.localizedName).tag(intensity)
                             }
                         }
-                        .onChange(of: settings.hapticIntensity) { _, newValue in
+                        .onChange(of: settings.hapticIntensity) { newValue in
                             HapticService.shared.intensity = newValue
                             saveSettings()
                         }
@@ -144,7 +144,7 @@ struct SettingsView: View {
                 // 语音设置
                 Section {
                     Toggle(String(localized: "settings.voice"), isOn: $settings.voiceEnabled)
-                        .onChange(of: settings.voiceEnabled) { _, newValue in
+                        .onChange(of: settings.voiceEnabled) { newValue in
                             SpeechService.shared.isEnabled = newValue
                             saveSettings()
                         }
@@ -153,7 +153,7 @@ struct SettingsView: View {
                         HStack {
                             Text(String(localized: "settings.volume"))
                             Slider(value: $settings.voiceVolume, in: 0...1)
-                                .onChange(of: settings.voiceVolume) { _, newValue in
+                                .onChange(of: settings.voiceVolume) { newValue in
                                     SpeechService.shared.volume = newValue
                                     saveSettings()
                                 }

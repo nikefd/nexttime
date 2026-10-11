@@ -37,7 +37,7 @@ jobs:
       RELEASE_NOTES: ${{ inputs.release_notes }}
       MANUAL_VERSION: ${{ inputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Resolve version
         shell: bash
         run: |

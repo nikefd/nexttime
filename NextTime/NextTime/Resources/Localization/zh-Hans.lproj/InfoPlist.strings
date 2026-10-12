@@ -1,3 +1,4 @@
 /* App Display Name */
 CFBundleDisplayName = "下一次";
 CFBundleName = "下一次";
+"NSFaceIDUsageDescription" = "使用面容 ID 保护你的私密练习数据。";

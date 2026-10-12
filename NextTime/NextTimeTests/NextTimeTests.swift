@@ -6,12 +6,103 @@
 //
 
 import Testing
+import Foundation
 @testable import NextTime
 
 struct NextTimeTests {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    @Test func migratesLegacyTrainingDataIntoProtectedStore() throws {
+        let suiteName = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let record = TrainingRecord(
+            id: UUID(),
+            programId: UUID(),
+            programName: "Legacy Program",
+            completedAt: Date(timeIntervalSince1970: 1_700_000_000),
+            duration: 180,
+            completedSets: 2,
+            totalSets: 2,
+            isCompleted: true
+        )
+        defaults.set(try JSONEncoder().encode([record]), forKey: "trainingRecords")
+        defaults.set(
+            try JSONEncoder().encode([record.programId]),
+            forKey: "completedPrograms"
+        )
+
+        let protectedStore = try ProtectedDataStore(inMemory: true)
+        let service = DataService(userDefaults: defaults, protectedStore: protectedStore)
+
+        #expect(service.loadRecords().map(\.id) == [record.id])
+        #expect(service.loadCompletedProgramIds() == [record.programId])
+        #expect(defaults.data(forKey: "trainingRecords") == nil)
+        #expect(defaults.data(forKey: "completedPrograms") == nil)
+    }
+
+    @Test func onboardingRequiresCurrentAdultSafetyAcknowledgement() throws {
+        let suiteName = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let service = DataService(
+            userDefaults: defaults,
+            protectedStore: try ProtectedDataStore(inMemory: true)
+        )
+        #expect(service.hasCompletedOnboarding == false)
+
+        let goals: Set<WellnessGoal> = [.pelvicFoundation, .relaxation]
+        let date = Date(timeIntervalSince1970: 1_700_000_100)
+        service.completeOnboarding(selectedGoals: goals, now: date)
+
+        #expect(service.hasCompletedOnboarding)
+        #expect(service.loadWellnessProfile() == WellnessProfile(selectedGoals: goals, createdAt: date))
+        #expect(service.loadSafetyAcknowledgement()?.confirmedAdult == true)
+        #expect(service.loadSafetyAcknowledgement()?.version == SafetyAcknowledgement.currentVersion)
+    }
+
+    @Test func clearAllDataRemovesSensitiveAndPreferenceData() throws {
+        let suiteName = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let service = DataService(
+            userDefaults: defaults,
+            protectedStore: try ProtectedDataStore(inMemory: true)
+        )
+        service.completeOnboarding(selectedGoals: [.bodyConfidence])
+        service.saveRecord(
+            TrainingRecord(
+                programId: UUID(),
+                programName: "Protected Program",
+                duration: 60,
+                completedSets: 1,
+                totalSets: 1,
+                isCompleted: true
+            )
+        )
+        service.saveSettings(UserSettings())
+        defaults.set(true, forKey: "appLockEnabled")
+        defaults.set(false, forKey: "discreetNotifications")
+
+        service.clearAllData()
+
+        #expect(service.loadRecords().isEmpty)
+        #expect(service.loadCompletedProgramIds().isEmpty)
+        #expect(service.hasCompletedOnboarding == false)
+        #expect(service.loadWellnessProfile() == nil)
+        #expect(defaults.data(forKey: "userSettings") == nil)
+        #expect(defaults.object(forKey: "appLockEnabled") == nil)
+        #expect(defaults.object(forKey: "discreetNotifications") == nil)
+    }
+
+    @Test func discreetReminderUsesDifferentCopy() {
+        let discreet = ReminderService.reminderCopy(discreet: true)
+        let detailed = ReminderService.reminderCopy(discreet: false)
+
+        #expect(discreet.title != detailed.title)
+        #expect(discreet.body != detailed.body)
     }
 
 }

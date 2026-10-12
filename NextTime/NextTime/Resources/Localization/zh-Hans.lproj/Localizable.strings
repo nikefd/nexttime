@@ -265,3 +265,48 @@
 /* Reminder */
 "reminder.title" = "该训练了！";
 "reminder.body" = "花几分钟时间锻炼一下盆底肌吧。";
+
+/* Milestone A - Onboarding */
+"onboarding.welcome.title" = "欢迎使用下一次";
+"onboarding.welcome.message" = "一个注重隐私的成人盆底训练与亲密健康助手。开始前，请确认你的年龄并了解安全边界。";
+"onboarding.adultConfirmation" = "我已年满 18 周岁";
+"onboarding.safety.title" = "安全练习最重要";
+"onboarding.safety.message" = "下一次提供健康教育与练习引导，不进行医疗诊断，也不能替代医生或治疗师。";
+"onboarding.safety.notMedical" = "本 App 不是医疗诊断或治疗工具";
+"onboarding.safety.stop" = "如有疼痛、出血、麻木或明显不适，请停止练习";
+"onboarding.safety.professional" = "症状持续或影响生活时，请咨询专业人员";
+"onboarding.safety.confirmation" = "我理解以上安全说明";
+"onboarding.privacy.title" = "你的隐私留在设备上";
+"onboarding.privacy.message" = "MVP 不建立云端健康档案，也不会把训练目标和记录上传到服务器。";
+"onboarding.privacy.local" = "敏感记录使用系统数据保护保存在本机";
+"onboarding.privacy.noAccount" = "无需注册或登录";
+"onboarding.privacy.delete" = "可随时在设置中删除全部数据";
+"onboarding.goals.title" = "你想从哪里开始？";
+"onboarding.goals.message" = "可多选，也可以不选择并直接开始基础训练。";
+"onboarding.goal.pelvicFoundation.title" = "建立盆底基础";
+"onboarding.goal.pelvicFoundation.detail" = "学习正确识别、收缩和协调盆底肌";
+"onboarding.goal.relaxation.title" = "学会充分放松";
+"onboarding.goal.relaxation.detail" = "通过呼吸和恢复练习减少过度紧张";
+"onboarding.goal.bodyConfidence.title" = "提升身体觉察与信心";
+"onboarding.goal.bodyConfidence.detail" = "建立更从容、不过度追求表现的练习习惯";
+"onboarding.goal.partnerConnection.title" = "改善伴侣沟通";
+"onboarding.goal.partnerConnection.detail" = "练习表达感受、边界与亲密需求";
+"onboarding.continue" = "继续";
+"onboarding.start" = "开始使用";
+
+/* Milestone A - Privacy Lock */
+"settings.appLock %@" = "使用 %@ 保护 App";
+"settings.appLock.biometrics" = "生物识别";
+"settings.discreetNotifications" = "隐蔽通知内容";
+"settings.privacySecurityFooter" = "可以隐藏训练界面、使用生物识别保护 App，并让锁屏提醒不显示盆底训练内容。";
+"appLock.enableReason" = "验证身份以启用私密数据保护。";
+"appLock.unlockReason" = "验证身份以查看你的私密练习数据。";
+"appLock.unavailable" = "此设备尚未设置可用的生物识别。";
+"appLock.unavailable.title" = "无法启用应用锁";
+"appLock.title" = "下一次已锁定";
+"appLock.message" = "验证身份后才能查看本机上的私密练习数据。";
+"appLock.unlock" = "解锁";
+
+/* Milestone A - Discreet Reminder */
+"reminder.discreet.title" = "今天的小目标";
+"reminder.discreet.body" = "留几分钟给自己。";

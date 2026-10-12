@@ -23,12 +23,26 @@ final class NextTimeUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testCompletesRequiredOnboarding() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["--uitesting-reset-state"]
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        let adultConfirmation = app.switches["onboarding.adult-confirmation"]
+        XCTAssertTrue(adultConfirmation.waitForExistence(timeout: 5))
+        adultConfirmation.tap()
+        app.buttons["onboarding.continue-button"].tap()
+
+        let safetyConfirmation = app.switches["onboarding.safety-confirmation"]
+        XCTAssertTrue(safetyConfirmation.waitForExistence(timeout: 3))
+        safetyConfirmation.tap()
+        app.buttons["onboarding.continue-button"].tap()
+
+        app.buttons["onboarding.continue-button"].tap()
+        app.buttons["onboarding.goal.pelvicFoundation"].tap()
+        app.buttons["onboarding.continue-button"].tap()
+
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 5))
     }
 
     @MainActor

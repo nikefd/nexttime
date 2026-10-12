@@ -265,3 +265,48 @@
 /* Reminder */
 "reminder.title" = "Time to Train!";
 "reminder.body" = "Take a few minutes to strengthen your pelvic floor.";
+
+/* Milestone A - Onboarding */
+"onboarding.welcome.title" = "Welcome to NextTime";
+"onboarding.welcome.message" = "A privacy-first pelvic floor and intimate wellness companion for adults. Before you begin, please confirm your age and review the safety boundaries.";
+"onboarding.adultConfirmation" = "I am 18 or older";
+"onboarding.safety.title" = "Practice safely";
+"onboarding.safety.message" = "NextTime provides wellness education and guided practice. It does not diagnose conditions or replace a doctor or therapist.";
+"onboarding.safety.notMedical" = "This app is not a medical diagnosis or treatment tool";
+"onboarding.safety.stop" = "Stop if you experience pain, bleeding, numbness, or significant discomfort";
+"onboarding.safety.professional" = "Consult a professional if symptoms persist or affect daily life";
+"onboarding.safety.confirmation" = "I understand this safety information";
+"onboarding.privacy.title" = "Your private data stays on device";
+"onboarding.privacy.message" = "The MVP does not create a cloud health profile or upload your goals and practice history to a server.";
+"onboarding.privacy.local" = "Sensitive records use system data protection on this device";
+"onboarding.privacy.noAccount" = "No account or sign-in required";
+"onboarding.privacy.delete" = "Delete all data at any time in Settings";
+"onboarding.goals.title" = "Where would you like to start?";
+"onboarding.goals.message" = "Choose any that apply, or skip this step and start with the basics.";
+"onboarding.goal.pelvicFoundation.title" = "Build pelvic floor foundations";
+"onboarding.goal.pelvicFoundation.detail" = "Learn to identify, contract, and coordinate the pelvic floor";
+"onboarding.goal.relaxation.title" = "Learn to relax fully";
+"onboarding.goal.relaxation.detail" = "Use breathing and recovery practice to reduce excess tension";
+"onboarding.goal.bodyConfidence.title" = "Build body awareness and confidence";
+"onboarding.goal.bodyConfidence.detail" = "Practice with less pressure and more awareness";
+"onboarding.goal.partnerConnection.title" = "Improve partner communication";
+"onboarding.goal.partnerConnection.detail" = "Practice discussing feelings, boundaries, and intimacy needs";
+"onboarding.continue" = "Continue";
+"onboarding.start" = "Get Started";
+
+/* Milestone A - Privacy Lock */
+"settings.appLock %@" = "Protect App with %@";
+"settings.appLock.biometrics" = "Biometrics";
+"settings.discreetNotifications" = "Discreet Notification Text";
+"settings.privacySecurityFooter" = "Hide the training screen, protect the app with biometrics, and keep pelvic floor details off the lock screen.";
+"appLock.enableReason" = "Verify your identity to enable private data protection.";
+"appLock.unlockReason" = "Verify your identity to view your private practice data.";
+"appLock.unavailable" = "Biometric authentication is not set up on this device.";
+"appLock.unavailable.title" = "App Lock Unavailable";
+"appLock.title" = "NextTime is Locked";
+"appLock.message" = "Authenticate to view private practice data stored on this device.";
+"appLock.unlock" = "Unlock";
+
+/* Milestone A - Discreet Reminder */
+"reminder.discreet.title" = "Today's Small Goal";
+"reminder.discreet.body" = "Take a few minutes for yourself.";

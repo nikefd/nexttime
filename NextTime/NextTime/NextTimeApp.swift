@@ -11,15 +11,22 @@ import AVFoundation
 @main
 struct NextTimeApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject private var appLockManager = AppLockManager()
 
     init() {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-reset-state") {
+            DataService.shared.clearAllData()
+        }
+        #endif
         // 初始化设置
         setupInitialSettings()
     }
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            RootView()
+                .environmentObject(appLockManager)
         }
     }
 

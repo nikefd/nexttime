@@ -10,12 +10,28 @@ import Foundation
 class DataService {
     static let shared = DataService()
 
-    private let userDefaults = UserDefaults.standard
+    private enum ProtectedKey {
+        static let records = "training.records.v1"
+        static let completedProgramIDs = "training.completed-program-ids.v1"
+        static let wellnessProfile = "wellness.profile.v1"
+        static let safetyAcknowledgement = "safety.acknowledgement.v1"
+        static let legacyMigrationComplete = "migration.user-defaults.v1"
+    }
+
+    private let userDefaults: UserDefaults
+    private let protectedStore: ProtectedDataStore
     private let recordsKey = "trainingRecords"
     private let settingsKey = "userSettings"
     private let completedProgramsKey = "completedPrograms"
 
-    private init() {}
+    init(
+        userDefaults: UserDefaults = .standard,
+        protectedStore: ProtectedDataStore = .makeDefault()
+    ) {
+        self.userDefaults = userDefaults
+        self.protectedStore = protectedStore
+        migrateLegacyDataIfNeeded()
+    }
 
     // MARK: - 用户设置
     func saveSettings(_ settings: UserSettings) {
@@ -36,7 +52,7 @@ class DataService {
     func saveRecord(_ record: TrainingRecord) {
         var records = loadRecords()
         records.append(record)
-        saveRecords(records)
+        try? protectedStore.save(records, forKey: ProtectedKey.records)
 
         // 如果完整完成，标记该课程为已完成
         if record.isCompleted {
@@ -45,33 +61,19 @@ class DataService {
     }
 
     func loadRecords() -> [TrainingRecord] {
-        guard let data = userDefaults.data(forKey: recordsKey),
-              let records = try? JSONDecoder().decode([TrainingRecord].self, from: data) else {
-            return []
-        }
+        let records = protectedStore.load([TrainingRecord].self, forKey: ProtectedKey.records) ?? []
         return records.sorted { $0.completedAt > $1.completedAt }
-    }
-
-    private func saveRecords(_ records: [TrainingRecord]) {
-        if let data = try? JSONEncoder().encode(records) {
-            userDefaults.set(data, forKey: recordsKey)
-        }
     }
 
     // MARK: - 已完成的课程
     private func markProgramAsCompleted(_ programId: UUID) {
         var completedIds = loadCompletedProgramIds()
         completedIds.insert(programId)
-        if let data = try? JSONEncoder().encode(Array(completedIds)) {
-            userDefaults.set(data, forKey: completedProgramsKey)
-        }
+        try? protectedStore.save(Array(completedIds), forKey: ProtectedKey.completedProgramIDs)
     }
 
     func loadCompletedProgramIds() -> Set<UUID> {
-        guard let data = userDefaults.data(forKey: completedProgramsKey),
-              let ids = try? JSONDecoder().decode([UUID].self, from: data) else {
-            return []
-        }
+        let ids = protectedStore.load([UUID].self, forKey: ProtectedKey.completedProgramIDs) ?? []
         return Set(ids)
     }
 
@@ -170,10 +172,68 @@ class DataService {
         return longestStreak
     }
 
+    // MARK: - Onboarding
+    var hasCompletedOnboarding: Bool {
+        guard let acknowledgement = loadSafetyAcknowledgement() else { return false }
+        return acknowledgement.confirmedAdult
+            && acknowledgement.version == SafetyAcknowledgement.currentVersion
+            && loadWellnessProfile() != nil
+    }
+
+    func completeOnboarding(selectedGoals: Set<WellnessGoal>, now: Date = Date()) {
+        let profile = WellnessProfile(selectedGoals: selectedGoals, createdAt: now)
+        let acknowledgement = SafetyAcknowledgement(confirmedAdult: true, acceptedAt: now)
+        try? protectedStore.save(profile, forKey: ProtectedKey.wellnessProfile)
+        try? protectedStore.save(acknowledgement, forKey: ProtectedKey.safetyAcknowledgement)
+    }
+
+    func loadWellnessProfile() -> WellnessProfile? {
+        protectedStore.load(WellnessProfile.self, forKey: ProtectedKey.wellnessProfile)
+    }
+
+    func loadSafetyAcknowledgement() -> SafetyAcknowledgement? {
+        protectedStore.load(
+            SafetyAcknowledgement.self,
+            forKey: ProtectedKey.safetyAcknowledgement
+        )
+    }
+
     // MARK: - 删除所有数据
     func clearAllData() {
-        userDefaults.removeObject(forKey: recordsKey)
+        try? protectedStore.removeAll()
         userDefaults.removeObject(forKey: settingsKey)
+        userDefaults.removeObject(forKey: recordsKey)
         userDefaults.removeObject(forKey: completedProgramsKey)
+        userDefaults.removeObject(forKey: "defaultPrivacyMode")
+        userDefaults.removeObject(forKey: "appLockEnabled")
+        userDefaults.removeObject(forKey: "discreetNotifications")
+        NotificationCenter.default.post(name: .nextTimeAllDataDidClear, object: nil)
     }
+
+    // MARK: - 旧数据迁移
+    private func migrateLegacyDataIfNeeded() {
+        let migrationComplete = protectedStore.load(
+            Bool.self,
+            forKey: ProtectedKey.legacyMigrationComplete
+        ) ?? false
+        guard !migrationComplete else { return }
+
+        if let data = userDefaults.data(forKey: recordsKey),
+           let records = try? JSONDecoder().decode([TrainingRecord].self, from: data) {
+            try? protectedStore.save(records, forKey: ProtectedKey.records)
+            userDefaults.removeObject(forKey: recordsKey)
+        }
+
+        if let data = userDefaults.data(forKey: completedProgramsKey),
+           let identifiers = try? JSONDecoder().decode([UUID].self, from: data) {
+            try? protectedStore.save(identifiers, forKey: ProtectedKey.completedProgramIDs)
+            userDefaults.removeObject(forKey: completedProgramsKey)
+        }
+
+        try? protectedStore.save(true, forKey: ProtectedKey.legacyMigrationComplete)
+    }
+}
+
+extension Notification.Name {
+    static let nextTimeAllDataDidClear = Notification.Name("nexttime.allDataDidClear")
 }

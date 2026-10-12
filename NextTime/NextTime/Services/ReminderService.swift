@@ -16,6 +16,19 @@ class ReminderService {
 
     private init() {}
 
+    static func reminderCopy(discreet: Bool) -> (title: String, body: String) {
+        if discreet {
+            return (
+                String(localized: "reminder.discreet.title"),
+                String(localized: "reminder.discreet.body")
+            )
+        }
+        return (
+            String(localized: "reminder.title"),
+            String(localized: "reminder.body")
+        )
+    }
+
     // MARK: - 请求通知权限
     func requestAuthorization() async -> Bool {
         do {
@@ -44,8 +57,11 @@ class ReminderService {
 
         // 创建提醒内容
         let content = UNMutableNotificationContent()
-        content.title = String(localized: "reminder.title")
-        content.body = String(localized: "reminder.body")
+        let copy = Self.reminderCopy(
+            discreet: UserDefaults.standard.object(forKey: "discreetNotifications") as? Bool ?? true
+        )
+        content.title = copy.title
+        content.body = copy.body
         content.sound = .default
 
         // 设置触发时间

@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @EnvironmentObject private var appLockManager: AppLockManager
     @State private var settings = UserSettings()
     @State private var showResetAlert = false
     @State private var showProUpgrade = false
+    @State private var showAppLockError = false
     @AppStorage("defaultPrivacyMode") private var defaultPrivacyMode = false
+    @AppStorage("appLockEnabled") private var appLockEnabled = false
+    @AppStorage("discreetNotifications") private var discreetNotifications = true
 
     // 提醒相关
     @State private var reminderEnabled = false
@@ -64,10 +68,43 @@ struct SettingsView: View {
                 // 隐私模式设置
                 Section {
                     Toggle(String(localized: "settings.privacyMode"), isOn: $defaultPrivacyMode)
+
+                    Toggle(
+                        String(
+                            format: String(localized: "settings.appLock %@"),
+                            appLockManager.biometryName
+                        ),
+                        isOn: Binding(
+                            get: { appLockEnabled },
+                            set: { newValue in
+                                if newValue {
+                                    Task {
+                                        let enabled = await appLockManager.enable()
+                                        appLockEnabled = enabled
+                                        showAppLockError = !enabled
+                                    }
+                                } else {
+                                    appLockManager.disable()
+                                    appLockEnabled = false
+                                }
+                            }
+                        )
+                    )
+
+                    Toggle(
+                        String(localized: "settings.discreetNotifications"),
+                        isOn: $discreetNotifications
+                    )
+                    .onChange(of: discreetNotifications) { _ in
+                        guard reminderEnabled else { return }
+                        Task {
+                            _ = await ReminderService.shared.setDailyReminder(at: reminderTime)
+                        }
+                    }
                 } header: {
                     Text(String(localized: "settings.privacySection"))
                 } footer: {
-                    Text(String(localized: "settings.privacyFooter"))
+                    Text(String(localized: "settings.privacySecurityFooter"))
                 }
 
                 // 训练提醒（Pro 功能）
@@ -75,6 +112,8 @@ struct SettingsView: View {
                     if proManager.canUseReminders {
                         Toggle(String(localized: "settings.reminder"), isOn: $reminderEnabled)
                             .onChange(of: reminderEnabled) { newValue in
+                                settings.reminderEnabled = newValue
+                                saveSettings()
                                 Task {
                                     if newValue {
                                         _ = await ReminderService.shared.setDailyReminder(at: reminderTime)
@@ -91,6 +130,8 @@ struct SettingsView: View {
                                 displayedComponents: .hourAndMinute
                             )
                             .onChange(of: reminderTime) { newValue in
+                                settings.reminderTime = newValue
+                                saveSettings()
                                 Task {
                                     _ = await ReminderService.shared.setDailyReminder(at: newValue)
                                 }
@@ -216,10 +257,16 @@ struct SettingsView: View {
             .alert(String(localized: "alert.clearData.title"), isPresented: $showResetAlert) {
                 Button(String(localized: "alert.cancel"), role: .cancel) {}
                 Button(String(localized: "alert.clear"), role: .destructive) {
+                    ReminderService.shared.cancelAllReminders()
                     DataService.shared.clearAllData()
                 }
             } message: {
                 Text(String(localized: "alert.clearData.message"))
+            }
+            .alert(String(localized: "appLock.unavailable.title"), isPresented: $showAppLockError) {
+                Button(String(localized: "alert.ok"), role: .cancel) {}
+            } message: {
+                Text(appLockManager.lastErrorMessage ?? String(localized: "appLock.unavailable"))
             }
             .sheet(isPresented: $showProUpgrade) {
                 ProUpgradeView()
@@ -233,6 +280,8 @@ struct SettingsView: View {
         HapticService.shared.intensity = settings.hapticIntensity
         SpeechService.shared.isEnabled = settings.voiceEnabled
         SpeechService.shared.volume = settings.voiceVolume
+        reminderEnabled = settings.reminderEnabled
+        reminderTime = settings.reminderTime
     }
 
     private func saveSettings() {
@@ -242,4 +291,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+        .environmentObject(AppLockManager())
 }

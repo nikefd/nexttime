@@ -1,3 +1,4 @@
 /* App Display Name */
 CFBundleDisplayName = "NextTime";
 CFBundleName = "NextTime";
+"NSFaceIDUsageDescription" = "Use Face ID to protect your private practice data.";

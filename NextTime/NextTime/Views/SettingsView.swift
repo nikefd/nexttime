@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct SettingsView: View {
     @EnvironmentObject private var appLockManager: AppLockManager
@@ -191,6 +192,18 @@ struct SettingsView: View {
                         }
 
                     if settings.voiceEnabled {
+                        Picker(String(localized: "settings.voiceChoice"), selection: $settings.selectedVoice) {
+                            Text(String(localized: "settings.voiceAutomatic"))
+                                .tag("default")
+                            ForEach(availableVoices, id: \.identifier) { voice in
+                                Text(voice.name).tag(voice.identifier)
+                            }
+                        }
+                        .onChange(of: settings.selectedVoice) { newValue in
+                            SpeechService.shared.setVoice(identifier: newValue)
+                            saveSettings()
+                        }
+
                         HStack {
                             Text(String(localized: "settings.volume"))
                             Slider(value: $settings.voiceVolume, in: 0...1)
@@ -198,6 +211,12 @@ struct SettingsView: View {
                                     SpeechService.shared.volume = newValue
                                     saveSettings()
                                 }
+                        }
+
+                        Button {
+                            SpeechService.shared.previewNaturalVoice()
+                        } label: {
+                            Label(String(localized: "settings.voicePreview"), systemImage: "speaker.wave.2.fill")
                         }
                     }
                 } header: {
@@ -292,12 +311,17 @@ struct SettingsView: View {
         HapticService.shared.intensity = settings.hapticIntensity
         SpeechService.shared.isEnabled = settings.voiceEnabled
         SpeechService.shared.volume = settings.voiceVolume
+        SpeechService.shared.setVoice(identifier: settings.selectedVoice)
         reminderEnabled = settings.reminderEnabled
         reminderTime = settings.reminderTime
     }
 
     private func saveSettings() {
         DataService.shared.saveSettings(settings)
+    }
+
+    private var availableVoices: [AVSpeechSynthesisVoice] {
+        SpeechService.shared.availableVoicesForCurrentLanguage()
     }
 
     private var appVersion: String {

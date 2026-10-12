@@ -74,7 +74,7 @@ final class TrainingManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         stopHapticTimer()
-        speechService.stop()
+        speechService.stop(immediately: false)
         progress.currentStepIndex += 1
         progress.isAwaitingContinue = false
         updateLegacyProgress()
@@ -117,21 +117,22 @@ final class TrainingManager: ObservableObject {
         guard isRunning, !isPaused, currentStep?.duration != nil else { return }
         progress.elapsedTime += 1
         progress.remainingSeconds -= 1
-        if progress.remainingSeconds <= 3,
-           progress.remainingSeconds > 0,
-           currentStep?.kind == .contract {
-            speechService.speakCountdown(progress.remainingSeconds)
-        }
         if progress.remainingSeconds <= 0 { advanceStep() }
     }
 
     private func announce(_ step: GuidedPracticeStep) {
-        speechService.speakGuidance(localizedKey: step.guidanceKey)
         switch step.kind {
-        case .contract: startContinuousHaptic()
-        case .relax: hapticService.relaxStart()
-        case .rest: hapticService.restStart()
+        case .contract:
+            speechService.speakContract()
+            startContinuousHaptic()
+        case .relax:
+            speechService.speakRelax()
+            hapticService.relaxStart()
+        case .rest:
+            speechService.speakRest()
+            hapticService.restStart()
         case .instruction, .breathe, .bodyScan, .reflection, .partnerPrompt:
+            speechService.speakGuidance(localizedKey: step.guidanceKey)
             hapticService.simplePulse()
         }
     }

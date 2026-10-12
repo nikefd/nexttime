@@ -76,13 +76,17 @@
 "action.rest" = "休息";
 
 /* Voice Prompts */
-"voice.contract" = "收缩";
-"voice.breathe" = "缓慢呼吸";
-"voice.relax" = "放松";
-"voice.rest" = "休息";
+"voice.contract" = "轻轻收紧，保持呼吸。";
+"voice.breathe" = "慢慢呼吸，不用用力。";
+"voice.relax" = "慢慢放松，很好。";
+"voice.rest" = "先休息一下，保持自然呼吸。";
 "voice.nextSet %lld" = "第%lld组";
-"voice.complete" = "训练完成！做得好！";
-"voice.getReady" = "准备开始";
+"voice.complete" = "今天的练习完成了，辛苦了。";
+"voice.getReady" = "准备好以后，我们慢慢开始。";
+"voice.preview" = "你好。放松肩膀，自然呼吸，我们按照舒服的节奏慢慢来。";
+"settings.voicePreview" = "试听自然引导";
+"settings.voiceChoice" = "声音";
+"settings.voiceAutomatic" = "自动选择最佳音色（推荐）";
 
 /* Training View */
 "training.elapsedTime %@" = "已用时：%@";
@@ -117,7 +121,7 @@
 "settings.haptic.heavy" = "重";
 "settings.voice" = "语音提示";
 "settings.voiceSection" = "语音播报";
-"settings.voiceFooter" = "语音告诉你何时收缩和放松。";
+"settings.voiceFooter" = "自动模式会优先使用设备上已安装的高质量音色。你可以试听或手动选择。";
 "settings.volume" = "音量";
 "settings.dataSection" = "数据";
 "settings.clearData" = "清除所有数据";

@@ -1,23 +1,36 @@
-//
-//  SpeechService.swift
-//  NextTime
-//
-//  语音提示服务
-//
-
 import AVFoundation
 
-class SpeechService {
+enum SpeechStyle {
+    case guidance
+    case cue
+    case completion
+
+    func rate(for language: String) -> Float {
+        switch self {
+        case .guidance: return language.hasPrefix("zh") ? 0.46 : 0.48
+        case .cue: return language.hasPrefix("zh") ? 0.48 : 0.50
+        case .completion: return language.hasPrefix("zh") ? 0.47 : 0.49
+        }
+    }
+
+    var pitch: Float {
+        switch self {
+        case .guidance: return 0.98
+        case .cue: return 1.0
+        case .completion: return 1.0
+        }
+    }
+}
+
+final class SpeechService {
     static let shared = SpeechService()
 
     private let synthesizer = AVSpeechSynthesizer()
     private var audioSession: AVAudioSession { AVAudioSession.sharedInstance() }
-
-    var isEnabled: Bool = true
-    var volume: Float = 0.8
-
-    // 语音设置
     private var voiceIdentifier: String?
+
+    var isEnabled = true
+    var volume: Float = 0.8
 
     private init() {
         setupAudioSession()
@@ -25,10 +38,9 @@ class SpeechService {
 
     private func setupAudioSession() {
         do {
-            // 设置音频会话类别，允许后台播放和与其他音频混合
             try audioSession.setCategory(
                 .playback,
-                mode: .voicePrompt,
+                mode: .spokenAudio,
                 options: [.mixWithOthers, .duckOthers]
             )
             try audioSession.setActive(true)
@@ -37,115 +49,116 @@ class SpeechService {
         }
     }
 
-    // MARK: - 获取可用的中文语音
     func availableChineseVoices() -> [AVSpeechSynthesisVoice] {
-        return AVSpeechSynthesisVoice.speechVoices().filter {
-            $0.language.hasPrefix("zh")
-        }
+        sortedVoices(prefix: "zh")
     }
 
-    // MARK: - 获取可用的英文语音
     func availableEnglishVoices() -> [AVSpeechSynthesisVoice] {
-        return AVSpeechSynthesisVoice.speechVoices().filter {
-            $0.language.hasPrefix("en")
-        }
+        sortedVoices(prefix: "en")
     }
 
-    // MARK: - 设置语音
+    func availableVoicesForCurrentLanguage() -> [AVSpeechSynthesisVoice] {
+        sortedVoices(prefix: preferredLanguage)
+    }
+
     func setVoice(identifier: String?) {
-        self.voiceIdentifier = identifier
+        voiceIdentifier = identifier == "default" ? nil : identifier
     }
 
-    // MARK: - 收缩提示
     func speakContract() {
-        guard isEnabled else { return }
-        speak(text: String(localized: "voice.contract"))
+        speak(text: String(localized: "voice.contract"), style: .cue)
     }
 
     func speakBreathe() {
-        guard isEnabled else { return }
-        speak(text: String(localized: "voice.breathe"))
+        speak(text: String(localized: "voice.breathe"), style: .cue)
     }
 
-    // MARK: - 放松提示
     func speakRelax() {
-        guard isEnabled else { return }
-        speak(text: String(localized: "voice.relax"))
+        speak(text: String(localized: "voice.relax"), style: .cue)
     }
 
-    // MARK: - 组间休息提示
     func speakRest() {
-        guard isEnabled else { return }
-        speak(text: String(localized: "voice.rest"))
+        speak(text: String(localized: "voice.rest"), style: .cue)
     }
 
-    // MARK: - 下一组提示
     func speakNextSet(setNumber: Int) {
-        guard isEnabled else { return }
-        speak(text: String(localized: "voice.nextSet \(setNumber)"))
+        speak(text: String(localized: "voice.nextSet \(setNumber)"), style: .cue)
     }
 
-    // MARK: - 训练完成
     func speakComplete() {
-        guard isEnabled else { return }
-        speak(text: String(localized: "voice.complete"))
+        speak(text: String(localized: "voice.complete"), style: .completion)
     }
 
-    // MARK: - 倒计时
     func speakCountdown(_ seconds: Int) {
-        guard isEnabled, seconds <= 3, seconds > 0 else { return }
-        speak(text: "\(seconds)")
+        guard seconds <= 3, seconds > 0 else { return }
+        speak(text: "\(seconds)", style: .cue, addsPauses: false)
     }
 
-    // MARK: - 准备开始
     func speakGetReady() {
-        guard isEnabled else { return }
-        speak(text: String(localized: "voice.getReady"))
+        speak(text: String(localized: "voice.getReady"), style: .cue)
     }
 
     func speakGuidance(localizedKey: String) {
-        guard isEnabled else { return }
-        speak(text: NSLocalizedString(localizedKey, comment: ""))
+        speak(text: NSLocalizedString(localizedKey, comment: ""), style: .guidance)
     }
 
-    // MARK: - 通用语音播放
-    private func speak(text: String) {
-        // 如果正在说话，停止当前语音
+    func previewNaturalVoice() {
+        speak(text: String(localized: "voice.preview"), style: .guidance)
+    }
+
+    private func speak(text: String, style: SpeechStyle, addsPauses: Bool = true) {
+        guard isEnabled else { return }
         if synthesizer.isSpeaking {
-            synthesizer.stopSpeaking(at: .immediate)
+            synthesizer.stopSpeaking(at: .word)
         }
 
+        let language = preferredLanguage
         let utterance = AVSpeechUtterance(string: text)
-
-        // 设置语音
-        if let voiceId = voiceIdentifier,
-           let voice = AVSpeechSynthesisVoice(identifier: voiceId) {
-            utterance.voice = voice
-        } else {
-            // 根据当前语言选择默认语音
-            let languageCode = Locale.current.language.languageCode?.identifier ?? "en"
-            if languageCode == "zh" {
-                utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
-            } else {
-                utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-            }
-        }
-
+        utterance.voice = selectedVoice(for: language)
         utterance.volume = volume
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        utterance.pitchMultiplier = 1.0
-
+        utterance.rate = style.rate(for: language)
+        utterance.pitchMultiplier = style.pitch
+        utterance.preUtteranceDelay = addsPauses ? 0.14 : 0
+        utterance.postUtteranceDelay = addsPauses ? 0.12 : 0
+        utterance.prefersAssistiveTechnologySettings = false
         synthesizer.speak(utterance)
     }
 
-    // MARK: - 停止语音
-    func stop() {
-        if synthesizer.isSpeaking {
-            synthesizer.stopSpeaking(at: .immediate)
-        }
+    private var preferredLanguage: String {
+        let localization = Bundle.main.preferredLocalizations.first
+            ?? Locale.preferredLanguages.first
+            ?? "en"
+        return localization.hasPrefix("zh") ? "zh-CN" : "en-US"
     }
 
-    // MARK: - 激活音频会话（用于后台播放）
+    private func selectedVoice(for language: String) -> AVSpeechSynthesisVoice? {
+        if let voiceIdentifier,
+           let selected = AVSpeechSynthesisVoice(identifier: voiceIdentifier) {
+            return selected
+        }
+        return sortedVoices(prefix: language).first
+            ?? AVSpeechSynthesisVoice(language: language)
+    }
+
+    private func sortedVoices(prefix: String) -> [AVSpeechSynthesisVoice] {
+        AVSpeechSynthesisVoice.speechVoices()
+            .filter { $0.language.hasPrefix(prefix) }
+            .sorted { left, right in
+                if left.quality.rawValue != right.quality.rawValue {
+                    return left.quality.rawValue > right.quality.rawValue
+                }
+                let leftExact = left.language.caseInsensitiveCompare(prefix) == .orderedSame
+                let rightExact = right.language.caseInsensitiveCompare(prefix) == .orderedSame
+                if leftExact != rightExact { return leftExact }
+                return left.name.localizedCaseInsensitiveCompare(right.name) == .orderedAscending
+            }
+    }
+
+    func stop(immediately: Bool = true) {
+        guard synthesizer.isSpeaking else { return }
+        synthesizer.stopSpeaking(at: immediately ? .immediate : .word)
+    }
+
     func activateAudioSession() {
         do {
             try audioSession.setActive(true)
@@ -154,7 +167,6 @@ class SpeechService {
         }
     }
 
-    // MARK: - 释放音频会话
     func deactivateAudioSession() {
         do {
             try audioSession.setActive(false, options: .notifyOthersOnDeactivation)

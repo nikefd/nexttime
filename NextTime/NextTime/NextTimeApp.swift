@@ -36,6 +36,7 @@ struct NextTimeApp: App {
         HapticService.shared.intensity = settings.hapticIntensity
         SpeechService.shared.isEnabled = settings.voiceEnabled
         SpeechService.shared.volume = settings.voiceVolume
+        SpeechService.shared.setVoice(identifier: settings.selectedVoice)
     }
 }
 
@@ -55,7 +56,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             let audioSession = AVAudioSession.sharedInstance()
             try audioSession.setCategory(
                 .playback,
-                mode: .voicePrompt,
+                mode: .spokenAudio,
                 options: [.mixWithOthers, .duckOthers]
             )
             try audioSession.setActive(true)

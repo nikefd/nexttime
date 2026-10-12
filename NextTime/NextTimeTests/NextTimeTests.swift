@@ -260,4 +260,14 @@ struct NextTimeTests {
         #expect(service.loadSafetyEvents() == [event])
     }
 
+    @Test func speechTuningKeepsGuidanceNaturalAndCuesConcise() {
+        let chineseGuidance = SpeechStyle.guidance.rate(for: "zh-CN")
+        let englishGuidance = SpeechStyle.guidance.rate(for: "en-US")
+
+        #expect(chineseGuidance >= 0.4 && chineseGuidance <= 0.55)
+        #expect(englishGuidance >= 0.4 && englishGuidance <= 0.55)
+        #expect(SpeechStyle.guidance.pitch < SpeechStyle.cue.pitch)
+        #expect(SpeechStyle.cue.rate(for: "zh-CN") >= chineseGuidance)
+    }
+
 }

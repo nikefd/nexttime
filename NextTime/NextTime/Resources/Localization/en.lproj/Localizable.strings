@@ -76,13 +76,17 @@
 "action.rest" = "Rest";
 
 /* Voice Prompts */
-"voice.contract" = "Contract";
-"voice.breathe" = "Breathe slowly";
-"voice.relax" = "Relax";
-"voice.rest" = "Rest";
+"voice.contract" = "Gently engage, and keep breathing.";
+"voice.breathe" = "Breathe slowly, without forcing it.";
+"voice.relax" = "Let go slowly. That's good.";
+"voice.rest" = "Take a short rest, and breathe naturally.";
 "voice.nextSet %lld" = "Set %lld";
-"voice.complete" = "Training complete! Great job!";
-"voice.getReady" = "Get ready";
+"voice.complete" = "That's your practice for today. Well done.";
+"voice.getReady" = "When you're ready, we'll begin gently.";
+"voice.preview" = "Hello. Let your shoulders soften, breathe naturally, and we'll move at a comfortable pace.";
+"settings.voicePreview" = "Preview Natural Guidance";
+"settings.voiceChoice" = "Voice";
+"settings.voiceAutomatic" = "Best Available Voice (Recommended)";
 
 /* Training View */
 "training.elapsedTime %@" = "Elapsed: %@";
@@ -117,7 +121,7 @@
 "settings.haptic.heavy" = "Heavy";
 "settings.voice" = "Voice Guidance";
 "settings.voiceSection" = "Voice Prompts";
-"settings.voiceFooter" = "Voice guidance tells you when to contract and relax.";
+"settings.voiceFooter" = "Automatic mode prefers the highest-quality voice installed on this device. You can preview or choose one manually.";
 "settings.volume" = "Volume";
 "settings.dataSection" = "Data";
 "settings.clearData" = "Clear All Data";

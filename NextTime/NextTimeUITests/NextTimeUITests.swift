@@ -61,9 +61,13 @@ final class NextTimeUITests: XCTestCase {
         app.buttons["onboarding.continue-button"].tap()
         app.buttons["onboarding.continue-button"].tap()
 
-        XCTAssertTrue(app.staticTexts["建立盆底基础"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["学会充分放松"].exists)
-        XCTAssertFalse(app.staticTexts["Build pelvic floor foundations"].exists)
+        let foundationGoal = app.buttons["onboarding.goal.pelvicFoundation"]
+        let relaxationGoal = app.buttons["onboarding.goal.relaxation"]
+        XCTAssertTrue(foundationGoal.waitForExistence(timeout: 3))
+        XCTAssertTrue(relaxationGoal.exists)
+        XCTAssertTrue(foundationGoal.label.contains("建立盆底基础"))
+        XCTAssertTrue(relaxationGoal.label.contains("学会充分放松"))
+        XCTAssertFalse(foundationGoal.label.contains("Build pelvic floor foundations"))
     }
 
     @MainActor

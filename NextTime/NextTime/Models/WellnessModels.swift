@@ -16,11 +16,21 @@ enum WellnessGoal: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var title: String {
-        NSLocalizedString("onboarding.goal.\(rawValue).title", comment: "")
+        switch self {
+        case .pelvicFoundation: return String(localized: "onboarding.goal.pelvicFoundation.title")
+        case .relaxation: return String(localized: "onboarding.goal.relaxation.title")
+        case .bodyConfidence: return String(localized: "onboarding.goal.bodyConfidence.title")
+        case .partnerConnection: return String(localized: "onboarding.goal.partnerConnection.title")
+        }
     }
 
     var detail: String {
-        NSLocalizedString("onboarding.goal.\(rawValue).detail", comment: "")
+        switch self {
+        case .pelvicFoundation: return String(localized: "onboarding.goal.pelvicFoundation.detail")
+        case .relaxation: return String(localized: "onboarding.goal.relaxation.detail")
+        case .bodyConfidence: return String(localized: "onboarding.goal.bodyConfidence.detail")
+        case .partnerConnection: return String(localized: "onboarding.goal.partnerConnection.detail")
+        }
     }
 
     var systemImage: String {
@@ -40,8 +50,22 @@ enum PracticeRoute: String, Codable, CaseIterable, Identifiable {
     case partner
 
     var id: String { rawValue }
-    var title: String { NSLocalizedString("route.\(rawValue).title", comment: "") }
-    var detail: String { NSLocalizedString("route.\(rawValue).detail", comment: "") }
+    var title: String {
+        switch self {
+        case .foundation: return String(localized: "route.foundation.title")
+        case .relaxation: return String(localized: "route.relaxation.title")
+        case .confidence: return String(localized: "route.confidence.title")
+        case .partner: return String(localized: "route.partner.title")
+        }
+    }
+    var detail: String {
+        switch self {
+        case .foundation: return String(localized: "route.foundation.detail")
+        case .relaxation: return String(localized: "route.relaxation.detail")
+        case .confidence: return String(localized: "route.confidence.detail")
+        case .partner: return String(localized: "route.partner.detail")
+        }
+    }
 
     var systemImage: String {
         switch self {

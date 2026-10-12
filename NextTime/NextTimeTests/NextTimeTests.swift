@@ -9,6 +9,7 @@ import Testing
 import Foundation
 @testable import NextTime
 
+@MainActor
 struct NextTimeTests {
 
     @Test func migratesLegacyTrainingDataIntoProtectedStore() throws {

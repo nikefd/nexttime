@@ -10,7 +10,7 @@
 - [x] 准备 App Review 提交说明和 App Store Connect 核对项。
 - [x] 准备成年 TestFlight 邀请、测试路径和非敏感反馈模板。
 - [x] 完成本地链接、响应式与无障碍冒烟验证。
-- [ ] 部署并验证公开 GitHub Pages URL。
+- [x] 部署并验证公开 GitHub Pages URL（`https://nikefd.github.io/nexttime-site/`）。
 
 ## 必须由真实人员完成
 

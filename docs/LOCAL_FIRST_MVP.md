@@ -257,7 +257,7 @@ Hetzner 服务器和 `zhangyangbin.com` 保留给后续阶段；只有确定需�
 ### 里程碑 C：TestFlight 验证
 
 - [x] 更新中英文 GitHub Pages 静态站，并补齐隐私、条款、安全、来源和支持页面。
-- [ ] 验证 GitHub Pages 线上部署与所有公开链接。
+- [x] 验证独立 `nexttime-site` 仓库的 GitHub Pages 线上部署与所有公开链接。
 - [x] 准备专业内容审阅包和 App Review 说明。
 - [ ] 由真实、可验证的合格专业人士完成内容审阅。
 - [x] 准备成年测试者邀请文本、测试路径和非敏感反馈模板。
@@ -265,6 +265,8 @@ Hetzner 服务器和 `zhangyangbin.com` 保留给后续阶段；只有确定需�
 - [ ] 根据反馈决定是否进入账号同步、伴侣配对或订阅阶段。
 
 执行材料：`CONTENT_REVIEW.md`、`APP_REVIEW_NOTES.md`、`TESTFLIGHT_TEST_PLAN.md` 和 `MILESTONE_C_CHECKLIST.md`。专业审阅与真实测试尚未完成，不得把准备材料视为审阅或测试结论。
+
+网站实现记录：`nikefd/nexttime-site` 提交 `6287103`；GitHub Pages deployment run `38248878447` 成功，公开地址为 `https://nikefd.github.io/nexttime-site/`。
 
 ## 12. MVP 成功信号
 

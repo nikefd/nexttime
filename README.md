@@ -30,9 +30,9 @@
 ## Links / 链接
 
 - [App Store](https://apps.apple.com/app/nexttime)
-- [Website](https://nikefd.github.io/nexttime/)
-- [Privacy Policy](https://nikefd.github.io/nexttime/privacy.html)
-- [Support](https://nikefd.github.io/nexttime/support.html)
+- [Website](https://nikefd.github.io/nexttime-site/)
+- [Privacy Policy](https://nikefd.github.io/nexttime-site/privacy.html)
+- [Support](https://nikefd.github.io/nexttime-site/support.html)
 
 ## Automated releases / 自动发布
 

@@ -208,7 +208,7 @@ MVP 保留目前的一次性 Pro，比立刻改订阅更稳妥。
 
 ## 9. 官网与后端策略
 
-MVP 继续使用现有 GitHub Pages：`https://nikefd.github.io/nexttime/`，暂不迁移到 Hetzner 或 `zhangyangbin.com`，也不需要业务 API。
+MVP 继续使用独立公开仓库 `nikefd/nexttime-site` 的 GitHub Pages：`https://nikefd.github.io/nexttime-site/`，暂不迁移到 Hetzner 或 `zhangyangbin.com`，也不需要业务 API。
 
 GitHub Pages 承载以下静态页面：
 

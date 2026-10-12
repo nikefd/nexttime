@@ -13,7 +13,7 @@
 ## 审阅材料
 
 - App：onboarding、四条练习路线、7 天计划、状态记录、了解页、伴侣沟通卡和设置页。
-- 网站：[首页](https://nikefd.github.io/nexttime/)、[安全说明](https://nikefd.github.io/nexttime/safety.html)、[资料来源](https://nikefd.github.io/nexttime/sources.html)。
+- 网站：[首页](https://nikefd.github.io/nexttime-site/)、[安全说明](https://nikefd.github.io/nexttime-site/safety.html)、[资料来源](https://nikefd.github.io/nexttime-site/sources.html)。
 - 公开参考资料：网站资料来源页列出的 NIDDK、Cleveland Clinic、NHS、ACOG 与 RAINN 页面。
 
 ## 必审清单

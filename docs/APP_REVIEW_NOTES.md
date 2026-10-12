@@ -14,11 +14,11 @@ All practice history, optional check-ins, goals, and partner-card progress remai
 
 Digital Pro features use Apple In-App Purchase. Core safety information, basic practice, and data deletion are available without purchase. Partner cards are used on the same device and do not connect two accounts or transmit messages.
 
-Safety information: https://nikefd.github.io/nexttime/safety_en.html  
-Privacy policy: https://nikefd.github.io/nexttime/privacy_en.html  
-Terms: https://nikefd.github.io/nexttime/terms_en.html  
-Sources and content-review status: https://nikefd.github.io/nexttime/sources_en.html  
-Support: https://nikefd.github.io/nexttime/support_en.html
+- Safety information: https://nikefd.github.io/nexttime-site/safety_en.html
+- Privacy policy: https://nikefd.github.io/nexttime-site/privacy_en.html
+- Terms: https://nikefd.github.io/nexttime-site/terms_en.html
+- Sources and content-review status: https://nikefd.github.io/nexttime-site/sources_en.html
+- Support: https://nikefd.github.io/nexttime-site/support_en.html
 
 ## 提交前 App Store Connect 核对
 

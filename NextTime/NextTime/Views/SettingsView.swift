@@ -322,7 +322,7 @@ struct SettingsView: View {
 
     private func websiteURL(path: String) -> URL {
         let suffix = prefersChineseWebsite ? ".html" : "_en.html"
-        return URL(string: "https://nikefd.github.io/nexttime/\(path)\(suffix)")!
+        return URL(string: "https://nikefd.github.io/nexttime-site/\(path)\(suffix)")!
     }
 }
 

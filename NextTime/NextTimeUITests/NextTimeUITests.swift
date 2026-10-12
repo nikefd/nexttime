@@ -38,8 +38,11 @@ final class NextTimeUITests: XCTestCase {
         safetyConfirmation.tap()
         app.buttons["onboarding.continue-button"].tap()
 
+        XCTAssertTrue(safetyConfirmation.waitForNonExistence(timeout: 3))
         app.buttons["onboarding.continue-button"].tap()
-        app.buttons["onboarding.goal.pelvicFoundation"].tap()
+        let foundationGoal = app.buttons["onboarding.goal.pelvicFoundation"]
+        XCTAssertTrue(foundationGoal.waitForExistence(timeout: 3))
+        foundationGoal.tap()
         app.buttons["onboarding.continue-button"].tap()
 
         XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 5))
@@ -55,10 +58,15 @@ final class NextTimeUITests: XCTestCase {
         ]
         app.launch()
 
-        app.switches["onboarding.adult-confirmation"].tap()
+        let adultConfirmation = app.switches["onboarding.adult-confirmation"]
+        XCTAssertTrue(adultConfirmation.waitForExistence(timeout: 5))
+        adultConfirmation.tap()
         app.buttons["onboarding.continue-button"].tap()
-        app.switches["onboarding.safety-confirmation"].tap()
+        let safetyConfirmation = app.switches["onboarding.safety-confirmation"]
+        XCTAssertTrue(safetyConfirmation.waitForExistence(timeout: 3))
+        safetyConfirmation.tap()
         app.buttons["onboarding.continue-button"].tap()
+        XCTAssertTrue(safetyConfirmation.waitForNonExistence(timeout: 3))
         app.buttons["onboarding.continue-button"].tap()
 
         let foundationGoal = app.buttons["onboarding.goal.pelvicFoundation"]

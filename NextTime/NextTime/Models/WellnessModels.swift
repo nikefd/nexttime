@@ -16,11 +16,11 @@ enum WellnessGoal: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var title: String {
-        String(localized: String.LocalizationValue("onboarding.goal.\(rawValue).title"))
+        NSLocalizedString("onboarding.goal.\(rawValue).title", comment: "")
     }
 
     var detail: String {
-        String(localized: String.LocalizationValue("onboarding.goal.\(rawValue).detail"))
+        NSLocalizedString("onboarding.goal.\(rawValue).detail", comment: "")
     }
 
     var systemImage: String {
@@ -31,6 +31,97 @@ enum WellnessGoal: String, Codable, CaseIterable, Identifiable {
         case .partnerConnection: return "person.2.fill"
         }
     }
+}
+
+enum PracticeRoute: String, Codable, CaseIterable, Identifiable {
+    case foundation
+    case relaxation
+    case confidence
+    case partner
+
+    var id: String { rawValue }
+    var title: String { NSLocalizedString("route.\(rawValue).title", comment: "") }
+    var detail: String { NSLocalizedString("route.\(rawValue).detail", comment: "") }
+
+    var systemImage: String {
+        switch self {
+        case .foundation: return "figure.strengthtraining.traditional"
+        case .relaxation: return "wind"
+        case .confidence: return "heart.text.square"
+        case .partner: return "person.2.fill"
+        }
+    }
+
+    static func routes(for goals: Set<WellnessGoal>) -> [PracticeRoute] {
+        let mapped = goals.map { goal -> PracticeRoute in
+            switch goal {
+            case .pelvicFoundation: return .foundation
+            case .relaxation: return .relaxation
+            case .bodyConfidence: return .confidence
+            case .partnerConnection: return .partner
+            }
+        }
+        return mapped.isEmpty ? allCases : allCases.filter(Set(mapped).contains)
+    }
+}
+
+enum CheckInMoment: String, Codable {
+    case beforePractice
+    case afterPractice
+}
+
+struct WellnessCheckIn: Identifiable, Codable, Equatable {
+    let id: UUID
+    let createdAt: Date
+    let moment: CheckInMoment
+    let comfort: Int
+    let tension: Int
+    let energy: Int?
+    let relaxation: Int?
+    let experiencedDiscomfort: Bool
+
+    init(
+        id: UUID = UUID(),
+        createdAt: Date = Date(),
+        moment: CheckInMoment,
+        comfort: Int,
+        tension: Int,
+        energy: Int? = nil,
+        relaxation: Int? = nil,
+        experiencedDiscomfort: Bool = false
+    ) {
+        self.id = id
+        self.createdAt = createdAt
+        self.moment = moment
+        self.comfort = min(max(comfort, 1), 5)
+        self.tension = min(max(tension, 1), 5)
+        self.energy = energy.map { min(max($0, 1), 5) }
+        self.relaxation = relaxation.map { min(max($0, 1), 5) }
+        self.experiencedDiscomfort = experiencedDiscomfort
+    }
+}
+
+struct PracticePlanDay: Identifiable, Equatable {
+    let day: Int
+    let programID: UUID
+    var id: Int { day }
+}
+
+struct PracticePlan: Equatable {
+    let days: [PracticePlanDay]
+
+    func programID(for day: Int) -> UUID? {
+        days.first { $0.day == day }?.programID
+    }
+}
+
+struct PartnerCommunicationCard: Identifiable, Equatable {
+    let id: String
+    let titleKey: String
+    let promptKey: String
+
+    var title: String { NSLocalizedString(titleKey, comment: "") }
+    var prompt: String { NSLocalizedString(promptKey, comment: "") }
 }
 
 struct WellnessProfile: Codable, Equatable {

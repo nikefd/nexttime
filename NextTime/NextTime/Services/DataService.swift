@@ -15,6 +15,8 @@ class DataService {
         static let completedProgramIDs = "training.completed-program-ids.v1"
         static let wellnessProfile = "wellness.profile.v1"
         static let safetyAcknowledgement = "safety.acknowledgement.v1"
+        static let wellnessCheckIns = "wellness.check-ins.v1"
+        static let completedPartnerCards = "wellness.partner-cards.v1"
         static let legacyMigrationComplete = "migration.user-defaults.v1"
     }
 
@@ -196,6 +198,35 @@ class DataService {
             SafetyAcknowledgement.self,
             forKey: ProtectedKey.safetyAcknowledgement
         )
+    }
+
+    // MARK: - 状态记录与伴侣沟通卡
+    func saveCheckIn(_ checkIn: WellnessCheckIn) {
+        var checkIns = loadCheckIns()
+        checkIns.append(checkIn)
+        try? protectedStore.save(checkIns, forKey: ProtectedKey.wellnessCheckIns)
+    }
+
+    func loadCheckIns() -> [WellnessCheckIn] {
+        let values = protectedStore.load(
+            [WellnessCheckIn].self,
+            forKey: ProtectedKey.wellnessCheckIns
+        ) ?? []
+        return values.sorted { $0.createdAt > $1.createdAt }
+    }
+
+    func markPartnerCardCompleted(_ cardID: String) {
+        var identifiers = loadCompletedPartnerCardIDs()
+        identifiers.insert(cardID)
+        try? protectedStore.save(Array(identifiers), forKey: ProtectedKey.completedPartnerCards)
+    }
+
+    func loadCompletedPartnerCardIDs() -> Set<String> {
+        let identifiers = protectedStore.load(
+            [String].self,
+            forKey: ProtectedKey.completedPartnerCards
+        ) ?? []
+        return Set(identifiers)
     }
 
     // MARK: - 删除所有数据

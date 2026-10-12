@@ -10,16 +10,11 @@ import SwiftUI
 struct HistoryView: View {
     @State private var records: [TrainingRecord] = []
     @State private var statistics = TrainingStatistics()
+    @State private var checkIns: [WellnessCheckIn] = []
 
     var body: some View {
         NavigationStack {
-            Group {
-                if records.isEmpty {
-                    emptyStateView
-                } else {
-                    recordsList
-                }
-            }
+            recordsList
             .navigationTitle(String(localized: "history.title"))
             .onAppear {
                 loadData()
@@ -74,14 +69,65 @@ struct HistoryView: View {
                 .padding(.vertical, 8)
             }
 
-            // 按日期分组的记录
-            ForEach(groupedRecords.keys.sorted().reversed(), id: \.self) { date in
-                Section {
-                    ForEach(groupedRecords[date] ?? []) { record in
-                        RecordRow(record: record)
+            Section(String(localized: "progress.routes")) {
+                ForEach(PracticeRoute.allCases) { route in
+                    let progress = routeProgress(route)
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Label(route.title, systemImage: route.systemImage)
+                            Spacer()
+                            Text("\(progress.completed)/\(progress.total)")
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+                        ProgressView(value: Double(progress.completed), total: Double(max(progress.total, 1)))
                     }
-                } header: {
-                    Text(formatDateHeader(date))
+                    .accessibilityElement(children: .combine)
+                }
+            }
+
+            Section(String(localized: "progress.wellnessTrend")) {
+                if checkIns.isEmpty {
+                    Text(String(localized: "progress.noCheckIns"))
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(Array(checkIns.prefix(7))) { checkIn in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(checkIn.createdAt, style: .date)
+                                Text(checkIn.moment == .beforePractice
+                                     ? String(localized: "checkin.before.short")
+                                     : String(localized: "checkin.after.short"))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Label("\(checkIn.comfort)/5", systemImage: "heart.fill")
+                                .foregroundStyle(.pink)
+                            Label("\(checkIn.tension)/5", systemImage: "waveform.path")
+                                .foregroundStyle(.orange)
+                        }
+                        .font(.caption)
+                    }
+                }
+            }
+
+            // 按日期分组的记录
+            if records.isEmpty {
+                Section {
+                    emptyStateView
+                        .frame(maxWidth: .infinity)
+                        .listRowBackground(Color.clear)
+                }
+            } else {
+                ForEach(groupedRecords.keys.sorted().reversed(), id: \.self) { date in
+                    Section {
+                        ForEach(groupedRecords[date] ?? []) { record in
+                            RecordRow(record: record)
+                        }
+                    } header: {
+                        Text(formatDateHeader(date))
+                    }
                 }
             }
         }
@@ -113,6 +159,13 @@ struct HistoryView: View {
     private func loadData() {
         records = DataService.shared.loadRecords()
         statistics = DataService.shared.calculateStatistics()
+        checkIns = DataService.shared.loadCheckIns()
+    }
+
+    private func routeProgress(_ route: PracticeRoute) -> (completed: Int, total: Int) {
+        let programs = TrainingData.programs(for: route)
+        let completed = Set(records.filter(\.isCompleted).map(\.programId))
+        return (programs.filter { completed.contains($0.id) }.count, programs.count)
     }
 }
 

@@ -62,6 +62,11 @@ class SpeechService {
         speak(text: String(localized: "voice.contract"))
     }
 
+    func speakBreathe() {
+        guard isEnabled else { return }
+        speak(text: String(localized: "voice.breathe"))
+    }
+
     // MARK: - 放松提示
     func speakRelax() {
         guard isEnabled else { return }

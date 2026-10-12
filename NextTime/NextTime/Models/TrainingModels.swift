@@ -10,6 +10,7 @@ import Foundation
 // MARK: - 训练动作类型
 enum ExerciseAction: String, Codable {
     case contract = "contract"  // 收缩
+    case breathe = "breathe"    // 呼吸
     case relax = "relax"        // 放松
     case rest = "rest"          // 组间休息
 }
@@ -74,10 +75,14 @@ struct TrainingProgram: Identifiable, Codable {
     let sets: [ExerciseSet]
     let restBetweenSets: Int      // 组间休息时间（秒）
     let order: Int                // 课程顺序
+    let route: PracticeRoute
+    let primaryAction: ExerciseAction
+    let isPremium: Bool
 
     init(id: UUID = UUID(), name: String, localizedNameKey: String, description: String,
          localizedDescriptionKey: String, difficulty: DifficultyLevel, sets: [ExerciseSet],
-         restBetweenSets: Int = 10, order: Int) {
+         restBetweenSets: Int = 10, order: Int, route: PracticeRoute = .foundation,
+         primaryAction: ExerciseAction = .contract, isPremium: Bool = false) {
         self.id = id
         self.name = name
         self.localizedNameKey = localizedNameKey
@@ -87,6 +92,9 @@ struct TrainingProgram: Identifiable, Codable {
         self.sets = sets
         self.restBetweenSets = restBetweenSets
         self.order = order
+        self.route = route
+        self.primaryAction = primaryAction
+        self.isPremium = isPremium
     }
 
     // 计算总时长（秒）
@@ -122,9 +130,11 @@ struct TrainingRecord: Identifiable, Codable {
     let completedSets: Int        // 完成的组数
     let totalSets: Int            // 总组数
     let isCompleted: Bool         // 是否完整完成
+    let route: PracticeRoute?
 
     init(id: UUID = UUID(), programId: UUID, programName: String, completedAt: Date = Date(),
-         duration: Int, completedSets: Int, totalSets: Int, isCompleted: Bool) {
+         duration: Int, completedSets: Int, totalSets: Int, isCompleted: Bool,
+         route: PracticeRoute? = nil) {
         self.id = id
         self.programId = programId
         self.programName = programName
@@ -133,6 +143,7 @@ struct TrainingRecord: Identifiable, Codable {
         self.completedSets = completedSets
         self.totalSets = totalSets
         self.isCompleted = isCompleted
+        self.route = route
     }
 }
 

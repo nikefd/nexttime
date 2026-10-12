@@ -13,6 +13,10 @@ struct TrainingView: View {
     @ObservedObject private var trainingManager = TrainingManager.shared
     @State private var showExitAlert = false
     @State private var privacyMode = false
+    @State private var postComfort = 3
+    @State private var postRelaxation = 3
+    @State private var experiencedDiscomfort = false
+    @State private var savedPostCheckIn = false
     @AppStorage("defaultPrivacyMode") private var defaultPrivacyMode = false
 
     var body: some View {
@@ -86,6 +90,8 @@ struct TrainingView: View {
         switch trainingManager.progress.currentAction {
         case .contract:
             return Color.blue.opacity(0.3)
+        case .breathe:
+            return Color.cyan.opacity(0.25)
         case .relax:
             return Color.green.opacity(0.3)
         case .rest:
@@ -190,7 +196,8 @@ struct TrainingView: View {
 
     // MARK: - 完成内容
     private var completedContent: some View {
-        VStack(spacing: 24) {
+        ScrollView {
+        VStack(spacing: 18) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 80))
                 .foregroundStyle(.green)
@@ -203,6 +210,37 @@ struct TrainingView: View {
             Text(String(localized: "training.greatJob"))
                 .font(.subheadline)
                 .foregroundStyle(privacyMode ? .gray : .secondary)
+
+            if !savedPostCheckIn {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text(String(localized: "checkin.after.title"))
+                        .font(.headline)
+                    WellnessRatingRow(title: String(localized: "checkin.comfort"), value: $postComfort)
+                    WellnessRatingRow(title: String(localized: "checkin.relaxation"), value: $postRelaxation)
+                    Toggle(String(localized: "checkin.discomfort"), isOn: $experiencedDiscomfort)
+                    Button(String(localized: "checkin.save")) {
+                        DataService.shared.saveCheckIn(
+                            WellnessCheckIn(
+                                moment: .afterPractice,
+                                comfort: postComfort,
+                                tension: max(1, 6 - postRelaxation),
+                                relaxation: postRelaxation,
+                                experiencedDiscomfort: experiencedDiscomfort
+                            )
+                        )
+                        savedPostCheckIn = true
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
+                }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+            } else {
+                Label(String(localized: "checkin.saved"), systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            }
+        }
         }
     }
 
@@ -274,6 +312,7 @@ struct TrainingView: View {
     private var actionColor: Color {
         switch trainingManager.progress.currentAction {
         case .contract: return .blue
+        case .breathe: return .cyan
         case .relax: return .green
         case .rest: return .orange
         }
@@ -282,6 +321,7 @@ struct TrainingView: View {
     private var actionColorPrivacy: Color {
         switch trainingManager.progress.currentAction {
         case .contract: return .blue.opacity(0.8)
+        case .breathe: return .cyan.opacity(0.8)
         case .relax: return .green.opacity(0.8)
         case .rest: return .orange.opacity(0.8)
         }
@@ -295,6 +335,8 @@ struct TrainingView: View {
         let totalSeconds: Int
         switch trainingManager.progress.currentAction {
         case .contract:
+            totalSeconds = currentSet.contractDuration
+        case .breathe:
             totalSeconds = currentSet.contractDuration
         case .relax:
             totalSeconds = currentSet.relaxDuration
@@ -402,6 +444,7 @@ struct PrivacyBlurOverlay: View {
     private var actionColor: Color {
         switch currentAction {
         case .contract: return .blue
+        case .breathe: return .cyan
         case .relax: return .green
         case .rest: return .orange
         }
@@ -410,6 +453,7 @@ struct PrivacyBlurOverlay: View {
     private var actionText: String {
         switch currentAction {
         case .contract: return String(localized: "action.contract")
+        case .breathe: return String(localized: "action.breathe")
         case .relax: return String(localized: "action.relax")
         case .rest: return String(localized: "action.rest")
         }

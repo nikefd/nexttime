@@ -194,8 +194,7 @@ extension ProManager {
     func isProgramLocked(_ program: TrainingProgram) -> Bool {
         if isPro { return false }
 
-        // 免费课程：入门和基础级别
-        return program.difficulty != .beginner && program.difficulty != .elementary
+        return program.isPremium
     }
 
     /// 检查是否可以使用自定义训练

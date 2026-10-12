@@ -11,30 +11,134 @@ struct TrainingData {
 
     // MARK: - 所有预设训练课程
     static let allPrograms: [TrainingProgram] = [
-        // === 初级课程 ===
-        beginnerQuickStart,
-        beginnerBasic,
-        beginnerGentle,
-
-        // === 基础课程 ===
-        elementaryStandard,
-        elementaryEndurance,
-        elementaryRhythm,
-
-        // === 中级课程 ===
-        intermediateStrength,
-        intermediateIntensive,
-        intermediateVariety,
-
-        // === 高级课程 ===
-        advancedPower,
-        advancedMarathon,
-        advancedChallenge,
-
-        // === 专家课程 ===
-        expertUltimate,
-        expertMaster
+        foundationAwareness, foundationCoordination,
+        relaxationBreathing, relaxationRelease,
+        confidenceBodyScan, confidenceCalmRhythm,
+        partnerPause, partnerSharedReset
     ]
+
+    static let partnerCards: [PartnerCommunicationCard] = [
+        .init(id: "appreciation", titleKey: "partner.card.appreciation.title", promptKey: "partner.card.appreciation.prompt"),
+        .init(id: "comfort", titleKey: "partner.card.comfort.title", promptKey: "partner.card.comfort.prompt"),
+        .init(id: "boundary", titleKey: "partner.card.boundary.title", promptKey: "partner.card.boundary.prompt"),
+        .init(id: "checkin", titleKey: "partner.card.checkin.title", promptKey: "partner.card.checkin.prompt")
+    ]
+
+    private static func stableID(_ suffix: String) -> UUID {
+        UUID(uuidString: "4E585442-0000-4000-8000-\(suffix)")!
+    }
+
+    // MARK: - 里程碑 B：四条练习路线
+
+    static let foundationAwareness = TrainingProgram(
+        id: stableID("000000000001"), name: "Foundation Awareness",
+        localizedNameKey: "program.route.foundation.awareness",
+        description: "Identify gentle contraction and full release.",
+        localizedDescriptionKey: "program.route.foundation.awareness.desc",
+        difficulty: .beginner,
+        sets: [ExerciseSet(contractDuration: 3, relaxDuration: 6, repetitions: 5)],
+        restBetweenSets: 15, order: 1, route: .foundation
+    )
+
+    static let foundationCoordination = TrainingProgram(
+        id: stableID("000000000002"), name: "Foundation Coordination",
+        localizedNameKey: "program.route.foundation.coordination",
+        description: "Coordinate breathing, contraction, and release without strain.",
+        localizedDescriptionKey: "program.route.foundation.coordination.desc",
+        difficulty: .elementary,
+        sets: [
+            ExerciseSet(contractDuration: 4, relaxDuration: 8, repetitions: 6),
+            ExerciseSet(contractDuration: 2, relaxDuration: 5, repetitions: 6)
+        ],
+        restBetweenSets: 20, order: 2, route: .foundation, isPremium: true
+    )
+
+    static let relaxationBreathing = TrainingProgram(
+        id: stableID("000000000003"), name: "Breathing Reset",
+        localizedNameKey: "program.route.relaxation.breathing",
+        description: "Slow breathing with a long, easy release.",
+        localizedDescriptionKey: "program.route.relaxation.breathing.desc",
+        difficulty: .beginner,
+        sets: [ExerciseSet(contractDuration: 4, relaxDuration: 6, repetitions: 6)],
+        restBetweenSets: 15, order: 3, route: .relaxation, primaryAction: .breathe
+    )
+
+    static let relaxationRelease = TrainingProgram(
+        id: stableID("000000000004"), name: "Full Release",
+        localizedNameKey: "program.route.relaxation.release",
+        description: "Practice noticing and releasing unnecessary tension.",
+        localizedDescriptionKey: "program.route.relaxation.release.desc",
+        difficulty: .elementary,
+        sets: [
+            ExerciseSet(contractDuration: 5, relaxDuration: 10, repetitions: 5),
+            ExerciseSet(contractDuration: 4, relaxDuration: 8, repetitions: 5)
+        ],
+        restBetweenSets: 20, order: 4, route: .relaxation,
+        primaryAction: .breathe, isPremium: true
+    )
+
+    static let confidenceBodyScan = TrainingProgram(
+        id: stableID("000000000005"), name: "Body Scan",
+        localizedNameKey: "program.route.confidence.scan",
+        description: "Notice sensations without judging performance.",
+        localizedDescriptionKey: "program.route.confidence.scan.desc",
+        difficulty: .beginner,
+        sets: [ExerciseSet(contractDuration: 5, relaxDuration: 7, repetitions: 5)],
+        restBetweenSets: 15, order: 5, route: .confidence, primaryAction: .breathe
+    )
+
+    static let confidenceCalmRhythm = TrainingProgram(
+        id: stableID("000000000006"), name: "Calm Rhythm",
+        localizedNameKey: "program.route.confidence.rhythm",
+        description: "Use a steady rhythm to reduce performance pressure.",
+        localizedDescriptionKey: "program.route.confidence.rhythm.desc",
+        difficulty: .elementary,
+        sets: [
+            ExerciseSet(contractDuration: 4, relaxDuration: 8, repetitions: 6),
+            ExerciseSet(contractDuration: 3, relaxDuration: 6, repetitions: 6)
+        ],
+        restBetweenSets: 20, order: 6, route: .confidence,
+        primaryAction: .breathe, isPremium: true
+    )
+
+    static let partnerPause = TrainingProgram(
+        id: stableID("000000000007"), name: "Shared Pause",
+        localizedNameKey: "program.route.partner.pause",
+        description: "A short same-device pause before a conversation.",
+        localizedDescriptionKey: "program.route.partner.pause.desc",
+        difficulty: .beginner,
+        sets: [ExerciseSet(contractDuration: 4, relaxDuration: 6, repetitions: 5)],
+        restBetweenSets: 15, order: 7, route: .partner, primaryAction: .breathe
+    )
+
+    static let partnerSharedReset = TrainingProgram(
+        id: stableID("000000000008"), name: "Listen and Reset",
+        localizedNameKey: "program.route.partner.reset",
+        description: "Settle together before sharing a need or boundary.",
+        localizedDescriptionKey: "program.route.partner.reset.desc",
+        difficulty: .elementary,
+        sets: [
+            ExerciseSet(contractDuration: 5, relaxDuration: 8, repetitions: 5),
+            ExerciseSet(contractDuration: 4, relaxDuration: 8, repetitions: 5)
+        ],
+        restBetweenSets: 20, order: 8, route: .partner,
+        primaryAction: .breathe, isPremium: true
+    )
+
+    static func programs(for route: PracticeRoute) -> [TrainingProgram] {
+        allPrograms.filter { $0.route == route }.sorted { $0.order < $1.order }
+    }
+
+    static func sevenDayPlan(for goals: Set<WellnessGoal>) -> PracticePlan {
+        let selectedRoutes = PracticeRoute.routes(for: goals)
+        let routeCycle = selectedRoutes.isEmpty ? PracticeRoute.allCases : selectedRoutes
+        let days = (1...7).map { day -> PracticePlanDay in
+            let route = routeCycle[(day - 1) % routeCycle.count]
+            let program = programs(for: route).first ?? foundationAwareness
+            return PracticePlanDay(day: day, programID: program.id)
+        }
+        return PracticePlan(days: days)
+    }
 
     // MARK: - 初级课程 (Beginner)
 
@@ -308,7 +412,7 @@ struct TrainingData {
             }
         }
 
-        // 如果都完成了，返回最高级课程
-        return expertMaster
+        // 如果都完成了，从第一条路线重新开始温和练习
+        return allPrograms.first ?? foundationAwareness
     }
 }

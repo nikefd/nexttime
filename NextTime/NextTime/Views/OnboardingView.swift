@@ -215,12 +215,12 @@ struct OnboardingView: View {
     }
 
     private func safetyRow(_ key: String, icon: String) -> some View {
-        Label(String(localized: String.LocalizationValue(key)), systemImage: icon)
+        Label(NSLocalizedString(key, comment: ""), systemImage: icon)
             .font(.subheadline)
     }
 
     private func privacyRow(_ key: String, icon: String) -> some View {
-        Label(String(localized: String.LocalizationValue(key)), systemImage: icon)
+        Label(NSLocalizedString(key, comment: ""), systemImage: icon)
             .font(.body)
     }
 }

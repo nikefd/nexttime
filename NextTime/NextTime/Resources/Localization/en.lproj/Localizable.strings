@@ -2,9 +2,9 @@
 "app.name" = "NextTime";
 
 /* Tabs */
-"tab.home" = "Home";
-"tab.programs" = "Programs";
-"tab.history" = "History";
+"tab.home" = "Today";
+"tab.programs" = "Practice";
+"tab.history" = "Progress";
 "tab.learn" = "Learn";
 "tab.settings" = "Settings";
 
@@ -71,11 +71,13 @@
 
 /* Training Actions */
 "action.contract" = "Contract";
+"action.breathe" = "Breathe";
 "action.relax" = "Relax";
 "action.rest" = "Rest";
 
 /* Voice Prompts */
 "voice.contract" = "Contract";
+"voice.breathe" = "Breathe slowly";
 "voice.relax" = "Relax";
 "voice.rest" = "Rest";
 "voice.nextSet %lld" = "Set %lld";
@@ -93,7 +95,7 @@
 "progress.description %lld %lld %lld %lld" = "Set %lld/%lld · Rep %lld/%lld";
 
 /* History */
-"history.title" = "Training History";
+"history.title" = "Progress";
 "history.empty" = "No Training Records";
 "history.emptyDescription" = "Complete your first training session to see your history here.";
 
@@ -310,3 +312,65 @@
 /* Milestone A - Discreet Reminder */
 "reminder.discreet.title" = "Today's Small Goal";
 "reminder.discreet.body" = "Take a few minutes for yourself.";
+
+/* Milestone B - Core Experience */
+"route.foundation.title" = "Foundation";
+"route.foundation.detail" = "Identify, gently contract, and coordinate the pelvic floor";
+"route.relaxation.title" = "Relax & Recover";
+"route.relaxation.detail" = "Use breathing and full release to reduce excess tension";
+"route.confidence.title" = "Confidence & Awareness";
+"route.confidence.detail" = "Notice sensations without judging performance";
+"route.partner.title" = "Practice Together";
+"route.partner.detail" = "Same-device communication, boundaries, and connection exercises";
+
+"program.route.foundation.awareness" = "Pelvic Floor Awareness";
+"program.route.foundation.awareness.desc" = "Practice gentle identification, contraction, and full release.";
+"program.route.foundation.coordination" = "Contract & Release Coordination";
+"program.route.foundation.coordination.desc" = "Coordinate breathing, contraction, and release without strain.";
+"program.route.relaxation.breathing" = "Breathing Reset";
+"program.route.relaxation.breathing.desc" = "Recover your rhythm with slow breathing and a longer release.";
+"program.route.relaxation.release" = "Full Release";
+"program.route.relaxation.release.desc" = "Notice and release unnecessary tension.";
+"program.route.confidence.scan" = "Body Scan";
+"program.route.confidence.scan.desc" = "Notice present sensations without judging performance.";
+"program.route.confidence.rhythm" = "Calm Rhythm";
+"program.route.confidence.rhythm.desc" = "Use a steady rhythm to reduce performance pressure.";
+"program.route.partner.pause" = "Shared Pause";
+"program.route.partner.pause.desc" = "Use the same device for a short breathing pause before talking.";
+"program.route.partner.reset" = "Listen & Reset";
+"program.route.partner.reset.desc" = "Settle together before sharing a need or boundary.";
+
+"home.plan.title" = "7-Day Starter Plan";
+"home.plan.day %lld" = "Day %lld";
+"home.plan.progress" = "Starter plan progress";
+"home.plan.message %lld" = "%lld/7 days completed. Practice at your own pace.";
+"checkin.before.title" = "One-Minute Check-In";
+"checkin.after.title" = "How did practice feel?";
+"checkin.optional" = "Optional and stored only on this device. 1 is lower; 5 is higher.";
+"checkin.comfort" = "Comfort";
+"checkin.tension" = "Tension";
+"checkin.energy" = "Energy";
+"checkin.relaxation" = "Relaxation";
+"checkin.discomfort" = "I felt discomfort during practice";
+"checkin.save" = "Save Check-In";
+"checkin.saved" = "Check-in saved on device";
+"checkin.before.short" = "Before";
+"checkin.after.short" = "After";
+
+"progress.routes" = "Four Routes";
+"progress.wellnessTrend" = "On-Device Wellness Trend";
+"progress.noCheckIns" = "Record a before- or after-practice check-in to see trends here.";
+
+"partner.cards.title" = "Partner Conversation Cards";
+"partner.cards.subtitle" = "Same-device, no-account, non-explicit communication exercises";
+"partner.cards.privacy" = "Take turns reading and answering. Nothing is recorded or uploaded, and either person can skip at any time.";
+"partner.cards.consent" = "First confirm that both people want to continue. Listen without arguing or rushing, and never treat silence as consent.";
+"partner.cards.complete" = "Complete This Card";
+"partner.card.appreciation.title" = "Share Appreciation";
+"partner.card.appreciation.prompt" = "Take turns naming one recent moment that helped you feel cared for or respected.";
+"partner.card.comfort.title" = "A Comfortable Pace";
+"partner.card.comfort.prompt" = "What pace of conversation helps you relax? How can your partner check in with you?";
+"partner.card.boundary.title" = "Boundaries & Consent";
+"partner.card.boundary.prompt" = "Name one boundary you want asked about, respected, or free to change at any time.";
+"partner.card.checkin.title" = "Gentle Check-In";
+"partner.card.checkin.prompt" = "Each answer in one sentence: would continuing, slowing down, or pausing feel best right now?";

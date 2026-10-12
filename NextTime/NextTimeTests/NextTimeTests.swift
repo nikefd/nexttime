@@ -105,4 +105,36 @@ struct NextTimeTests {
         #expect(discreet.body != detailed.body)
     }
 
+    @Test func sevenDayPlanFollowsSelectedRoutes() {
+        let plan = TrainingData.sevenDayPlan(for: [.relaxation, .partnerConnection])
+        let programRoutes = plan.days.compactMap { day in
+            TrainingData.allPrograms.first { $0.id == day.programID }?.route
+        }
+
+        #expect(plan.days.count == 7)
+        #expect(Set(programRoutes) == [.relaxation, .partner])
+    }
+
+    @Test func storesWellnessCheckInsAndPartnerCardProgressLocally() throws {
+        let suiteName = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let service = DataService(
+            userDefaults: defaults,
+            protectedStore: try ProtectedDataStore(inMemory: true)
+        )
+        let checkIn = WellnessCheckIn(
+            moment: .beforePractice,
+            comfort: 4,
+            tension: 2,
+            energy: 3
+        )
+
+        service.saveCheckIn(checkIn)
+        service.markPartnerCardCompleted("boundary")
+
+        #expect(service.loadCheckIns() == [checkIn])
+        #expect(service.loadCompletedPartnerCardIDs() == ["boundary"])
+    }
+
 }

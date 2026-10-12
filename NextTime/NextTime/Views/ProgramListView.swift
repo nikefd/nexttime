@@ -56,10 +56,29 @@ struct ProgramListView: View {
                     }
                 }
 
-                // 预设课程
-                ForEach(DifficultyLevel.allCases, id: \.rawValue) { difficulty in
+                Section {
+                    NavigationLink {
+                        PartnerCardsView()
+                    } label: {
+                        Label {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(String(localized: "partner.cards.title"))
+                                    .font(.headline)
+                                Text(String(localized: "partner.cards.subtitle"))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } icon: {
+                            Image(systemName: "person.2.wave.2.fill")
+                                .foregroundStyle(.pink)
+                        }
+                    }
+                }
+
+                // 四条本地优先练习路线
+                ForEach(PracticeRoute.allCases) { route in
                     Section {
-                        ForEach(TrainingData.programs(for: difficulty)) { program in
+                        ForEach(TrainingData.programs(for: route)) { program in
                             let isLocked = proManager.isProgramLocked(program)
 
                             ProgramRow(
@@ -78,14 +97,9 @@ struct ProgramListView: View {
                         }
                     } header: {
                         HStack {
-                            Text(difficulty.localizedName)
-                            if difficulty != .beginner && difficulty != .elementary {
-                                Image(systemName: "crown.fill")
-                                    .font(.caption2)
-                                    .foregroundStyle(.yellow)
-                            }
+                            Label(route.title, systemImage: route.systemImage)
                             Spacer()
-                            Text("\(TrainingData.programs(for: difficulty).count) \(String(localized: "program.courses"))")
+                            Text("\(TrainingData.programs(for: route).count) \(String(localized: "program.courses"))")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -130,7 +144,7 @@ struct ProgramRow: View {
                         .foregroundStyle(.green)
                         .font(.title2)
                 } else {
-                    Image(systemName: "figure.strengthtraining.traditional")
+                    Image(systemName: program.route.systemImage)
                         .foregroundStyle(difficultyColor)
                         .font(.title3)
                 }
@@ -173,12 +187,11 @@ struct ProgramRow: View {
     }
 
     private var difficultyColor: Color {
-        switch program.difficulty {
-        case .beginner: return .green
-        case .elementary: return .blue
-        case .intermediate: return .orange
-        case .advanced: return .red
-        case .expert: return .purple
+        switch program.route {
+        case .foundation: return .blue
+        case .relaxation: return .green
+        case .confidence: return .purple
+        case .partner: return .pink
         }
     }
 }

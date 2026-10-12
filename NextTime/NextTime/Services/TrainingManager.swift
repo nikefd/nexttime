@@ -163,7 +163,7 @@ class TrainingManager: ObservableObject {
 
         // 初始化第一个动作
         if let firstSet = program.sets.first {
-            progress.currentAction = .contract
+            progress.currentAction = program.primaryAction
             progress.remainingSeconds = firstSet.contractDuration
 
             // 延迟开始，给用户准备时间
@@ -216,7 +216,8 @@ class TrainingManager: ObservableObject {
                 duration: duration,
                 completedSets: progress.currentSetIndex,
                 totalSets: program.sets.count,
-                isCompleted: progress.isCompleted
+                isCompleted: progress.isCompleted,
+                route: program.route
             )
             onTrainingComplete?(record)
             DataService.shared.saveRecord(record)
@@ -235,7 +236,7 @@ class TrainingManager: ObservableObject {
 
         // 直接进入下一组的收缩
         let nextSet = program.sets[progress.currentSetIndex]
-        progress.currentAction = .contract
+        progress.currentAction = program.primaryAction
         progress.remainingSeconds = nextSet.contractDuration
         progress.isResting = false
 
@@ -298,7 +299,7 @@ class TrainingManager: ObservableObject {
         let currentSet = program.sets[progress.currentSetIndex]
 
         switch progress.currentAction {
-        case .contract:
+        case .contract, .breathe:
             // 收缩完成，停止震动，切换到放松
             stopHapticTimer()
             progress.currentAction = .relax
@@ -311,7 +312,7 @@ class TrainingManager: ObservableObject {
 
             if progress.currentRepetition < currentSet.repetitions {
                 // 还有重复，继续收缩
-                progress.currentAction = .contract
+                progress.currentAction = program.primaryAction
                 progress.remainingSeconds = currentSet.contractDuration
                 announceCurrentAction()
             } else {
@@ -335,7 +336,7 @@ class TrainingManager: ObservableObject {
             // 休息完成，开始下一组
             progress.isResting = false
             let nextSet = program.sets[progress.currentSetIndex]
-            progress.currentAction = .contract
+            progress.currentAction = program.primaryAction
             progress.remainingSeconds = nextSet.contractDuration
             announceNextSet()
         }
@@ -368,6 +369,10 @@ class TrainingManager: ObservableObject {
         case .contract:
             speechService.speakContract()
             startContinuousHaptic()
+        case .breathe:
+            speechService.speakBreathe()
+            stopHapticTimer()
+            hapticService.simplePulse()
         case .relax:
             speechService.speakRelax()
             stopHapticTimer()
@@ -388,8 +393,7 @@ class TrainingManager: ObservableObject {
 
         // 稍后宣布收缩并开始震动
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.speechService.speakContract()
-            self?.startContinuousHaptic()
+            self?.announceCurrentAction()
         }
     }
 
@@ -412,7 +416,8 @@ class TrainingManager: ObservableObject {
                 duration: duration,
                 completedSets: program.sets.count,
                 totalSets: program.sets.count,
-                isCompleted: true
+                isCompleted: true,
+                route: program.route
             )
             onTrainingComplete?(record)
             DataService.shared.saveRecord(record)
@@ -441,6 +446,8 @@ class TrainingManager: ObservableObject {
         switch progress.currentAction {
         case .contract:
             return String(localized: "action.contract")
+        case .breathe:
+            return String(localized: "action.breathe")
         case .relax:
             return String(localized: "action.relax")
         case .rest:

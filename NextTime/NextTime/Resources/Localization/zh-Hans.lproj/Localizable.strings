@@ -2,10 +2,10 @@
 "app.name" = "下一次";
 
 /* Tabs */
-"tab.home" = "首页";
-"tab.programs" = "课程";
-"tab.history" = "历史";
-"tab.learn" = "学习";
+"tab.home" = "今日";
+"tab.programs" = "练习";
+"tab.history" = "进展";
+"tab.learn" = "了解";
 "tab.settings" = "设置";
 
 /* Difficulty Levels */
@@ -71,11 +71,13 @@
 
 /* Training Actions */
 "action.contract" = "收缩";
+"action.breathe" = "呼吸";
 "action.relax" = "放松";
 "action.rest" = "休息";
 
 /* Voice Prompts */
 "voice.contract" = "收缩";
+"voice.breathe" = "缓慢呼吸";
 "voice.relax" = "放松";
 "voice.rest" = "休息";
 "voice.nextSet %lld" = "第%lld组";
@@ -93,7 +95,7 @@
 "progress.description %lld %lld %lld %lld" = "第%lld/%lld组 · 第%lld/%lld次";
 
 /* History */
-"history.title" = "训练历史";
+"history.title" = "进展";
 "history.empty" = "暂无训练记录";
 "history.emptyDescription" = "完成你的第一次训练，记录会显示在这里。";
 
@@ -310,3 +312,65 @@
 /* Milestone A - Discreet Reminder */
 "reminder.discreet.title" = "今天的小目标";
 "reminder.discreet.body" = "留几分钟给自己。";
+
+/* Milestone B - Core Experience */
+"route.foundation.title" = "基础控制";
+"route.foundation.detail" = "识别、轻柔收缩并协调盆底";
+"route.relaxation.title" = "放松恢复";
+"route.relaxation.detail" = "用呼吸和充分放松减少过度紧张";
+"route.confidence.title" = "信心与觉察";
+"route.confidence.detail" = "在不追求表现的前提下关注身体感受";
+"route.partner.title" = "一起练习";
+"route.partner.detail" = "同设备完成沟通、边界与亲密练习";
+
+"program.route.foundation.awareness" = "盆底觉察入门";
+"program.route.foundation.awareness.desc" = "练习轻柔识别、收缩与完整放松。";
+"program.route.foundation.coordination" = "收缩与放松协调";
+"program.route.foundation.coordination.desc" = "配合呼吸完成收缩和放松，避免用力过度。";
+"program.route.relaxation.breathing" = "呼吸重置";
+"program.route.relaxation.breathing.desc" = "用缓慢呼吸和较长放松恢复身体节奏。";
+"program.route.relaxation.release" = "充分释放";
+"program.route.relaxation.release.desc" = "觉察并释放不必要的紧张。";
+"program.route.confidence.scan" = "身体扫描";
+"program.route.confidence.scan.desc" = "不评判表现，只关注当下的身体感受。";
+"program.route.confidence.rhythm" = "从容节奏";
+"program.route.confidence.rhythm.desc" = "用稳定节奏降低表现压力。";
+"program.route.partner.pause" = "共同暂停";
+"program.route.partner.pause.desc" = "开始沟通前，在同一设备上完成短暂呼吸练习。";
+"program.route.partner.reset" = "倾听与重置";
+"program.route.partner.reset.desc" = "表达需要或边界前，先一起稳定节奏。";
+
+"home.plan.title" = "7 天入门计划";
+"home.plan.day %lld" = "第 %lld 天";
+"home.plan.progress" = "入门计划进度";
+"home.plan.message %lld" = "已完成 %lld/7 天；按自己的节奏练习即可。";
+"checkin.before.title" = "一分钟状态记录";
+"checkin.after.title" = "练习后感觉如何？";
+"checkin.optional" = "可选，仅保存在当前设备。1 表示较低，5 表示较高。";
+"checkin.comfort" = "舒适度";
+"checkin.tension" = "紧张度";
+"checkin.energy" = "精力";
+"checkin.relaxation" = "放松程度";
+"checkin.discomfort" = "练习中出现不适";
+"checkin.save" = "保存状态";
+"checkin.saved" = "状态已保存在本机";
+"checkin.before.short" = "练习前";
+"checkin.after.short" = "练习后";
+
+"progress.routes" = "四条路线";
+"progress.wellnessTrend" = "本地状态趋势";
+"progress.noCheckIns" = "记录一次练习前或练习后状态，趋势会显示在这里。";
+
+"partner.cards.title" = "伴侣沟通卡";
+"partner.cards.subtitle" = "同设备、无账号的非露骨沟通练习";
+"partner.cards.privacy" = "轮流阅读和回答即可。答案不会被录音或上传；任何一方都可以随时跳过。";
+"partner.cards.consent" = "先确认双方都愿意继续。倾听时不反驳、不催促，也不把沉默视为同意。";
+"partner.cards.complete" = "完成这张卡";
+"partner.card.appreciation.title" = "表达欣赏";
+"partner.card.appreciation.prompt" = "轮流说一件最近让你感到被关心或被尊重的小事。";
+"partner.card.comfort.title" = "舒适的节奏";
+"partner.card.comfort.prompt" = "什么样的沟通节奏会让你更放松？对方可以怎样确认你的感受？";
+"partner.card.boundary.title" = "边界与同意";
+"partner.card.boundary.prompt" = "说出一个你希望被询问、被尊重或可以随时改变主意的边界。";
+"partner.card.checkin.title" = "温和确认";
+"partner.card.checkin.prompt" = "各自用一句话回答：现在继续、放慢，还是暂停，哪一个更舒服？";

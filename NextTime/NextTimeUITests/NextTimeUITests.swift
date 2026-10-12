@@ -46,6 +46,27 @@ final class NextTimeUITests: XCTestCase {
     }
 
     @MainActor
+    func testGoalChoicesUseSimplifiedChineseLocalization() throws {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "--uitesting-reset-state",
+            "-AppleLanguages", "(zh-Hans)",
+            "-AppleLocale", "zh_CN"
+        ]
+        app.launch()
+
+        app.switches["onboarding.adult-confirmation"].tap()
+        app.buttons["onboarding.continue-button"].tap()
+        app.switches["onboarding.safety-confirmation"].tap()
+        app.buttons["onboarding.continue-button"].tap()
+        app.buttons["onboarding.continue-button"].tap()
+
+        XCTAssertTrue(app.staticTexts["建立盆底基础"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["学会充分放松"].exists)
+        XCTAssertFalse(app.staticTexts["Build pelvic floor foundations"].exists)
+    }
+
+    @MainActor
     func testLaunchPerformance() throws {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {

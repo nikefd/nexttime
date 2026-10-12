@@ -14,11 +14,21 @@ struct HomeView: View {
     @State private var recommendedProgram: TrainingProgram?
     @State private var selectedProgram: TrainingProgram?
     @State private var showProUpgrade = false
+    @State private var planDay = 1
+    @State private var completedPlanDays = 0
+    @State private var comfort = 3
+    @State private var tension = 3
+    @State private var energy = 3
+    @State private var checkInSavedToday = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
+                    planSection
+
+                    checkInSection
+
                     // 统计卡片
                     statisticsSection
 
@@ -38,6 +48,65 @@ struct HomeView: View {
                 TrainingView(program: program)
             }
         }
+    }
+
+    private var planSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(String(localized: "home.plan.title"))
+                    .font(.headline)
+                Spacer()
+                Text(String(localized: "home.plan.day \(planDay)"))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.blue)
+            }
+
+            ProgressView(value: Double(completedPlanDays), total: 7)
+                .tint(.blue)
+                .accessibilityLabel(String(localized: "home.plan.progress"))
+                .accessibilityValue("\(completedPlanDays)/7")
+
+            Text(String(localized: "home.plan.message \(completedPlanDays)"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var checkInSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(String(localized: "checkin.before.title"))
+                .font(.headline)
+            Text(String(localized: "checkin.optional"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if checkInSavedToday {
+                Label(String(localized: "checkin.saved"), systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            } else {
+                WellnessRatingRow(title: String(localized: "checkin.comfort"), value: $comfort)
+                WellnessRatingRow(title: String(localized: "checkin.tension"), value: $tension)
+                WellnessRatingRow(title: String(localized: "checkin.energy"), value: $energy)
+                Button(String(localized: "checkin.save")) {
+                    DataService.shared.saveCheckIn(
+                        WellnessCheckIn(
+                            moment: .beforePractice,
+                            comfort: comfort,
+                            tension: tension,
+                            energy: energy
+                        )
+                    )
+                    checkInSavedToday = true
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     // MARK: - 统计卡片
@@ -187,7 +256,55 @@ struct HomeView: View {
     private func loadData() {
         statistics = DataService.shared.calculateStatistics()
         let records = DataService.shared.loadRecords()
-        recommendedProgram = TrainingData.recommendedProgram(basedOn: records)
+        let profile = DataService.shared.loadWellnessProfile()
+        let goals = profile?.selectedGoals ?? []
+        let plan = TrainingData.sevenDayPlan(for: goals)
+        if let createdAt = profile?.createdAt {
+            let elapsedDays = Calendar.current.dateComponents(
+                [.day],
+                from: Calendar.current.startOfDay(for: createdAt),
+                to: Calendar.current.startOfDay(for: Date())
+            ).day ?? 0
+            planDay = min(max(elapsedDays + 1, 1), 7)
+        }
+        let completedIDs = Set(records.filter(\.isCompleted).map(\.programId))
+        completedPlanDays = plan.days.filter { completedIDs.contains($0.programID) }.count
+        let targetID = plan.programID(for: planDay)
+        recommendedProgram = TrainingData.allPrograms.first { $0.id == targetID }
+            ?? TrainingData.recommendedProgram(basedOn: records)
+        checkInSavedToday = DataService.shared.loadCheckIns().contains {
+            $0.moment == .beforePractice && Calendar.current.isDateInToday($0.createdAt)
+        }
+    }
+}
+
+struct WellnessRatingRow: View {
+    let title: String
+    @Binding var value: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(title)
+                    .font(.subheadline)
+                Spacer()
+                Text("\(value)/5")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            HStack(spacing: 8) {
+                ForEach(1...5, id: \.self) { score in
+                    Button("\(score)") { value = score }
+                        .font(.caption.weight(.semibold))
+                        .frame(maxWidth: .infinity, minHeight: 34)
+                        .background(score == value ? Color.accentColor : Color(.tertiarySystemFill))
+                        .foregroundStyle(score == value ? .white : .primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .accessibilityLabel("\(title) \(score)")
+                        .accessibilityAddTraits(score == value ? .isSelected : [])
+                }
+            }
+        }
     }
 }
 

@@ -105,7 +105,7 @@
 
 /* Settings */
 "settings.title" = "Settings";
-"settings.privacyMode" = "Privacy Mode";
+"settings.privacyMode" = "Discreet Practice Mode";
 "settings.privacySection" = "Privacy";
 "settings.privacyFooter" = "Enables dark screen by default during training for discretion.";
 "settings.vibration" = "Vibration";
@@ -307,7 +307,7 @@
 "settings.appLock %@" = "Protect App with %@";
 "settings.appLock.biometrics" = "Biometrics";
 "settings.discreetNotifications" = "Discreet Notification Text";
-"settings.privacySecurityFooter" = "Hide the training screen, protect the app with biometrics, and keep pelvic floor details off the lock screen.";
+"settings.privacySecurityFooter" = "Discreet mode shows only neutral progress and hides content in the app switcher. You can also protect the app with biometrics and conceal notification details.";
 "appLock.enableReason" = "Verify your identity to enable private data protection.";
 "appLock.unlockReason" = "Verify your identity to view your private practice data.";
 "appLock.unavailable" = "Biometric authentication is not set up on this device.";
@@ -381,3 +381,86 @@
 "partner.card.boundary.prompt" = "Name one boundary you want asked about, respected, or free to change at any time.";
 "partner.card.checkin.title" = "Gentle Check-In";
 "partner.card.checkin.prompt" = "Each answer in one sentence: would continuing, slowing down, or pausing feel best right now?";
+
+/* Milestone D - Scripted Practice */
+"guided.prepare.title" = "Get Comfortable";
+"guided.prepare.body" = "Find a supported position and soften your shoulders and abdomen. Continue when ready.";
+"guided.contract.title" = "Gently Contract";
+"guided.contract.body" = "As you exhale, gently lift inward and upward. Keep breathing and avoid squeezing your glutes or straining.";
+"guided.breathe.title" = "Breathe Naturally";
+"guided.breathe.body" = "Let each inhale expand naturally and allow the exhale to lengthen without forcing depth.";
+"guided.relax.title" = "Fully Release";
+"guided.relax.body" = "Let go of effort and allow your pelvic floor, abdomen, and jaw to return to neutral.";
+"guided.rest.title" = "Take a Short Rest";
+"guided.rest.body" = "Breathe naturally and check that your body still feels comfortable.";
+"guided.scan.title" = "Body Scan";
+"guided.release.title" = "Release Tension";
+"guided.reflection.title" = "Notice What Changed";
+"guided.continue" = "I'm Ready—Continue";
+"guided.partner.optional" = "Either person may skip, slow down, or stop at any time.";
+"guided.secondsRemaining %lld" = "About %lld seconds left";
+"guided.progress %lld %lld" = "Step %lld of %lld";
+"program.steps %lld" = "%lld steps";
+"button.pause" = "Pause";
+"button.resume" = "Resume";
+
+"guided.foundation.intro.title" = "Find Gentle Control";
+"guided.foundation.intro.body" = "Begin with natural breathing. Imagine gently lifting inward and upward as if holding back gas. Keep the movement small, and stop if it hurts.";
+"guided.foundation.reflect.body" = "Was the contraction gentle? Did you fully let go afterward? There is no score to give yourself.";
+"guided.coordinate.intro.title" = "Coordinate with Breath";
+"guided.coordinate.intro.body" = "Keep your shoulders, abdomen, and glutes relaxed. Gently contract only while exhaling, then fully release while inhaling.";
+"guided.coordinate.breathe.body" = "Observe a few breaths: let your abdomen expand on the inhale and settle slowly on the exhale.";
+"guided.coordinate.reflect.body" = "Notice whether breathing stayed easy during movement. Next time, choose less effort rather than holding your breath.";
+
+"guided.breathing.intro.title" = "Slow the Pace";
+"guided.breathing.intro.body" = "Choose a supported position. There is no contraction or performance target here—only breathing and release.";
+"guided.breathing.slow.body" = "Let the inhale move naturally into your abdomen and side ribs. Make the exhale slightly longer without forcing a deep breath.";
+"guided.breathing.scan.body" = "Notice your jaw, shoulders, abdomen, and pelvic floor in turn. When you find tension, allow it to soften.";
+"guided.breathing.release.body" = "With each exhale, use a little less effort and let the support beneath you carry your weight.";
+"guided.breathing.reflect.body" = "How does tension compare with when you began? Simply notice; immediate improvement is not required.";
+"guided.release.intro.title" = "Practice Letting Go";
+"guided.release.intro.body" = "Today's goal is not more force. It is noticing unnecessary tension and allowing it to leave.";
+"guided.release.breathe.body" = "Breathe naturally and notice whether your abdomen or glutes remain braced at the end of each exhale.";
+"guided.release.scan.body" = "Scan from your face down to your pelvis. Wherever you find tension, reduce active effort slightly.";
+"guided.release.practice.body" = "Imagine the pelvic floor as a hammock that widens naturally on the inhale and stays soft on the exhale.";
+"guided.release.reflect.body" = "Which area held tension most easily? Begin your next practice by softening there.";
+
+"guided.scan.intro.title" = "Observe Without Judging";
+"guided.scan.intro.body" = "This is not a performance test. Notice contact, temperature, breathing, and tension as they are right now.";
+"guided.scan.breathe.body" = "Settle with a few comfortable breaths without trying to control the result.";
+"guided.scan.practice.body" = "Move attention slowly from your feet and legs through your pelvis, abdomen, chest, and shoulders. Notice without changing anything.";
+"guided.scan.reflect.body" = "Name one neutral sensation you noticed, such as warmth, weight, contact, or a shift in breathing.";
+"guided.rhythm.intro.title" = "Find an Easy Rhythm";
+"guided.rhythm.intro.body" = "The goal is steadiness and comfort, not lasting longer. You can slow down at any time.";
+"guided.rhythm.breathe.body" = "Find an effortless breathing rhythm and let the exhale run slightly longer than the inhale.";
+"guided.rhythm.scan.body" = "Notice whether anticipation makes you brace early. If it does, return attention to support and breathing.";
+"guided.rhythm.release.body" = "Release judgment about the outcome and let your body return to a natural, sustainable rhythm.";
+"guided.rhythm.reflect.body" = "Which rhythm felt most settled? Remember the sensation rather than a number you must reach.";
+
+"guided.partner.intro.title" = "Pause Together";
+"guided.partner.intro.body" = "Place the device where both people can see it. Answers are not recorded, and no intimate details are required.";
+"guided.partner.reset.intro.title" = "Settle Before Sharing";
+"guided.partner.reset.intro.body" = "Take turns reading. While one person speaks, the other listens. Either person may pause at any time.";
+"guided.partner.consent.title" = "Confirm Willingness First";
+"guided.partner.consent.body" = "Each person should clearly say whether they want to continue. Silence is not consent, and changing your mind needs no explanation.";
+"guided.partner.breathe.title" = "Breathe Together";
+"guided.partner.breathe.body" = "You do not need to synchronize perfectly. Simply slow down together while keeping your own breath comfortable.";
+"guided.partner.reset.breathe.body" = "Take a few natural breaths each. Notice the other person's presence without needing to match them.";
+"guided.partner.share.title" = "One-Sentence Check-In";
+"guided.partner.share.body" = "Take turns answering in one sentence: would continuing, slowing down, or pausing feel best? Listen without persuading.";
+"guided.partner.speaker.title" = "Share One Need";
+"guided.partner.speaker.body" = "One person uses “Right now I need…” to name a boundary, pace, or kind of support without guessing for the other person.";
+"guided.partner.listener.title" = "Reflect What You Heard";
+"guided.partner.listener.body" = "The listener repeats what they understood and asks, “Did I get that right?” Avoid explaining or arguing for now.";
+"guided.partner.finish.title" = "Close Gently";
+"guided.partner.finish.body" = "Each person checks their comfort level. You may continue talking or end here.";
+"guided.partner.reset.finish.body" = "Each say whether you need to continue, slow down, or pause. Respect every answer; finishing this exercise is not a commitment.";
+
+"discreet.mode.title" = "Discreet Practice Mode";
+"discreet.inProgress" = "In Progress";
+"discreet.paused" = "Paused";
+"discreet.complete" = "Complete";
+"discreet.reveal" = "Reveal Briefly";
+"discreet.exit" = "Exit";
+"discreet.hint" = "Details are hidden. A brief reveal hides them again after 8 seconds.";
+"privacyShield.title" = "Content Hidden";

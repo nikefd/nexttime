@@ -169,9 +169,8 @@ struct ProgramRow: View {
                     .lineLimit(1)
 
                 HStack(spacing: 12) {
-                    Label("\(program.sets.count)", systemImage: "square.stack.fill")
+                    Label(String(localized: "program.steps \(program.resolvedGuidedSteps.count)"), systemImage: "list.number")
                     Label(program.formattedDuration, systemImage: "clock")
-                    Label("\(program.totalRepetitions)", systemImage: "arrow.counterclockwise")
                 }
                 .font(.caption2)
                 .foregroundStyle(.secondary)

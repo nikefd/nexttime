@@ -105,7 +105,7 @@
 
 /* Settings */
 "settings.title" = "设置";
-"settings.privacyMode" = "隐私模式";
+"settings.privacyMode" = "隐蔽练习模式";
 "settings.privacySection" = "隐私";
 "settings.privacyFooter" = "训练时默认使用黑色屏幕，更加隐蔽。";
 "settings.vibration" = "震动提示";
@@ -307,7 +307,7 @@
 "settings.appLock %@" = "使用 %@ 保护 App";
 "settings.appLock.biometrics" = "生物识别";
 "settings.discreetNotifications" = "隐蔽通知内容";
-"settings.privacySecurityFooter" = "可以隐藏训练界面、使用生物识别保护 App，并让锁屏提醒不显示盆底训练内容。";
+"settings.privacySecurityFooter" = "隐蔽练习模式只显示中性进度；切换应用时自动遮挡内容。还可使用生物识别保护 App，并隐藏锁屏提醒细节。";
 "appLock.enableReason" = "验证身份以启用私密数据保护。";
 "appLock.unlockReason" = "验证身份以查看你的私密练习数据。";
 "appLock.unavailable" = "此设备尚未设置可用的生物识别。";
@@ -381,3 +381,86 @@
 "partner.card.boundary.prompt" = "说出一个你希望被询问、被尊重或可以随时改变主意的边界。";
 "partner.card.checkin.title" = "温和确认";
 "partner.card.checkin.prompt" = "各自用一句话回答：现在继续、放慢，还是暂停，哪一个更舒服？";
+
+/* Milestone D - Scripted Practice */
+"guided.prepare.title" = "先准备好";
+"guided.prepare.body" = "找一个舒适姿势，放松肩膀和腹部。准备好后再继续。";
+"guided.contract.title" = "轻柔收缩";
+"guided.contract.body" = "呼气时轻柔向内上方收缩，不夹臀、不屏气；只用能稳定保持的力度。";
+"guided.breathe.title" = "自然呼吸";
+"guided.breathe.body" = "让吸气自然展开，呼气缓慢变长，不必追求固定深度。";
+"guided.relax.title" = "完整放松";
+"guided.relax.body" = "松开用力，让盆底、腹部和下颌一起回到自然状态。";
+"guided.rest.title" = "短暂休息";
+"guided.rest.body" = "保持自然呼吸，确认身体没有不适。";
+"guided.scan.title" = "身体扫描";
+"guided.release.title" = "释放紧张";
+"guided.reflection.title" = "留意变化";
+"guided.continue" = "我准备好了，继续";
+"guided.partner.optional" = "双方都可以跳过、放慢或随时停止。";
+"guided.secondsRemaining %lld" = "约剩 %lld 秒";
+"guided.progress %lld %lld" = "第 %lld / %lld 步";
+"program.steps %lld" = "%lld 步";
+"button.pause" = "暂停";
+"button.resume" = "继续";
+
+"guided.foundation.intro.title" = "找到轻柔的控制";
+"guided.foundation.intro.body" = "先自然呼吸。想象在忍住排气时轻柔向内上方提起；若不确定，只做很小的动作。疼痛或不适时停止。";
+"guided.foundation.reflect.body" = "回想刚才：收缩是否轻柔？放松时是否真的松开？不用给表现打分。";
+"guided.coordinate.intro.title" = "配合呼吸";
+"guided.coordinate.intro.body" = "保持肩膀、腹部和臀部放松。接下来只在呼气时轻柔收缩，吸气时完整松开。";
+"guided.coordinate.breathe.body" = "先观察几次呼吸：吸气时腹部自然展开，呼气时缓慢回落。";
+"guided.coordinate.reflect.body" = "留意呼吸与动作是否能同时保持顺畅。下次宁可更轻，也不要屏气硬撑。";
+
+"guided.breathing.intro.title" = "把节奏慢下来";
+"guided.breathing.intro.body" = "找一个有支撑的姿势。这里不需要收缩或追求表现，只练习呼吸和放松。";
+"guided.breathing.slow.body" = "让吸气自然进入腹部和肋骨两侧，呼气稍长一些。不要强迫深呼吸。";
+"guided.breathing.scan.body" = "依次留意下颌、肩膀、腹部和盆底。发现紧张时，只需允许它软下来。";
+"guided.breathing.release.body" = "每次呼气都少用一点力，让身体重量交给支撑面。";
+"guided.breathing.reflect.body" = "现在的紧张与开始前相比有什么变化？只记录感觉，不要求立刻改善。";
+"guided.release.intro.title" = "练习充分释放";
+"guided.release.intro.body" = "今天的重点不是更用力，而是识别不必要的紧张并允许它离开。";
+"guided.release.breathe.body" = "保持自然呼吸，尤其留意呼气结束时是否仍在夹紧腹部或臀部。";
+"guided.release.scan.body" = "从面部向下扫描到骨盆。每发现一处紧张，就减少一点主动用力。";
+"guided.release.practice.body" = "想象骨盆底像一张吊床，吸气时自然变宽，呼气时仍保持柔软。";
+"guided.release.reflect.body" = "哪些部位最容易保持紧张？下次练习从那里开始放松即可。";
+
+"guided.scan.intro.title" = "不评判地观察";
+"guided.scan.intro.body" = "这不是表现测试。只需要注意当下的接触、温度、呼吸和紧张程度。";
+"guided.scan.breathe.body" = "用几次舒适的呼吸安定下来，不控制结果。";
+"guided.scan.practice.body" = "从脚、腿、骨盆、腹部到胸肩缓慢移动注意力。感受即可，不必改变。";
+"guided.scan.reflect.body" = "说出一个你刚刚注意到的中性感受，例如温度、重量或呼吸变化。";
+"guided.rhythm.intro.title" = "建立从容节奏";
+"guided.rhythm.intro.body" = "目标是稳定和舒适，不是坚持更久。任何时候都可以放慢。";
+"guided.rhythm.breathe.body" = "找到不会让你费力的呼吸节奏，让呼气略长于吸气。";
+"guided.rhythm.scan.body" = "留意身体是否因期待而提前绷紧；发现后，把注意力带回支撑和呼吸。";
+"guided.rhythm.release.body" = "放下对结果的判断，让身体回到自然、可持续的节奏。";
+"guided.rhythm.reflect.body" = "哪一种节奏让你最从容？记住感觉，而不是一个必须达到的数字。";
+
+"guided.partner.intro.title" = "一起暂停一下";
+"guided.partner.intro.body" = "把设备放在双方都能看到的位置。这里不记录回答，也不要求讨论私密细节。";
+"guided.partner.reset.intro.title" = "先稳定，再表达";
+"guided.partner.reset.intro.body" = "轮流阅读。一个人说话时，另一个人只听；双方都可以随时暂停。";
+"guided.partner.consent.title" = "先确认意愿";
+"guided.partner.consent.body" = "请双方分别明确说出是否愿意继续。沉默不代表同意，任何人改变主意都无需解释。";
+"guided.partner.breathe.title" = "一起呼吸";
+"guided.partner.breathe.body" = "不必同步得完全一致，只需一起放慢一点，保持各自舒适的呼吸。";
+"guided.partner.reset.breathe.body" = "各自做几次自然呼吸。注意对方的存在，但不要求彼此同步。";
+"guided.partner.share.title" = "一句话确认";
+"guided.partner.share.body" = "轮流用一句话回答：现在继续、放慢还是暂停，哪一个更舒服？只需听见，不必说服。";
+"guided.partner.speaker.title" = "表达一个需要";
+"guided.partner.speaker.body" = "一方用“我现在需要……”说出一个边界、节奏或支持；避免猜测对方。";
+"guided.partner.listener.title" = "复述你听到的";
+"guided.partner.listener.body" = "另一方只复述理解到的内容，并问“我理解对了吗？”暂时不解释或反驳。";
+"guided.partner.finish.title" = "温和结束";
+"guided.partner.finish.body" = "双方各自确认现在的舒适程度。可以继续交流，也可以在这里结束。";
+"guided.partner.reset.finish.body" = "各自说一句现在需要继续、放慢还是暂停。尊重任何答案，不把练习完成当作承诺。";
+
+"discreet.mode.title" = "隐蔽练习模式";
+"discreet.inProgress" = "进行中";
+"discreet.paused" = "已暂停";
+"discreet.complete" = "已完成";
+"discreet.reveal" = "暂时显示";
+"discreet.exit" = "退出";
+"discreet.hint" = "详细内容已隐藏；暂时显示会在 8 秒后自动恢复。";
+"privacyShield.title" = "内容已隐藏";

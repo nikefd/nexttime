@@ -138,4 +138,40 @@ struct NextTimeTests {
         #expect(service.loadCompletedPartnerCardIDs() == ["boundary"])
     }
 
+    @Test func eachPracticeRouteUsesARealGuidedScript() {
+        #expect(TrainingData.foundationAwareness.resolvedGuidedSteps.contains { $0.kind == .contract })
+        #expect(TrainingData.relaxationBreathing.resolvedGuidedSteps.contains { $0.kind == .bodyScan })
+        #expect(TrainingData.confidenceBodyScan.resolvedGuidedSteps.contains { $0.kind == .reflection })
+        #expect(TrainingData.partnerPause.resolvedGuidedSteps.contains { $0.kind == .partnerPrompt })
+
+        for program in TrainingData.allPrograms {
+            #expect(program.resolvedGuidedSteps.count >= 4)
+            #expect(program.resolvedGuidedSteps.first?.kind == .instruction)
+        }
+    }
+
+    @Test func legacyProgramsReceiveACompatibleGuidedScript() {
+        let program = TrainingProgram(
+            name: "Legacy",
+            localizedNameKey: "legacy.name",
+            description: "Legacy timer program",
+            localizedDescriptionKey: "legacy.description",
+            difficulty: .beginner,
+            sets: [ExerciseSet(contractDuration: 3, relaxDuration: 5, repetitions: 2)],
+            order: 1
+        )
+
+        let steps = program.resolvedGuidedSteps
+        #expect(steps.map(\.kind) == [.instruction, .contract, .relax, .contract, .relax])
+        #expect(program.totalDuration == 16)
+    }
+
+    @Test func interactiveGuidanceDoesNotInflateTimedDuration() {
+        let program = TrainingData.partnerPause
+        let timedDuration = program.resolvedGuidedSteps.compactMap(\.duration).reduce(0, +)
+
+        #expect(program.totalDuration == timedDuration)
+        #expect(program.resolvedGuidedSteps.contains { $0.duration == nil })
+    }
+
 }

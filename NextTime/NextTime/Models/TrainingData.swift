@@ -28,6 +28,32 @@ struct TrainingData {
         UUID(uuidString: "4E585442-0000-4000-8000-\(suffix)")!
     }
 
+    private static func contractionCycles(
+        prefix: String,
+        contract: Int,
+        relax: Int,
+        count: Int
+    ) -> [GuidedPracticeStep] {
+        (0..<count).flatMap { index in
+            [
+                GuidedPracticeStep(
+                    id: "\(prefix)-\(index)-contract",
+                    kind: .contract,
+                    titleKey: "guided.contract.title",
+                    guidanceKey: "guided.contract.body",
+                    duration: contract
+                ),
+                GuidedPracticeStep(
+                    id: "\(prefix)-\(index)-relax",
+                    kind: .relax,
+                    titleKey: "guided.relax.title",
+                    guidanceKey: "guided.relax.body",
+                    duration: relax
+                )
+            ]
+        }
+    }
+
     // MARK: - 里程碑 B：四条练习路线
 
     static let foundationAwareness = TrainingProgram(
@@ -37,7 +63,12 @@ struct TrainingData {
         localizedDescriptionKey: "program.route.foundation.awareness.desc",
         difficulty: .beginner,
         sets: [ExerciseSet(contractDuration: 3, relaxDuration: 6, repetitions: 5)],
-        restBetweenSets: 15, order: 1, route: .foundation
+        restBetweenSets: 15, order: 1, route: .foundation,
+        guidedSteps: [
+            GuidedPracticeStep(id: "foundation-awareness-intro", kind: .instruction, titleKey: "guided.foundation.intro.title", guidanceKey: "guided.foundation.intro.body")
+        ] + contractionCycles(prefix: "foundation-awareness", contract: 3, relax: 6, count: 5) + [
+            GuidedPracticeStep(id: "foundation-awareness-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.foundation.reflect.body")
+        ]
     )
 
     static let foundationCoordination = TrainingProgram(
@@ -50,7 +81,13 @@ struct TrainingData {
             ExerciseSet(contractDuration: 4, relaxDuration: 8, repetitions: 6),
             ExerciseSet(contractDuration: 2, relaxDuration: 5, repetitions: 6)
         ],
-        restBetweenSets: 20, order: 2, route: .foundation, isPremium: true
+        restBetweenSets: 20, order: 2, route: .foundation, isPremium: true,
+        guidedSteps: [
+            GuidedPracticeStep(id: "foundation-coordinate-intro", kind: .instruction, titleKey: "guided.coordinate.intro.title", guidanceKey: "guided.coordinate.intro.body"),
+            GuidedPracticeStep(id: "foundation-coordinate-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.coordinate.breathe.body", duration: 20)
+        ] + contractionCycles(prefix: "foundation-coordinate", contract: 4, relax: 8, count: 4) + [
+            GuidedPracticeStep(id: "foundation-coordinate-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.coordinate.reflect.body")
+        ]
     )
 
     static let relaxationBreathing = TrainingProgram(
@@ -60,7 +97,14 @@ struct TrainingData {
         localizedDescriptionKey: "program.route.relaxation.breathing.desc",
         difficulty: .beginner,
         sets: [ExerciseSet(contractDuration: 4, relaxDuration: 6, repetitions: 6)],
-        restBetweenSets: 15, order: 3, route: .relaxation, primaryAction: .breathe
+        restBetweenSets: 15, order: 3, route: .relaxation, primaryAction: .breathe,
+        guidedSteps: [
+            GuidedPracticeStep(id: "breathing-intro", kind: .instruction, titleKey: "guided.breathing.intro.title", guidanceKey: "guided.breathing.intro.body"),
+            GuidedPracticeStep(id: "breathing-settle", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.breathing.slow.body", duration: 40),
+            GuidedPracticeStep(id: "breathing-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.breathing.scan.body", duration: 35),
+            GuidedPracticeStep(id: "breathing-release", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.breathing.release.body", duration: 35),
+            GuidedPracticeStep(id: "breathing-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.breathing.reflect.body")
+        ]
     )
 
     static let relaxationRelease = TrainingProgram(
@@ -74,7 +118,14 @@ struct TrainingData {
             ExerciseSet(contractDuration: 4, relaxDuration: 8, repetitions: 5)
         ],
         restBetweenSets: 20, order: 4, route: .relaxation,
-        primaryAction: .breathe, isPremium: true
+        primaryAction: .breathe, isPremium: true,
+        guidedSteps: [
+            GuidedPracticeStep(id: "release-intro", kind: .instruction, titleKey: "guided.release.intro.title", guidanceKey: "guided.release.intro.body"),
+            GuidedPracticeStep(id: "release-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.release.breathe.body", duration: 35),
+            GuidedPracticeStep(id: "release-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.release.scan.body", duration: 45),
+            GuidedPracticeStep(id: "release-practice", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.release.practice.body", duration: 50),
+            GuidedPracticeStep(id: "release-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.release.reflect.body")
+        ]
     )
 
     static let confidenceBodyScan = TrainingProgram(
@@ -84,7 +135,13 @@ struct TrainingData {
         localizedDescriptionKey: "program.route.confidence.scan.desc",
         difficulty: .beginner,
         sets: [ExerciseSet(contractDuration: 5, relaxDuration: 7, repetitions: 5)],
-        restBetweenSets: 15, order: 5, route: .confidence, primaryAction: .breathe
+        restBetweenSets: 15, order: 5, route: .confidence, primaryAction: .breathe,
+        guidedSteps: [
+            GuidedPracticeStep(id: "scan-intro", kind: .instruction, titleKey: "guided.scan.intro.title", guidanceKey: "guided.scan.intro.body"),
+            GuidedPracticeStep(id: "scan-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.scan.breathe.body", duration: 30),
+            GuidedPracticeStep(id: "scan-body", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.scan.practice.body", duration: 60),
+            GuidedPracticeStep(id: "scan-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.scan.reflect.body")
+        ]
     )
 
     static let confidenceCalmRhythm = TrainingProgram(
@@ -98,7 +155,14 @@ struct TrainingData {
             ExerciseSet(contractDuration: 3, relaxDuration: 6, repetitions: 6)
         ],
         restBetweenSets: 20, order: 6, route: .confidence,
-        primaryAction: .breathe, isPremium: true
+        primaryAction: .breathe, isPremium: true,
+        guidedSteps: [
+            GuidedPracticeStep(id: "rhythm-intro", kind: .instruction, titleKey: "guided.rhythm.intro.title", guidanceKey: "guided.rhythm.intro.body"),
+            GuidedPracticeStep(id: "rhythm-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.rhythm.breathe.body", duration: 45),
+            GuidedPracticeStep(id: "rhythm-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.rhythm.scan.body", duration: 45),
+            GuidedPracticeStep(id: "rhythm-release", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.rhythm.release.body", duration: 35),
+            GuidedPracticeStep(id: "rhythm-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.rhythm.reflect.body")
+        ]
     )
 
     static let partnerPause = TrainingProgram(
@@ -108,7 +172,14 @@ struct TrainingData {
         localizedDescriptionKey: "program.route.partner.pause.desc",
         difficulty: .beginner,
         sets: [ExerciseSet(contractDuration: 4, relaxDuration: 6, repetitions: 5)],
-        restBetweenSets: 15, order: 7, route: .partner, primaryAction: .breathe
+        restBetweenSets: 15, order: 7, route: .partner, primaryAction: .breathe,
+        guidedSteps: [
+            GuidedPracticeStep(id: "partner-pause-intro", kind: .instruction, titleKey: "guided.partner.intro.title", guidanceKey: "guided.partner.intro.body"),
+            GuidedPracticeStep(id: "partner-pause-consent", kind: .partnerPrompt, titleKey: "guided.partner.consent.title", guidanceKey: "guided.partner.consent.body"),
+            GuidedPracticeStep(id: "partner-pause-breathe", kind: .breathe, titleKey: "guided.partner.breathe.title", guidanceKey: "guided.partner.breathe.body", duration: 30),
+            GuidedPracticeStep(id: "partner-pause-prompt", kind: .partnerPrompt, titleKey: "guided.partner.share.title", guidanceKey: "guided.partner.share.body"),
+            GuidedPracticeStep(id: "partner-pause-reflect", kind: .reflection, titleKey: "guided.partner.finish.title", guidanceKey: "guided.partner.finish.body")
+        ]
     )
 
     static let partnerSharedReset = TrainingProgram(
@@ -122,7 +193,15 @@ struct TrainingData {
             ExerciseSet(contractDuration: 4, relaxDuration: 8, repetitions: 5)
         ],
         restBetweenSets: 20, order: 8, route: .partner,
-        primaryAction: .breathe, isPremium: true
+        primaryAction: .breathe, isPremium: true,
+        guidedSteps: [
+            GuidedPracticeStep(id: "partner-reset-intro", kind: .instruction, titleKey: "guided.partner.reset.intro.title", guidanceKey: "guided.partner.reset.intro.body"),
+            GuidedPracticeStep(id: "partner-reset-consent", kind: .partnerPrompt, titleKey: "guided.partner.consent.title", guidanceKey: "guided.partner.consent.body"),
+            GuidedPracticeStep(id: "partner-reset-breathe", kind: .breathe, titleKey: "guided.partner.breathe.title", guidanceKey: "guided.partner.reset.breathe.body", duration: 40),
+            GuidedPracticeStep(id: "partner-reset-speaker", kind: .partnerPrompt, titleKey: "guided.partner.speaker.title", guidanceKey: "guided.partner.speaker.body"),
+            GuidedPracticeStep(id: "partner-reset-listener", kind: .partnerPrompt, titleKey: "guided.partner.listener.title", guidanceKey: "guided.partner.listener.body"),
+            GuidedPracticeStep(id: "partner-reset-reflect", kind: .reflection, titleKey: "guided.partner.finish.title", guidanceKey: "guided.partner.reset.finish.body")
+        ]
     )
 
     static func programs(for route: PracticeRoute) -> [TrainingProgram] {

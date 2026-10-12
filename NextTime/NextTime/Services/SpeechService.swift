@@ -103,6 +103,11 @@ class SpeechService {
         speak(text: String(localized: "voice.getReady"))
     }
 
+    func speakGuidance(localizedKey: String) {
+        guard isEnabled else { return }
+        speak(text: NSLocalizedString(localizedKey, comment: ""))
+    }
+
     // MARK: - 通用语音播放
     private func speak(text: String) {
         // 如果正在说话，停止当前语音

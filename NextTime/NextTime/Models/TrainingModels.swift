@@ -15,6 +15,72 @@ enum ExerciseAction: String, Codable {
     case rest = "rest"          // 组间休息
 }
 
+// MARK: - 引导练习脚本
+enum GuidedStepKind: String, Codable {
+    case instruction
+    case breathe
+    case contract
+    case relax
+    case bodyScan
+    case reflection
+    case partnerPrompt
+    case rest
+
+    var exerciseAction: ExerciseAction {
+        switch self {
+        case .contract: return .contract
+        case .breathe, .bodyScan, .reflection, .partnerPrompt, .instruction: return .breathe
+        case .relax: return .relax
+        case .rest: return .rest
+        }
+    }
+
+    var isInteractive: Bool {
+        switch self {
+        case .instruction, .reflection, .partnerPrompt: return true
+        default: return false
+        }
+    }
+}
+
+struct GuidedPracticeStep: Identifiable, Codable, Equatable {
+    let id: String
+    let kind: GuidedStepKind
+    let titleKey: String
+    let guidanceKey: String
+    let duration: Int?
+    let repeatCount: Int
+
+    init(
+        id: String,
+        kind: GuidedStepKind,
+        titleKey: String,
+        guidanceKey: String,
+        duration: Int? = nil,
+        repeatCount: Int = 1
+    ) {
+        self.id = id
+        self.kind = kind
+        self.titleKey = titleKey
+        self.guidanceKey = guidanceKey
+        self.duration = duration
+        self.repeatCount = max(1, repeatCount)
+    }
+
+    var expanded: [GuidedPracticeStep] {
+        (0..<repeatCount).map { index in
+            GuidedPracticeStep(
+                id: "\(id)-\(index)",
+                kind: kind,
+                titleKey: titleKey,
+                guidanceKey: guidanceKey,
+                duration: duration,
+                repeatCount: 1
+            )
+        }
+    }
+}
+
 // MARK: - 训练难度级别
 enum DifficultyLevel: Int, Codable, CaseIterable {
     case beginner = 1      // 初级
@@ -78,11 +144,13 @@ struct TrainingProgram: Identifiable, Codable {
     let route: PracticeRoute
     let primaryAction: ExerciseAction
     let isPremium: Bool
+    let guidedSteps: [GuidedPracticeStep]
 
     init(id: UUID = UUID(), name: String, localizedNameKey: String, description: String,
          localizedDescriptionKey: String, difficulty: DifficultyLevel, sets: [ExerciseSet],
          restBetweenSets: Int = 10, order: Int, route: PracticeRoute = .foundation,
-         primaryAction: ExerciseAction = .contract, isPremium: Bool = false) {
+         primaryAction: ExerciseAction = .contract, isPremium: Bool = false,
+         guidedSteps: [GuidedPracticeStep] = []) {
         self.id = id
         self.name = name
         self.localizedNameKey = localizedNameKey
@@ -95,10 +163,14 @@ struct TrainingProgram: Identifiable, Codable {
         self.route = route
         self.primaryAction = primaryAction
         self.isPremium = isPremium
+        self.guidedSteps = guidedSteps
     }
 
     // 计算总时长（秒）
     var totalDuration: Int {
+        if !guidedSteps.isEmpty {
+            return resolvedGuidedSteps.compactMap(\.duration).reduce(0, +)
+        }
         let setsDuration = sets.reduce(0) { $0 + $1.totalDuration }
         let restDuration = restBetweenSets * max(0, sets.count - 1)
         return setsDuration + restDuration
@@ -117,6 +189,55 @@ struct TrainingProgram: Identifiable, Codable {
     // 总重复次数
     var totalRepetitions: Int {
         return sets.reduce(0) { $0 + $1.repetitions }
+    }
+
+    var resolvedGuidedSteps: [GuidedPracticeStep] {
+        if !guidedSteps.isEmpty {
+            return guidedSteps.flatMap(\.expanded)
+        }
+
+        var steps = [
+            GuidedPracticeStep(
+                id: "legacy-intro",
+                kind: .instruction,
+                titleKey: "guided.prepare.title",
+                guidanceKey: "guided.prepare.body"
+            )
+        ]
+        for (setIndex, set) in sets.enumerated() {
+            for repetition in 0..<set.repetitions {
+                steps.append(
+                    GuidedPracticeStep(
+                        id: "legacy-\(setIndex)-\(repetition)-active",
+                        kind: primaryAction == .contract ? .contract : .breathe,
+                        titleKey: primaryAction == .contract ? "guided.contract.title" : "guided.breathe.title",
+                        guidanceKey: primaryAction == .contract ? "guided.contract.body" : "guided.breathe.body",
+                        duration: set.contractDuration
+                    )
+                )
+                steps.append(
+                    GuidedPracticeStep(
+                        id: "legacy-\(setIndex)-\(repetition)-relax",
+                        kind: .relax,
+                        titleKey: "guided.relax.title",
+                        guidanceKey: "guided.relax.body",
+                        duration: set.relaxDuration
+                    )
+                )
+            }
+            if setIndex < sets.count - 1 {
+                steps.append(
+                    GuidedPracticeStep(
+                        id: "legacy-\(setIndex)-rest",
+                        kind: .rest,
+                        titleKey: "guided.rest.title",
+                        guidanceKey: "guided.rest.body",
+                        duration: restBetweenSets
+                    )
+                )
+            }
+        }
+        return steps
     }
 }
 
@@ -156,9 +277,14 @@ struct TrainingProgress {
     var isResting: Bool = false
     var elapsedTime: Int = 0
     var totalSets: Int = 0
+    var currentStepIndex: Int = 0
+    var totalSteps: Int = 0
+    var isAwaitingContinue: Bool = false
 
     var isCompleted: Bool {
-        // 只有当 totalSets > 0 且已完成所有组时才算完成
+        if totalSteps > 0 {
+            return currentStepIndex >= totalSteps
+        }
         return totalSets > 0 && currentSetIndex >= totalSets
     }
 }

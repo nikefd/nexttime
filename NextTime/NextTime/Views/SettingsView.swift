@@ -222,12 +222,24 @@ struct SettingsView: View {
                     Text(String(localized: "settings.clearDataFooter"))
                 }
 
+                Section {
+                    policyLink("settings.safetyGuide", path: "safety")
+                    policyLink("settings.privacyPolicy", path: "privacy")
+                    policyLink("settings.termsOfUse", path: "terms")
+                    policyLink("settings.contentSources", path: "sources")
+                    policyLink("settings.support", path: "support")
+                } header: {
+                    Text(String(localized: "settings.information"))
+                } footer: {
+                    Text(String(localized: "settings.informationFooter"))
+                }
+
                 // 关于
                 Section {
                     HStack {
                         Text(String(localized: "settings.version"))
                         Spacer()
-                        Text("1.0.0")
+                        Text(appVersion)
                             .foregroundStyle(.secondary)
                     }
                 } header: {
@@ -286,6 +298,31 @@ struct SettingsView: View {
 
     private func saveSettings() {
         DataService.shared.saveSettings(settings)
+    }
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+    }
+
+    private var prefersChineseWebsite: Bool {
+        Bundle.main.preferredLocalizations.first?.hasPrefix("zh") == true
+    }
+
+    private func policyLink(_ titleKey: LocalizedStringKey, path: String) -> some View {
+        Link(destination: websiteURL(path: path)) {
+            HStack {
+                Text(titleKey)
+                Spacer()
+                Image(systemName: "arrow.up.right")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private func websiteURL(path: String) -> URL {
+        let suffix = prefersChineseWebsite ? ".html" : "_en.html"
+        return URL(string: "https://nikefd.github.io/nexttime/\(path)\(suffix)")!
     }
 }
 

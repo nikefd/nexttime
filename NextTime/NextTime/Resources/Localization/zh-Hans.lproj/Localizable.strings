@@ -124,6 +124,13 @@
 "settings.clearDataFooter" = "这将删除你所有的训练记录。";
 "settings.about" = "关于";
 "settings.version" = "版本";
+"settings.information" = "安全与政策";
+"settings.safetyGuide" = "安全说明";
+"settings.privacyPolicy" = "隐私政策";
+"settings.termsOfUse" = "使用条款";
+"settings.contentSources" = "资料来源与审阅状态";
+"settings.support" = "支持与帮助";
+"settings.informationFooter" = "这些页面会在浏览器中打开。下一次仅提供健康教育与练习引导，不替代专业医疗建议。";
 
 /* Alerts */
 "alert.exitTraining.title" = "退出训练？";

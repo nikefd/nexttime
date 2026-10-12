@@ -124,6 +124,13 @@
 "settings.clearDataFooter" = "This will delete all your training records.";
 "settings.about" = "About";
 "settings.version" = "Version";
+"settings.information" = "Safety & Policies";
+"settings.safetyGuide" = "Safety Guide";
+"settings.privacyPolicy" = "Privacy Policy";
+"settings.termsOfUse" = "Terms of Use";
+"settings.contentSources" = "Sources & Review Status";
+"settings.support" = "Support & Help";
+"settings.informationFooter" = "These pages open in your browser. NextTime provides wellness education and guided practice, not professional medical advice.";
 
 /* Alerts */
 "alert.exitTraining.title" = "Exit Training?";

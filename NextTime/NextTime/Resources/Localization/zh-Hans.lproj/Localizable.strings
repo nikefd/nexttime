@@ -464,3 +464,33 @@
 "discreet.exit" = "退出";
 "discreet.hint" = "详细内容已隐藏；暂时显示会在 8 秒后自动恢复。";
 "privacyShield.title" = "内容已隐藏";
+
+/* Milestone E - Personalization & Safety Loop */
+"recommendation.section.title" = "今日本地推荐";
+"recommendation.localOnly" = "仅在本机计算";
+"recommendation.onPlan.title" = "按计划继续";
+"recommendation.onPlan.detail" = "今天的状态没有触发调整，继续当前 7 天计划即可。";
+"recommendation.lowerIntensity.title" = "今天温和一点";
+"recommendation.lowerIntensity.detail" = "根据今天较低的舒适度或较高的紧张度，已切换为呼吸与放松练习。";
+"recommendation.lowEnergy.title" = "选择低负担练习";
+"recommendation.lowEnergy.detail" = "根据今天的精力记录，已切换为无需追求强度的身体扫描。";
+"recommendation.recovery.title" = "优先恢复";
+"recommendation.recovery.detail" = "近期记录过不适，今天只推荐温和呼吸；若仍不舒服，请停止练习。";
+"recommendation.professionalSupport.title" = "反复不适需要关注";
+"recommendation.professionalSupport.detail" = "近 14 天多次记录不适。可以选择温和呼吸，但建议先咨询医生或盆底康复专业人员。";
+"recommendation.seekCare.title" = "先暂停练习并咨询专业人员";
+"recommendation.seekCare.detail" = "近期记录过疼痛、出血、麻木或突发/明显症状。今日推荐已暂停；如症状严重或持续，请及时就医。";
+
+"safety.during.button" = "我感到不适";
+"safety.during.title" = "先停止用力";
+"safety.during.message" = "请选择最符合当前情况的一项。NextTime 不进行诊断。";
+"safety.during.mild" = "轻微不适或紧张，停止并恢复";
+"safety.during.warning" = "疼痛、出血、麻木或突发明显症状";
+"safety.recovery.title" = "今天到这里就好";
+"safety.recovery.guidance" = "停止收缩，恢复自然呼吸并选择舒适姿势。今天不要继续增加强度。若不适没有缓解、反复出现或影响生活，请咨询医生或盆底康复专业人员。";
+"safety.seekCare.title" = "停止练习并寻求专业帮助";
+"safety.seekCare.guidance" = "不要继续训练。疼痛、出血、麻木或突发/明显症状需要专业评估；如症状严重、迅速加重或你感到情况紧急，请联系当地急救服务。";
+"safety.localOnly" = "这次安全反馈只保存在当前设备，不会上传。";
+"safety.history.title" = "安全跟进";
+"safety.history.count %lld" = "近 14 天记录 %lld 次安全反馈。";
+"discreet.stop" = "需要停止";

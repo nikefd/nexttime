@@ -175,3 +175,125 @@ struct SafetyAcknowledgement: Codable, Equatable {
         self.acceptedAt = acceptedAt
     }
 }
+
+// MARK: - 本地安全反馈与个性化推荐
+
+enum PracticeSafetyResponse: String, Codable, Equatable {
+    case stopAndRecover
+    case seekProfessionalCare
+
+    var title: String {
+        switch self {
+        case .stopAndRecover: return String(localized: "safety.recovery.title")
+        case .seekProfessionalCare: return String(localized: "safety.seekCare.title")
+        }
+    }
+
+    var guidance: String {
+        switch self {
+        case .stopAndRecover: return String(localized: "safety.recovery.guidance")
+        case .seekProfessionalCare: return String(localized: "safety.seekCare.guidance")
+        }
+    }
+}
+
+struct PracticeSafetyEvent: Identifiable, Codable, Equatable {
+    let id: UUID
+    let createdAt: Date
+    let programID: UUID
+    let response: PracticeSafetyResponse
+
+    init(
+        id: UUID = UUID(),
+        createdAt: Date = Date(),
+        programID: UUID,
+        response: PracticeSafetyResponse
+    ) {
+        self.id = id
+        self.createdAt = createdAt
+        self.programID = programID
+        self.response = response
+    }
+}
+
+enum PracticeRecommendationKind: String, Equatable {
+    case onPlan
+    case lowerIntensity
+    case lowEnergy
+    case recovery
+    case professionalSupport
+    case seekCare
+
+    var title: String {
+        switch self {
+        case .onPlan: return String(localized: "recommendation.onPlan.title")
+        case .lowerIntensity: return String(localized: "recommendation.lowerIntensity.title")
+        case .lowEnergy: return String(localized: "recommendation.lowEnergy.title")
+        case .recovery: return String(localized: "recommendation.recovery.title")
+        case .professionalSupport: return String(localized: "recommendation.professionalSupport.title")
+        case .seekCare: return String(localized: "recommendation.seekCare.title")
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .onPlan: return String(localized: "recommendation.onPlan.detail")
+        case .lowerIntensity: return String(localized: "recommendation.lowerIntensity.detail")
+        case .lowEnergy: return String(localized: "recommendation.lowEnergy.detail")
+        case .recovery: return String(localized: "recommendation.recovery.detail")
+        case .professionalSupport: return String(localized: "recommendation.professionalSupport.detail")
+        case .seekCare: return String(localized: "recommendation.seekCare.detail")
+        }
+    }
+
+    var canStartPractice: Bool { self != .seekCare }
+}
+
+struct DailyPracticeRecommendation: Equatable {
+    let programID: UUID
+    let kind: PracticeRecommendationKind
+}
+
+enum PracticeRecommendationEngine {
+    static func recommend(
+        plannedProgramID: UUID,
+        relaxationProgramID: UUID,
+        bodyScanProgramID: UUID,
+        checkIns: [WellnessCheckIn],
+        safetyEvents: [PracticeSafetyEvent],
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> DailyPracticeRecommendation {
+        let fourteenDaysAgo = calendar.date(byAdding: .day, value: -14, to: now) ?? .distantPast
+        let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: now) ?? .distantPast
+        let recentEvents = safetyEvents.filter { $0.createdAt >= fourteenDaysAgo && $0.createdAt <= now }
+        let recentDiscomfort = checkIns.filter {
+            $0.createdAt >= fourteenDaysAgo && $0.createdAt <= now && $0.experiencedDiscomfort
+        }
+
+        if recentEvents.contains(where: { $0.response == .seekProfessionalCare }) {
+            return DailyPracticeRecommendation(programID: relaxationProgramID, kind: .seekCare)
+        }
+        if recentEvents.count + recentDiscomfort.count >= 2 {
+            return DailyPracticeRecommendation(programID: relaxationProgramID, kind: .professionalSupport)
+        }
+        if recentEvents.contains(where: { $0.createdAt >= sevenDaysAgo })
+            || recentDiscomfort.contains(where: { $0.createdAt >= sevenDaysAgo }) {
+            return DailyPracticeRecommendation(programID: relaxationProgramID, kind: .recovery)
+        }
+
+        let todayCheckIn = checkIns
+            .filter { $0.moment == .beforePractice && calendar.isDate($0.createdAt, inSameDayAs: now) }
+            .max { $0.createdAt < $1.createdAt }
+        if let todayCheckIn {
+            if todayCheckIn.comfort <= 2 || todayCheckIn.tension >= 4 {
+                return DailyPracticeRecommendation(programID: relaxationProgramID, kind: .lowerIntensity)
+            }
+            if (todayCheckIn.energy ?? 3) <= 2 {
+                return DailyPracticeRecommendation(programID: bodyScanProgramID, kind: .lowEnergy)
+            }
+        }
+
+        return DailyPracticeRecommendation(programID: plannedProgramID, kind: .onPlan)
+    }
+}

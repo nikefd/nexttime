@@ -17,6 +17,7 @@ class DataService {
         static let safetyAcknowledgement = "safety.acknowledgement.v1"
         static let wellnessCheckIns = "wellness.check-ins.v1"
         static let completedPartnerCards = "wellness.partner-cards.v1"
+        static let practiceSafetyEvents = "wellness.practice-safety-events.v1"
         static let legacyMigrationComplete = "migration.user-defaults.v1"
     }
 
@@ -227,6 +228,21 @@ class DataService {
             forKey: ProtectedKey.completedPartnerCards
         ) ?? []
         return Set(identifiers)
+    }
+
+    // MARK: - 安全反馈
+    func saveSafetyEvent(_ event: PracticeSafetyEvent) {
+        var events = loadSafetyEvents()
+        events.append(event)
+        try? protectedStore.save(events, forKey: ProtectedKey.practiceSafetyEvents)
+    }
+
+    func loadSafetyEvents() -> [PracticeSafetyEvent] {
+        let values = protectedStore.load(
+            [PracticeSafetyEvent].self,
+            forKey: ProtectedKey.practiceSafetyEvents
+        ) ?? []
+        return values.sorted { $0.createdAt > $1.createdAt }
     }
 
     // MARK: - 删除所有数据

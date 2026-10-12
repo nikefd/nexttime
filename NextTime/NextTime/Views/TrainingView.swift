@@ -13,30 +13,37 @@ struct TrainingView: View {
     @State private var postRelaxation = 3
     @State private var experiencedDiscomfort = false
     @State private var savedPostCheckIn = false
+    @State private var showSafetyChoices = false
+    @State private var safetyOutcome: PracticeSafetyResponse?
 
     var body: some View {
         ZStack {
-            backgroundColor.ignoresSafeArea()
-            VStack(spacing: 20) {
-                topBar
-                if trainingManager.isRunning || trainingManager.isPaused {
-                    activeContent
-                } else if trainingManager.progress.isCompleted {
-                    completedContent
+            if let safetyOutcome {
+                SafetyOutcomeView(response: safetyOutcome) { dismiss() }
+            } else {
+                backgroundColor.ignoresSafeArea()
+                VStack(spacing: 20) {
+                    topBar
+                    if trainingManager.isRunning || trainingManager.isPaused {
+                        activeContent
+                    } else if trainingManager.progress.isCompleted {
+                        completedContent
+                    }
+                    Spacer(minLength: 8)
+                    controls
                 }
-                Spacer(minLength: 8)
-                controls
-            }
-            .padding()
+                .padding()
 
-            if discreetMode && !temporarilyRevealed {
-                DiscreetPracticeOverlay(
-                    progress: stepProgress,
-                    isPaused: trainingManager.isPaused,
-                    isCompleted: trainingManager.progress.isCompleted,
-                    onReveal: revealTemporarily,
-                    onExit: { showExitAlert = true }
-                )
+                if discreetMode && !temporarilyRevealed {
+                    DiscreetPracticeOverlay(
+                        progress: stepProgress,
+                        isPaused: trainingManager.isPaused,
+                        isCompleted: trainingManager.progress.isCompleted,
+                        onReveal: revealTemporarily,
+                        onSafety: { showSafetyChoices = true },
+                        onExit: { showExitAlert = true }
+                    )
+                }
             }
         }
         .preferredColorScheme(discreetMode ? .dark : nil)
@@ -57,6 +64,21 @@ struct TrainingView: View {
             }
         } message: {
             Text(String(localized: "alert.exitTraining.message"))
+        }
+        .confirmationDialog(
+            String(localized: "safety.during.title"),
+            isPresented: $showSafetyChoices,
+            titleVisibility: .visible
+        ) {
+            Button(String(localized: "safety.during.mild")) {
+                handleSafety(.stopAndRecover)
+            }
+            Button(String(localized: "safety.during.warning"), role: .destructive) {
+                handleSafety(.seekProfessionalCare)
+            }
+            Button(String(localized: "alert.cancel"), role: .cancel) {}
+        } message: {
+            Text(String(localized: "safety.during.message"))
         }
     }
 
@@ -143,7 +165,7 @@ struct TrainingView: View {
     }
 
     private var controls: some View {
-        Group {
+        VStack(spacing: 12) {
             if trainingManager.isRunning || trainingManager.isPaused {
                 if trainingManager.progress.isAwaitingContinue {
                     Button(String(localized: "guided.continue")) { trainingManager.advanceStep() }
@@ -170,6 +192,15 @@ struct TrainingView: View {
                     }
                     .controlSize(.large)
                 }
+
+                Button {
+                    showSafetyChoices = true
+                } label: {
+                    Label(String(localized: "safety.during.button"), systemImage: "hand.raised.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(.orange)
             } else if trainingManager.progress.isCompleted {
                 Button(String(localized: "button.done")) { dismiss() }
                     .buttonStyle(.borderedProminent)
@@ -201,6 +232,9 @@ struct TrainingView: View {
                                 experiencedDiscomfort: experiencedDiscomfort
                             ))
                             savedPostCheckIn = true
+                            if experiencedDiscomfort {
+                                safetyOutcome = .stopAndRecover
+                            }
                         }
                         .buttonStyle(.borderedProminent)
                     }
@@ -269,6 +303,17 @@ struct TrainingView: View {
             await MainActor.run { temporarilyRevealed = false }
         }
     }
+
+    private func handleSafety(_ response: PracticeSafetyResponse) {
+        DataService.shared.saveSafetyEvent(
+            PracticeSafetyEvent(programID: program.id, response: response)
+        )
+        trainingManager.stopTraining()
+        revealTask?.cancel()
+        discreetMode = false
+        temporarilyRevealed = true
+        safetyOutcome = response
+    }
 }
 
 private struct DiscreetPracticeOverlay: View {
@@ -276,6 +321,7 @@ private struct DiscreetPracticeOverlay: View {
     let isPaused: Bool
     let isCompleted: Bool
     let onReveal: () -> Void
+    let onSafety: () -> Void
     let onExit: () -> Void
 
     var body: some View {
@@ -292,9 +338,12 @@ private struct DiscreetPracticeOverlay: View {
                 ProgressView(value: progress).tint(.gray).padding(.horizontal, 64)
                 Text(String(localized: "discreet.hint")).font(.caption).foregroundStyle(.gray.opacity(0.7))
                 Spacer()
-                HStack(spacing: 42) {
+                HStack(spacing: 28) {
                     Button(action: onReveal) {
                         Label(String(localized: "discreet.reveal"), systemImage: "eye.fill")
+                    }
+                    Button(action: onSafety) {
+                        Label(String(localized: "discreet.stop"), systemImage: "hand.raised.fill")
                     }
                     Button(action: onExit) {
                         Label(String(localized: "discreet.exit"), systemImage: "xmark")
@@ -303,6 +352,40 @@ private struct DiscreetPracticeOverlay: View {
                 .font(.footnote)
                 .foregroundStyle(.gray)
                 .padding(.bottom, 42)
+            }
+        }
+    }
+}
+
+private struct SafetyOutcomeView: View {
+    let response: PracticeSafetyResponse
+    let onDone: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color(.systemBackground).ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 22) {
+                    Image(systemName: response == .seekProfessionalCare ? "cross.case.fill" : "leaf.fill")
+                        .font(.system(size: 64))
+                        .foregroundStyle(response == .seekProfessionalCare ? .red : .green)
+                    Text(response.title)
+                        .font(.largeTitle.bold())
+                        .multilineTextAlignment(.center)
+                    Text(response.guidance)
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(5)
+                    Label(String(localized: "safety.localOnly"), systemImage: "lock.fill")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Button(String(localized: "button.done"), action: onDone)
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .frame(maxWidth: .infinity)
+                }
+                .padding(28)
             }
         }
     }

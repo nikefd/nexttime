@@ -84,6 +84,9 @@ struct NextTimeTests {
             )
         )
         service.saveSettings(UserSettings())
+        service.saveSafetyEvent(
+            PracticeSafetyEvent(programID: UUID(), response: .stopAndRecover)
+        )
         defaults.set(true, forKey: "appLockEnabled")
         defaults.set(false, forKey: "discreetNotifications")
 
@@ -93,6 +96,7 @@ struct NextTimeTests {
         #expect(service.loadCompletedProgramIds().isEmpty)
         #expect(service.hasCompletedOnboarding == false)
         #expect(service.loadWellnessProfile() == nil)
+        #expect(service.loadSafetyEvents().isEmpty)
         #expect(defaults.data(forKey: "userSettings") == nil)
         #expect(defaults.object(forKey: "appLockEnabled") == nil)
         #expect(defaults.object(forKey: "discreetNotifications") == nil)
@@ -172,6 +176,88 @@ struct NextTimeTests {
 
         #expect(program.totalDuration == timedDuration)
         #expect(program.resolvedGuidedSteps.contains { $0.duration == nil })
+    }
+
+    @Test func dailyRecommendationAdaptsToTodaysCheckIn() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let lowComfort = WellnessCheckIn(
+            createdAt: now,
+            moment: .beforePractice,
+            comfort: 2,
+            tension: 4,
+            energy: 4
+        )
+        let result = PracticeRecommendationEngine.recommend(
+            plannedProgramID: TrainingData.foundationAwareness.id,
+            relaxationProgramID: TrainingData.relaxationBreathing.id,
+            bodyScanProgramID: TrainingData.confidenceBodyScan.id,
+            checkIns: [lowComfort],
+            safetyEvents: [],
+            now: now
+        )
+
+        #expect(result.programID == TrainingData.relaxationBreathing.id)
+        #expect(result.kind == .lowerIntensity)
+    }
+
+    @Test func lowEnergyChoosesBodyScanWithoutClaimingDiagnosis() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let checkIn = WellnessCheckIn(
+            createdAt: now,
+            moment: .beforePractice,
+            comfort: 4,
+            tension: 2,
+            energy: 2
+        )
+        let result = PracticeRecommendationEngine.recommend(
+            plannedProgramID: TrainingData.foundationAwareness.id,
+            relaxationProgramID: TrainingData.relaxationBreathing.id,
+            bodyScanProgramID: TrainingData.confidenceBodyScan.id,
+            checkIns: [checkIn],
+            safetyEvents: [],
+            now: now
+        )
+
+        #expect(result.programID == TrainingData.confidenceBodyScan.id)
+        #expect(result.kind == .lowEnergy)
+    }
+
+    @Test func warningSymptomsPauseDailyPractice() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let event = PracticeSafetyEvent(
+            createdAt: now.addingTimeInterval(-3600),
+            programID: TrainingData.foundationAwareness.id,
+            response: .seekProfessionalCare
+        )
+        let result = PracticeRecommendationEngine.recommend(
+            plannedProgramID: TrainingData.foundationAwareness.id,
+            relaxationProgramID: TrainingData.relaxationBreathing.id,
+            bodyScanProgramID: TrainingData.confidenceBodyScan.id,
+            checkIns: [],
+            safetyEvents: [event],
+            now: now
+        )
+
+        #expect(result.kind == .seekCare)
+        #expect(result.kind.canStartPractice == false)
+    }
+
+    @Test func safetyEventsStayInProtectedLocalStore() throws {
+        let suiteName = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let service = DataService(
+            userDefaults: defaults,
+            protectedStore: try ProtectedDataStore(inMemory: true)
+        )
+        let event = PracticeSafetyEvent(
+            programID: TrainingData.relaxationBreathing.id,
+            response: .stopAndRecover
+        )
+
+        service.saveSafetyEvent(event)
+
+        #expect(service.loadSafetyEvents() == [event])
     }
 
 }

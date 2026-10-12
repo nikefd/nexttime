@@ -11,6 +11,7 @@ struct HistoryView: View {
     @State private var records: [TrainingRecord] = []
     @State private var statistics = TrainingStatistics()
     @State private var checkIns: [WellnessCheckIn] = []
+    @State private var safetyEvents: [PracticeSafetyEvent] = []
 
     var body: some View {
         NavigationStack {
@@ -112,6 +113,29 @@ struct HistoryView: View {
                 }
             }
 
+            if let latestSafetyEvent = safetyEvents.first {
+                Section(String(localized: "safety.history.title")) {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: latestSafetyEvent.response == .seekProfessionalCare
+                              ? "cross.case.fill" : "leaf.fill")
+                            .foregroundStyle(latestSafetyEvent.response == .seekProfessionalCare ? .red : .green)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(latestSafetyEvent.response.title)
+                                .font(.subheadline.weight(.semibold))
+                            Text(latestSafetyEvent.createdAt, style: .date)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(String(localized: "safety.history.count \(recentSafetyEventCount)"))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Text(String(localized: "safety.localOnly"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             // 按日期分组的记录
             if records.isEmpty {
                 Section {
@@ -160,12 +184,18 @@ struct HistoryView: View {
         records = DataService.shared.loadRecords()
         statistics = DataService.shared.calculateStatistics()
         checkIns = DataService.shared.loadCheckIns()
+        safetyEvents = DataService.shared.loadSafetyEvents()
     }
 
     private func routeProgress(_ route: PracticeRoute) -> (completed: Int, total: Int) {
         let programs = TrainingData.programs(for: route)
         let completed = Set(records.filter(\.isCompleted).map(\.programId))
         return (programs.filter { completed.contains($0.id) }.count, programs.count)
+    }
+
+    private var recentSafetyEventCount: Int {
+        let cutoff = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? .distantPast
+        return safetyEvents.filter { $0.createdAt >= cutoff }.count
     }
 }
 

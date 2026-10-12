@@ -464,3 +464,33 @@
 "discreet.exit" = "Exit";
 "discreet.hint" = "Details are hidden. A brief reveal hides them again after 8 seconds.";
 "privacyShield.title" = "Content Hidden";
+
+/* Milestone E - Personalization & Safety Loop */
+"recommendation.section.title" = "Today's On-Device Recommendation";
+"recommendation.localOnly" = "Calculated on device";
+"recommendation.onPlan.title" = "Continue Your Plan";
+"recommendation.onPlan.detail" = "Today's check-in did not trigger an adjustment, so you can continue the current 7-day plan.";
+"recommendation.lowerIntensity.title" = "Keep It Gentle Today";
+"recommendation.lowerIntensity.detail" = "Based on lower comfort or higher tension today, your recommendation has switched to breathing and release.";
+"recommendation.lowEnergy.title" = "Choose a Low-Effort Practice";
+"recommendation.lowEnergy.detail" = "Based on today's energy check-in, your recommendation has switched to a body scan with no intensity target.";
+"recommendation.recovery.title" = "Prioritize Recovery";
+"recommendation.recovery.detail" = "You recently recorded discomfort, so only gentle breathing is recommended today. Stop if discomfort remains.";
+"recommendation.professionalSupport.title" = "Repeated Discomfort Needs Attention";
+"recommendation.professionalSupport.detail" = "Discomfort was recorded more than once in 14 days. Gentle breathing is optional, but consider speaking with a doctor or pelvic health professional first.";
+"recommendation.seekCare.title" = "Pause Practice and Seek Professional Care";
+"recommendation.seekCare.detail" = "Pain, bleeding, numbness, or sudden/significant symptoms were recently recorded. Today's practice is paused; seek timely care if symptoms are severe or persist.";
+
+"safety.during.button" = "I Feel Discomfort";
+"safety.during.title" = "Stop Exerting First";
+"safety.during.message" = "Choose the option that best matches what you notice. NextTime does not diagnose conditions.";
+"safety.during.mild" = "Mild discomfort or tension—stop and recover";
+"safety.during.warning" = "Pain, bleeding, numbness, or sudden significant symptoms";
+"safety.recovery.title" = "That Is Enough for Today";
+"safety.recovery.guidance" = "Stop contracting, return to natural breathing, and choose a comfortable position. Do not increase intensity today. If discomfort does not settle, keeps returning, or affects daily life, consult a doctor or pelvic health professional.";
+"safety.seekCare.title" = "Stop Practice and Seek Professional Help";
+"safety.seekCare.guidance" = "Do not continue training. Pain, bleeding, numbness, or sudden/significant symptoms need professional assessment. If symptoms are severe, rapidly worsening, or feel urgent, contact local emergency services.";
+"safety.localOnly" = "This safety feedback stays on this device and is not uploaded.";
+"safety.history.title" = "Safety Follow-Up";
+"safety.history.count %lld" = "%lld safety events recorded in the last 14 days.";
+"discreet.stop" = "Need to Stop";

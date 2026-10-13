@@ -110,7 +110,7 @@ platform :ios do
       app_identifier: APP_IDENTIFIER,
       app_version: ENV.fetch("APP_VERSION"),
       release_notes: {
-        "en-US" => ENV.fetch("APP_STORE_RELEASE_NOTES_EN")
+        "zh-Hans" => ENV.fetch("APP_STORE_RELEASE_NOTES_ZH")
       },
       skip_metadata: false,
       skip_screenshots: true,

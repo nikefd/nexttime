@@ -150,62 +150,84 @@
 "button.skipRest" = "跳过休息";
 
 /* Learn */
-"learn.title" = "学习";
-"learn.whatIsKegel" = "什么是凯格尔运动？";
-"learn.whatIsKegel.subtitle" = "了解基础知识";
-"learn.benefits" = "训练好处";
-"learn.benefits.subtitle" = "为什么要练习";
-"learn.howTo" = "如何练习";
-"learn.howTo.subtitle" = "分步指南";
-"learn.faq" = "常见问题";
-"learn.faq.subtitle" = "解答你的疑惑";
-"learn.tips" = "练习提示";
-"learn.tips.subtitle" = "让训练更有效";
+"learn.title" = "了解";
+"learn.plan" = "如何使用 6 周计划";
+"learn.plan.subtitle" = "课程、恢复日与长期维持";
+"learn.basics" = "认识盆底";
+"learn.basics.subtitle" = "从身体觉察开始";
+"learn.balance" = "收缩与放松";
+"learn.balance.subtitle" = "完整释放和用力同样重要";
+"learn.wellbeing" = "状态与亲密健康";
+"learn.wellbeing.subtitle" = "压力、睡眠、活动与身体感受";
+"learn.partner" = "沟通、同意与边界";
+"learn.partner.subtitle" = "以尊重和安全为前提";
+"learn.safety" = "何时停止并寻求帮助";
+"learn.safety.subtitle" = "识别不适和需要专业支持的情况";
+"learn.sources" = "资料来源与审阅状态";
+"learn.sources.subtitle" = "了解内容依据与当前边界";
 
 /* Articles */
-"article.whatIsKegel.intro" = "凯格尔运动是简单的收缩-放松练习，可以增强盆底肌肉。这些肌肉支撑着子宫、膀胱、小肠和直肠。";
-"article.whatIsKegel.origin.title" = "起源";
-"article.whatIsKegel.origin.content" = "这些练习由阿诺德·凯格尔医生在20世纪40年代末开发，作为尿失禁的非手术治疗方法。";
-"article.whatIsKegel.muscles.title" = "目标肌肉";
-"article.whatIsKegel.muscles.content" = "盆底肌像一张吊床，从耻骨延伸到尾骨。这些肌肉支撑着盆腔器官，控制膀胱和肠道功能。";
+"article.plan.intro" = "下一次会根据你的目标、练习历史和当日状态提供建议。计划用于建立节奏，不是必须完成的医疗处方。";
+"article.plan.1.title" = "24 个课程，4 条路线";
+"article.plan.1.content" = "课程分为盆底基础、充分放松、身体觉察与伴侣沟通四条路线，每条路线 6 个课程。单次练习约 3–12 分钟。";
+"article.plan.2.title" = "6 周渐进安排";
+"article.plan.2.content" = "计划覆盖 42 天，并随周次逐步增加变化。每周安排 2 个恢复日，让身体有时间整合练习。";
+"article.plan.3.title" = "建议会减少重复";
+"article.plan.3.content" = "系统会结合你选择的目标轮换路线，并尽量避开最近完成的 4 个课程。互动提示不设倒计时，给你按自己的节奏思考和回应。";
+"article.plan.4.title" = "状态优先于计划";
+"article.plan.4.content" = "练习前后的状态确认可以调整当天建议。如果感到疲劳、紧张或不适，可以选择恢复练习、缩短练习或休息。";
+"article.plan.5.title" = "第 6 周以后";
+"article.plan.5.content" = "完成 6 周后会进入维持模式，继续轮换不同课程。你可以保持规律，也可以根据身体反馈降低频率；不需要为了连续记录勉强练习。";
 
-"article.benefits.intro" = "定期进行凯格尔运动可以为男性和女性带来多种好处：";
-"article.benefits.1.title" = "更好的膀胱控制";
-"article.benefits.1.desc" = "增强盆底肌可以帮助预防尿失禁。";
-"article.benefits.2.title" = "改善核心稳定性";
-"article.benefits.2.desc" = "强壮的盆底有助于整体核心力量和姿势。";
-"article.benefits.3.title" = "提升亲密体验";
-"article.benefits.3.desc" = "更强的盆底肌可以改善感觉和满足感。";
-"article.benefits.4.title" = "产后恢复";
-"article.benefits.4.desc" = "帮助分娩后恢复肌肉张力。";
-"article.benefits.5.title" = "前列腺健康";
-"article.benefits.5.desc" = "对于男性，可以帮助管理前列腺手术后的症状。";
+"article.basics.intro" = "盆底不是一块孤立的肌肉，而是由肌肉和结缔组织共同组成、参与支撑与控制的区域。每个人的身体结构和感受都可能不同。";
+"article.basics.1.title" = "它参与什么";
+"article.basics.1.content" = "盆底参与盆腔器官支撑、排尿排便控制、核心协调和部分亲密活动。训练目标不只是增强力量，也包括觉察、协调和放松。";
+"article.basics.2.title" = "如何温和觉察";
+"article.basics.2.content" = "可以想象轻轻阻止排气，观察盆底向内上方收拢的感觉，同时保持腹部、臀部和下巴不过度用力。感觉不清晰并不代表做错。";
+"article.basics.3.title" = "不要用排尿来反复测试";
+"article.basics.3.content" = "偶尔用“停止尿流”的想象帮助定位即可，不要把中断排尿当作日常训练。若始终无法辨认或症状困扰你，可咨询合格的盆底专业人员。";
 
-"article.howTo.intro" = "按照以下步骤正确进行凯格尔运动：";
-"article.howTo.step1.title" = "找到肌肉";
-"article.howTo.step1.content" = "想象你正在中途停止排尿或阻止放屁。你使用的肌肉就是盆底肌。";
-"article.howTo.step2.title" = "收缩";
-"article.howTo.step2.content" = "收紧盆底肌并保持收缩。保持正常呼吸。";
-"article.howTo.step3.title" = "放松";
-"article.howTo.step3.content" = "完全放松肌肉。在下一次收缩前休息。";
-"article.howTo.step4.title" = "重复";
-"article.howTo.step4.content" = "目标是每次10-15次重复，每天3次。随着肌肉增强，逐渐增加保持时间。";
+"article.balance.intro" = "健康的协调既需要能够轻柔收缩，也需要能够完整释放。更多、更久或更用力不一定更好。";
+"article.balance.1.title" = "收缩时";
+"article.balance.1.content" = "保持正常呼吸，用轻到中等力度缓慢收拢盆底。避免屏气，也不要让腹部、臀部或大腿代偿性紧绷。";
+"article.balance.2.title" = "放松时";
+"article.balance.2.content" = "让盆底回到自然、柔软的状态，给放松留出足够时间。呼气、舒适姿势和身体扫描可以帮助减少多余用力。";
+"article.balance.3.title" = "质量比数量重要";
+"article.balance.3.content" = "如果越练越紧、出现疼痛或难以释放，继续增加收缩量可能不合适。先暂停并选择恢复内容，持续不适时寻求专业评估。";
 
-"article.faq.1.q" = "多久能看到效果？";
-"article.faq.1.a" = "大多数人在规律练习4-6周内会注意到改善。完全的效果可能需要3-6个月。";
-"article.faq.2.q" = "可以边做其他事边做凯格尔运动吗？";
-"article.faq.2.a" = "可以！一旦掌握了技巧，你可以在坐着、站着甚至走路时做凯格尔运动。";
-"article.faq.3.q" = "男性可以做凯格尔运动吗？";
-"article.faq.3.a" = "当然可以！男性可以从凯格尔运动中获得膀胱控制和前列腺健康方面的好处。";
-"article.faq.4.q" = "怎么知道做对了？";
-"article.faq.4.a" = "你应该感到挤压感。你的腹部、臀部和大腿应该保持放松。";
+"article.wellbeing.intro" = "亲密健康受到身体、情绪、关系和生活状态共同影响。单一练习无法保证特定的性功能结果。";
+"article.wellbeing.1.title" = "压力与注意力";
+"article.wellbeing.1.content" = "压力可能让呼吸变浅、肌肉紧张并减少对身体信号的注意。短暂的慢呼吸或身体扫描可以帮助你观察当下，而不是追求表现。";
+"article.wellbeing.2.title" = "睡眠与恢复";
+"article.wellbeing.2.content" = "睡眠不足和持续疲劳会影响精力、情绪与练习体验。疲惫时选择短练习或恢复日，通常比勉强完成更合适。";
+"article.wellbeing.3.title" = "日常活动";
+"article.wellbeing.3.content" = "规律活动、减少久坐和舒适的呼吸习惯有助于整体健康。根据自己的能力循序渐进；如有疾病、术后或产后需求，请遵循专业人员建议。";
 
-"article.tips.intro" = "通过这些提示让你的练习更有效：";
-"article.tips.1" = "每天在固定时间练习，养成习惯";
-"article.tips.2" = "尝试不同姿势：坐着、躺着或站着";
-"article.tips.3" = "不要憋气 - 保持正常呼吸";
-"article.tips.4" = "只收紧盆底肌 - 不要收紧腹部或臀部";
-"article.tips.5" = "要有耐心 - 力量会在几周内逐渐增强";
+"article.partner.intro" = "好的亲密沟通以安全、尊重和双方自愿为前提。练习是为了帮助表达与倾听，而不是说服对方。";
+"article.partner.1.title" = "同意必须持续存在";
+"article.partner.1.content" = "同意应当清晰、自愿、具体，并且可以随时撤回。沉默、犹豫、过去的同意或处于压力之下，都不能代替当下的同意。";
+"article.partner.2.title" = "说出感受与边界";
+"article.partner.2.content" = "可以用“我现在感觉……”和“我希望……”描述自己的体验，也给对方完整拒绝或暂停的空间。任何一方说停，都应立即停止。";
+"article.partner.3.title" = "互动内容保持本地";
+"article.partner.3.content" = "伴侣提示卡可以共同阅读，但下一次不会记录你们的具体回答，也不会把练习目标和历史上传到云端。请仍然根据实际环境保护屏幕隐私。";
+
+"article.safety.intro" = "下一次提供健康教育和练习引导，不诊断疾病，也不替代医生或盆底治疗师。身体反馈始终优先。";
+"article.safety.1.title" = "出现这些情况请停止";
+"article.safety.1.content" = "如果出现疼痛、出血、麻木、头晕、明显不适，或排尿排便困难及症状加重，请停止练习。不要通过忍耐来完成计时或连续记录。";
+"article.safety.2.title" = "何时咨询专业人员";
+"article.safety.2.content" = "症状持续、反复或影响日常生活时，请咨询医生或具备资质的盆底专业人员。孕期、产后、术后或已有疾病者，应按个人医疗建议练习。";
+"article.safety.3.title" = "紧急情况";
+"article.safety.3.content" = "若症状突然且严重，或你认为可能需要紧急处理，请联系当地急救服务。App 内建议不能用于判断紧急程度。";
+"article.safety.link" = "查看完整安全说明";
+
+"article.sources.intro" = "内容参考公开的健康教育资料，并以通俗方式整理。我们会标注内容边界，并在资料更新时持续复核。";
+"article.sources.1.title" = "资料依据";
+"article.sources.1.content" = "当前来源包括公共卫生机构、专业组织与同行评审资料。官网列出具体链接和对应主题，便于你进一步核对。";
+"article.sources.2.title" = "当前审阅状态";
+"article.sources.2.content" = "截至当前版本，这些内容尚未经过独立临床专业人员的正式签署或背书，因此只应作为一般健康教育，而非个体化医疗建议。";
+"article.sources.3.title" = "我们如何处理不确定性";
+"article.sources.3.content" = "涉及个人差异时，我们避免保证效果或给出统一剂量。若 App 建议与你的专业医疗建议冲突，请以负责你个人情况的专业人员建议为准。";
+"article.sources.link" = "查看资料来源与审阅状态";
 
 /* Pro */
 "pro.title" = "升级 Pro";
@@ -219,7 +241,7 @@
 "pro.restoreNoPurchase" = "未找到之前的购买记录。";
 
 "pro.feature.courses" = "全部训练课程";
-"pro.feature.courses.desc" = "解锁8个中级到专家级进阶课程";
+"pro.feature.courses.desc" = "解锁 20 个进阶课程和完整 6 周计划";
 "pro.feature.custom" = "自定义训练";
 "pro.feature.custom.desc" = "创建你自己的训练计划";
 "pro.feature.reminder" = "每日提醒";

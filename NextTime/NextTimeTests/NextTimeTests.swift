@@ -344,4 +344,20 @@ struct NextTimeTests {
         #expect(SpeechStyle.cue.rate(for: "zh-CN") >= chineseGuidance)
     }
 
+    @Test func learnLibraryCoversCurrentPlanAndSafetyBoundaries() {
+        #expect(ArticleType.allCases == [
+            .plan,
+            .basics,
+            .balance,
+            .wellbeing,
+            .partner,
+            .safety,
+            .sources
+        ])
+        #expect(ArticleType.plan.sections.count == 5)
+        #expect(ArticleType.safety.externalURL != nil)
+        #expect(ArticleType.sources.externalURL != nil)
+        #expect(ArticleType.allCases.allSatisfy { !$0.sections.isEmpty })
+    }
+
 }

@@ -8,7 +8,7 @@
 
 NextTime is a wellness education and guided-practice app for adults aged 18 and over. It supports pelvic-floor contraction and relaxation, body awareness, and respectful partner communication. It does not diagnose, treat, prescribe, or claim guaranteed improvement of any medical or sexual condition.
 
-No account or demo credentials are required. On first launch, the reviewer will see adult-age, safety, and local-privacy disclosures. Confirm the disclosures, optionally select goals, and the app generates a seven-day starter plan. The five tabs are Today, Practice, Progress, Learn, and Settings.
+No account or demo credentials are required. On first launch, the reviewer will see adult-age, safety, and local-privacy disclosures. Confirm the disclosures, optionally select goals, and the app generates a progressive six-week plan with 24 courses across four practice routes and two recovery days per week. After week six, recommendations continue in maintenance mode. The five tabs are Today, Practice, Progress, Learn, and Settings.
 
 All practice history, optional check-ins, goals, and partner-card progress remain on the device in an iOS Data Protection-protected local store that is excluded from backup. The app has no developer backend, cloud sync, third-party analytics, advertising, HealthKit, location, camera, microphone, or AI service. Face ID / Touch ID app lock and reminders are optional. Sensitive notification wording is hidden by default. All local records can be erased from Settings → Data → Clear All Data.
 

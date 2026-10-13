@@ -2,7 +2,7 @@
 //  LearnView.swift
 //  NextTime
 //
-//  知识科普页面
+//  Educational content for the current practice plan and safety boundaries.
 //
 
 import SwiftUI
@@ -10,75 +10,16 @@ import SwiftUI
 struct LearnView: View {
     var body: some View {
         NavigationStack {
-            List {
-                // 什么是凯格尔运动
-                Section {
-                    NavigationLink {
-                        ArticleView(article: .whatIsKegel)
-                    } label: {
-                        ArticleRow(
-                            icon: "questionmark.circle.fill",
-                            color: .blue,
-                            title: String(localized: "learn.whatIsKegel"),
-                            subtitle: String(localized: "learn.whatIsKegel.subtitle")
-                        )
-                    }
-                }
-
-                // 好处
-                Section {
-                    NavigationLink {
-                        ArticleView(article: .benefits)
-                    } label: {
-                        ArticleRow(
-                            icon: "heart.fill",
-                            color: .red,
-                            title: String(localized: "learn.benefits"),
-                            subtitle: String(localized: "learn.benefits.subtitle")
-                        )
-                    }
-                }
-
-                // 如何正确练习
-                Section {
-                    NavigationLink {
-                        ArticleView(article: .howTo)
-                    } label: {
-                        ArticleRow(
-                            icon: "figure.strengthtraining.traditional",
-                            color: .green,
-                            title: String(localized: "learn.howTo"),
-                            subtitle: String(localized: "learn.howTo.subtitle")
-                        )
-                    }
-                }
-
-                // 常见问题
-                Section {
-                    NavigationLink {
-                        ArticleView(article: .faq)
-                    } label: {
-                        ArticleRow(
-                            icon: "bubble.left.and.bubble.right.fill",
-                            color: .orange,
-                            title: String(localized: "learn.faq"),
-                            subtitle: String(localized: "learn.faq.subtitle")
-                        )
-                    }
-                }
-
-                // 提示
-                Section {
-                    NavigationLink {
-                        ArticleView(article: .tips)
-                    } label: {
-                        ArticleRow(
-                            icon: "lightbulb.fill",
-                            color: .yellow,
-                            title: String(localized: "learn.tips"),
-                            subtitle: String(localized: "learn.tips.subtitle")
-                        )
-                    }
+            List(ArticleType.allCases) { article in
+                NavigationLink {
+                    ArticleView(article: article)
+                } label: {
+                    ArticleRow(
+                        icon: article.icon,
+                        color: article.color,
+                        title: article.title,
+                        subtitle: article.subtitle
+                    )
                 }
             }
             .listStyle(.insetGrouped)
@@ -87,7 +28,6 @@ struct LearnView: View {
     }
 }
 
-// MARK: - 文章行
 struct ArticleRow: View {
     let icon: String
     let color: Color
@@ -100,6 +40,7 @@ struct ArticleRow: View {
                 .font(.title2)
                 .foregroundStyle(color)
                 .frame(width: 40)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -114,177 +55,125 @@ struct ArticleRow: View {
     }
 }
 
-// MARK: - 文章类型
-enum ArticleType: String {
-    case whatIsKegel
-    case benefits
-    case howTo
-    case faq
-    case tips
+struct ArticleSection: Identifiable, Equatable {
+    let titleKey: String
+    let contentKey: String
+
+    var id: String { titleKey }
+
+    var title: String { NSLocalizedString(titleKey, comment: "") }
+    var content: String { NSLocalizedString(contentKey, comment: "") }
 }
 
-// MARK: - 文章详情视图
+enum ArticleType: String, CaseIterable, Identifiable {
+    case plan
+    case basics
+    case balance
+    case wellbeing
+    case partner
+    case safety
+    case sources
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .plan: return "calendar.badge.clock"
+        case .basics: return "figure.mind.and.body"
+        case .balance: return "arrow.left.arrow.right.circle.fill"
+        case .wellbeing: return "heart.text.square.fill"
+        case .partner: return "person.2.fill"
+        case .safety: return "cross.case.fill"
+        case .sources: return "books.vertical.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .plan: return .blue
+        case .basics: return .teal
+        case .balance: return .green
+        case .wellbeing: return .purple
+        case .partner: return .pink
+        case .safety: return .orange
+        case .sources: return .indigo
+        }
+    }
+
+    var title: String { localized("learn.\(rawValue)") }
+    var subtitle: String { localized("learn.\(rawValue).subtitle") }
+    var intro: String { localized("article.\(rawValue).intro") }
+
+    var sections: [ArticleSection] {
+        let count: Int
+        switch self {
+        case .plan: count = 5
+        case .basics, .balance, .wellbeing, .partner, .safety, .sources: count = 3
+        }
+
+        return (1...count).map {
+            ArticleSection(
+                titleKey: "article.\(rawValue).\($0).title",
+                contentKey: "article.\(rawValue).\($0).content"
+            )
+        }
+    }
+
+    var externalURL: URL? {
+        let languageSuffix = Locale.preferredLanguages.first?.hasPrefix("zh") == true ? "" : "_en"
+        switch self {
+        case .safety:
+            return URL(string: "https://nikefd.github.io/nexttime-site/safety\(languageSuffix).html")
+        case .sources:
+            return URL(string: "https://nikefd.github.io/nexttime-site/sources\(languageSuffix).html")
+        default:
+            return nil
+        }
+    }
+
+    var externalLinkTitle: String {
+        localized("article.\(rawValue).link")
+    }
+
+    private func localized(_ key: String) -> String {
+        NSLocalizedString(key, comment: "")
+    }
+}
+
 struct ArticleView: View {
     let article: ArticleType
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                switch article {
-                case .whatIsKegel:
-                    whatIsKegelContent
-                case .benefits:
-                    benefitsContent
-                case .howTo:
-                    howToContent
-                case .faq:
-                    faqContent
-                case .tips:
-                    tipsContent
+            VStack(alignment: .leading, spacing: 16) {
+                Text(article.intro)
+                    .font(.body)
+
+                ForEach(article.sections) { section in
+                    infoCard(section)
+                }
+
+                if let url = article.externalURL {
+                    Link(destination: url) {
+                        Label(article.externalLinkTitle, systemImage: "arrow.up.right.square")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.bordered)
                 }
             }
             .padding()
         }
-        .navigationTitle(articleTitle)
+        .navigationTitle(article.title)
         .navigationBarTitleDisplayMode(.large)
     }
 
-    private var articleTitle: String {
-        switch article {
-        case .whatIsKegel: return String(localized: "learn.whatIsKegel")
-        case .benefits: return String(localized: "learn.benefits")
-        case .howTo: return String(localized: "learn.howTo")
-        case .faq: return String(localized: "learn.faq")
-        case .tips: return String(localized: "learn.tips")
-        }
-    }
-
-    // MARK: - 什么是凯格尔运动
-    private var whatIsKegelContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(String(localized: "article.whatIsKegel.intro"))
-                .font(.body)
-
-            infoCard(
-                title: String(localized: "article.whatIsKegel.origin.title"),
-                content: String(localized: "article.whatIsKegel.origin.content")
-            )
-
-            infoCard(
-                title: String(localized: "article.whatIsKegel.muscles.title"),
-                content: String(localized: "article.whatIsKegel.muscles.content")
-            )
-        }
-    }
-
-    // MARK: - 好处
-    private var benefitsContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(String(localized: "article.benefits.intro"))
-                .font(.body)
-
-            benefitItem(
-                number: 1,
-                title: String(localized: "article.benefits.1.title"),
-                description: String(localized: "article.benefits.1.desc")
-            )
-            benefitItem(
-                number: 2,
-                title: String(localized: "article.benefits.2.title"),
-                description: String(localized: "article.benefits.2.desc")
-            )
-            benefitItem(
-                number: 3,
-                title: String(localized: "article.benefits.3.title"),
-                description: String(localized: "article.benefits.3.desc")
-            )
-            benefitItem(
-                number: 4,
-                title: String(localized: "article.benefits.4.title"),
-                description: String(localized: "article.benefits.4.desc")
-            )
-            benefitItem(
-                number: 5,
-                title: String(localized: "article.benefits.5.title"),
-                description: String(localized: "article.benefits.5.desc")
-            )
-        }
-    }
-
-    // MARK: - 如何正确练习
-    private var howToContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(String(localized: "article.howTo.intro"))
-                .font(.body)
-
-            stepCard(
-                step: 1,
-                title: String(localized: "article.howTo.step1.title"),
-                content: String(localized: "article.howTo.step1.content")
-            )
-
-            stepCard(
-                step: 2,
-                title: String(localized: "article.howTo.step2.title"),
-                content: String(localized: "article.howTo.step2.content")
-            )
-
-            stepCard(
-                step: 3,
-                title: String(localized: "article.howTo.step3.title"),
-                content: String(localized: "article.howTo.step3.content")
-            )
-
-            stepCard(
-                step: 4,
-                title: String(localized: "article.howTo.step4.title"),
-                content: String(localized: "article.howTo.step4.content")
-            )
-        }
-    }
-
-    // MARK: - 常见问题
-    private var faqContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            faqItem(
-                question: String(localized: "article.faq.1.q"),
-                answer: String(localized: "article.faq.1.a")
-            )
-            faqItem(
-                question: String(localized: "article.faq.2.q"),
-                answer: String(localized: "article.faq.2.a")
-            )
-            faqItem(
-                question: String(localized: "article.faq.3.q"),
-                answer: String(localized: "article.faq.3.a")
-            )
-            faqItem(
-                question: String(localized: "article.faq.4.q"),
-                answer: String(localized: "article.faq.4.a")
-            )
-        }
-    }
-
-    // MARK: - 练习提示
-    private var tipsContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(String(localized: "article.tips.intro"))
-                .font(.body)
-
-            tipItem(icon: "clock", content: String(localized: "article.tips.1"))
-            tipItem(icon: "location", content: String(localized: "article.tips.2"))
-            tipItem(icon: "figure.walk", content: String(localized: "article.tips.3"))
-            tipItem(icon: "brain.head.profile", content: String(localized: "article.tips.4"))
-            tipItem(icon: "calendar", content: String(localized: "article.tips.5"))
-        }
-    }
-
-    // MARK: - 辅助视图
-    private func infoCard(title: String, content: String) -> some View {
+    private func infoCard(_ section: ArticleSection) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
+            Text(section.title)
                 .font(.headline)
-            Text(content)
+            Text(section.content)
                 .font(.body)
                 .foregroundStyle(.secondary)
         }
@@ -292,79 +181,6 @@ struct ArticleView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-
-    private func benefitItem(number: Int, title: String, description: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Text("\(number)")
-                .font(.headline)
-                .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(Circle().fill(Color.blue))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                Text(description)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    private func stepCard(step: Int, title: String, content: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Text("Step \(step)")
-                .font(.caption)
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Capsule().fill(Color.green))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                Text(content)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    private func faqItem(question: String, answer: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                Text("Q:")
-                    .fontWeight(.bold)
-                    .foregroundStyle(.blue)
-                Text(question)
-                    .fontWeight(.medium)
-            }
-
-            HStack(alignment: .top) {
-                Text("A:")
-                    .fontWeight(.bold)
-                    .foregroundStyle(.green)
-                Text(answer)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-
-    private func tipItem(icon: String, content: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon)
-                .foregroundStyle(.orange)
-                .frame(width: 24)
-
-            Text(content)
-                .font(.body)
-        }
     }
 }
 

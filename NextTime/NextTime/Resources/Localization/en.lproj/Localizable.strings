@@ -151,61 +151,83 @@
 
 /* Learn */
 "learn.title" = "Learn";
-"learn.whatIsKegel" = "What is Kegel Exercise?";
-"learn.whatIsKegel.subtitle" = "Understanding the basics";
-"learn.benefits" = "Benefits";
-"learn.benefits.subtitle" = "Why you should practice";
-"learn.howTo" = "How to Practice";
-"learn.howTo.subtitle" = "Step by step guide";
-"learn.faq" = "FAQ";
-"learn.faq.subtitle" = "Common questions answered";
-"learn.tips" = "Practice Tips";
-"learn.tips.subtitle" = "Get the most from your training";
+"learn.plan" = "Using Your 6-Week Plan";
+"learn.plan.subtitle" = "Courses, recovery days, and maintenance";
+"learn.basics" = "Understanding the Pelvic Floor";
+"learn.basics.subtitle" = "Begin with body awareness";
+"learn.balance" = "Contract and Release";
+"learn.balance.subtitle" = "Full release matters as much as effort";
+"learn.wellbeing" = "Wellbeing and Intimacy";
+"learn.wellbeing.subtitle" = "Stress, sleep, movement, and sensation";
+"learn.partner" = "Communication, Consent, and Boundaries";
+"learn.partner.subtitle" = "Keep respect and safety at the center";
+"learn.safety" = "When to Stop and Get Help";
+"learn.safety.subtitle" = "Recognize discomfort and seek support";
+"learn.sources" = "Sources and Review Status";
+"learn.sources.subtitle" = "See the evidence and current limits";
 
 /* Articles */
-"article.whatIsKegel.intro" = "Kegel exercises are simple clench-and-release exercises that strengthen the pelvic floor muscles, which support the uterus, bladder, small intestine, and rectum.";
-"article.whatIsKegel.origin.title" = "Origin";
-"article.whatIsKegel.origin.content" = "These exercises were developed by Dr. Arnold Kegel in the late 1940s as a non-surgical treatment for urinary incontinence.";
-"article.whatIsKegel.muscles.title" = "Target Muscles";
-"article.whatIsKegel.muscles.content" = "The pelvic floor muscles are like a hammock stretching from the pubic bone to the tailbone. These muscles support your pelvic organs and control bladder and bowel function.";
+"article.plan.intro" = "NextTime suggests practice based on your goals, history, and current check-in. The plan helps you build a rhythm; it is not a medical prescription you must complete.";
+"article.plan.1.title" = "24 Courses Across 4 Routes";
+"article.plan.1.content" = "Courses cover pelvic-floor foundations, full release, body awareness, and partner communication, with 6 courses per route. Sessions run about 3–12 minutes.";
+"article.plan.2.title" = "A Progressive 6-Week Structure";
+"article.plan.2.content" = "The plan spans 42 days and introduces variety as the weeks progress. Two recovery days each week give your body time to absorb the practice.";
+"article.plan.3.title" = "Recommendations Reduce Repetition";
+"article.plan.3.content" = "The app rotates routes based on your goals and tries to avoid your 4 most recently completed courses. Interactive prompts are untimed so you can respond at your own pace.";
+"article.plan.4.title" = "Your Check-In Comes First";
+"article.plan.4.content" = "Before-and-after check-ins can adjust the day's suggestion. If you feel tired, tense, or uncomfortable, choose recovery, shorten the practice, or rest.";
+"article.plan.5.title" = "After Week 6";
+"article.plan.5.content" = "After 6 weeks, maintenance mode continues rotating courses. Keep a rhythm that suits you or reduce frequency based on your body; never force a session for a streak.";
 
-"article.benefits.intro" = "Regular Kegel exercises can provide many benefits for both men and women:";
-"article.benefits.1.title" = "Better Bladder Control";
-"article.benefits.1.desc" = "Strengthening pelvic floor muscles can help prevent urinary incontinence.";
-"article.benefits.2.title" = "Improved Core Stability";
-"article.benefits.2.desc" = "A strong pelvic floor contributes to overall core strength and posture.";
-"article.benefits.3.title" = "Enhanced Intimacy";
-"article.benefits.3.desc" = "Stronger pelvic muscles can improve sensation and satisfaction.";
-"article.benefits.4.title" = "Post-Pregnancy Recovery";
-"article.benefits.4.desc" = "Helps restore muscle tone after childbirth.";
-"article.benefits.5.title" = "Prostate Health";
-"article.benefits.5.desc" = "For men, can help manage symptoms after prostate surgery.";
+"article.basics.intro" = "The pelvic floor is not a single isolated muscle. It is a region of muscles and connective tissue involved in support and control, and each person's anatomy and sensations can differ.";
+"article.basics.1.title" = "What It Does";
+"article.basics.1.content" = "The pelvic floor contributes to pelvic-organ support, bladder and bowel control, core coordination, and some intimate activities. Practice can develop awareness, coordination, and release—not only strength.";
+"article.basics.2.title" = "Finding It Gently";
+"article.basics.2.content" = "Imagine gently preventing gas and notice a subtle inward and upward response. Keep your belly, buttocks, and jaw from bracing. An unclear sensation does not automatically mean you are doing it wrong.";
+"article.basics.3.title" = "Do Not Repeatedly Test While Urinating";
+"article.basics.3.content" = "Use the idea of stopping urine only as an occasional cue, not as routine practice. If you cannot identify the area or symptoms concern you, consult a qualified pelvic-floor professional.";
 
-"article.howTo.intro" = "Follow these steps to perform Kegel exercises correctly:";
-"article.howTo.step1.title" = "Find Your Muscles";
-"article.howTo.step1.content" = "Imagine you're trying to stop urinating midstream or prevent passing gas. The muscles you use are your pelvic floor muscles.";
-"article.howTo.step2.title" = "Contract";
-"article.howTo.step2.content" = "Tighten your pelvic floor muscles and hold the contraction. Keep your breathing normal.";
-"article.howTo.step3.title" = "Relax";
-"article.howTo.step3.content" = "Release the muscles completely. Rest before the next contraction.";
-"article.howTo.step4.title" = "Repeat";
-"article.howTo.step4.content" = "Aim for 10-15 repetitions, 3 times daily. Gradually increase hold time as muscles strengthen.";
+"article.balance.intro" = "Healthy coordination includes both a gentle contraction and a complete release. More effort, longer holds, or more repetitions are not always better.";
+"article.balance.1.title" = "During Contraction";
+"article.balance.1.content" = "Breathe normally and slowly gather the pelvic floor with light-to-moderate effort. Avoid holding your breath or bracing your belly, buttocks, or thighs.";
+"article.balance.2.title" = "During Release";
+"article.balance.2.content" = "Allow the area to return to a natural, soft state and give the release enough time. An easy exhale, a comfortable position, and a body scan may help reduce extra effort.";
+"article.balance.3.title" = "Quality Before Quantity";
+"article.balance.3.content" = "If practice increases tightness, causes pain, or makes release difficult, adding more contractions may not be appropriate. Pause, choose recovery content, and seek an assessment if discomfort continues.";
 
-"article.faq.1.q" = "How long until I see results?";
-"article.faq.1.a" = "Most people notice improvement within 4-6 weeks of regular practice. Full benefits may take 3-6 months.";
-"article.faq.2.q" = "Can I do Kegels while doing other activities?";
-"article.faq.2.a" = "Yes! Once you've mastered the technique, you can do Kegels while sitting, standing, or even walking.";
-"article.faq.3.q" = "Can men do Kegel exercises?";
-"article.faq.3.a" = "Absolutely! Men can benefit from Kegels for bladder control and prostate health.";
-"article.faq.4.q" = "How do I know if I'm doing them correctly?";
-"article.faq.4.a" = "You should feel a squeezing sensation. Your stomach, buttocks, and thighs should stay relaxed.";
+"article.wellbeing.intro" = "Intimate wellbeing is influenced by physical, emotional, relational, and everyday factors. No single exercise can guarantee a specific sexual-function outcome.";
+"article.wellbeing.1.title" = "Stress and Attention";
+"article.wellbeing.1.content" = "Stress may make breathing shallow, increase muscle tension, and reduce attention to body signals. A brief slow-breathing or body-scan practice can help you notice the present without chasing performance.";
+"article.wellbeing.2.title" = "Sleep and Recovery";
+"article.wellbeing.2.content" = "Poor sleep and persistent fatigue can affect energy, mood, and practice. When tired, a short session or recovery day may be more suitable than pushing through.";
+"article.wellbeing.3.title" = "Everyday Movement";
+"article.wellbeing.3.content" = "Regular movement, less prolonged sitting, and comfortable breathing support general wellbeing. Progress within your ability; during pregnancy, postpartum recovery, after surgery, or with a medical condition, follow professional advice.";
 
-"article.tips.intro" = "Get the most from your practice with these tips:";
-"article.tips.1" = "Practice at the same time each day to build a habit";
-"article.tips.2" = "Try different positions: sitting, lying down, or standing";
-"article.tips.3" = "Don't hold your breath - keep breathing normally";
-"article.tips.4" = "Focus on the pelvic floor only - don't tighten abs or buttocks";
-"article.tips.5" = "Be patient - strength builds gradually over weeks";
+"article.partner.intro" = "Healthy intimate communication centers safety, respect, and mutual choice. These exercises are for expressing and listening, not persuading someone.";
+"article.partner.1.title" = "Consent Must Be Ongoing";
+"article.partner.1.content" = "Consent should be clear, voluntary, specific, and revocable at any time. Silence, hesitation, past consent, or agreement under pressure do not replace consent in the present moment.";
+"article.partner.2.title" = "Name Feelings and Boundaries";
+"article.partner.2.content" = "Try “I feel…” and “I would like…” while leaving complete room for the other person to decline or pause. If either person says stop, stop immediately.";
+"article.partner.3.title" = "Partner Responses Stay Unrecorded";
+"article.partner.3.content" = "You can read partner prompt cards together, but NextTime does not record your specific answers or upload practice goals and history to the cloud. Still protect screen privacy in your surroundings.";
+
+"article.safety.intro" = "NextTime provides wellness education and guided practice. It does not diagnose conditions or replace a doctor or pelvic-floor therapist. Your body's feedback comes first.";
+"article.safety.1.title" = "Stop for These Symptoms";
+"article.safety.1.content" = "Stop if you experience pain, bleeding, numbness, dizziness, significant discomfort, difficulty urinating or having a bowel movement, or worsening symptoms. Never push through to finish a timer or streak.";
+"article.safety.2.title" = "When to Consult a Professional";
+"article.safety.2.content" = "If symptoms persist, recur, or affect daily life, consult a doctor or qualified pelvic-floor professional. During pregnancy, postpartum recovery, after surgery, or with a medical condition, follow individualized clinical advice.";
+"article.safety.3.title" = "Urgent Situations";
+"article.safety.3.content" = "If symptoms are sudden and severe, or you believe urgent care may be needed, contact local emergency services. In-app guidance cannot determine urgency.";
+"article.safety.link" = "Read the Full Safety Guide";
+
+"article.sources.intro" = "The content summarizes publicly available health-education material in plain language. We state its limits and review it as source material changes.";
+"article.sources.1.title" = "Evidence Base";
+"article.sources.1.content" = "Current references include public-health agencies, professional organizations, and peer-reviewed material. The website lists direct links by topic so you can verify them.";
+"article.sources.2.title" = "Current Review Status";
+"article.sources.2.content" = "As of this version, the content has not received formal sign-off or endorsement from an independent clinical professional. Treat it as general education, not individualized medical advice.";
+"article.sources.3.title" = "How We Handle Uncertainty";
+"article.sources.3.content" = "Where people differ, we avoid guaranteed outcomes and one-size-fits-all dosage. If app guidance conflicts with advice from a professional responsible for your care, follow that professional's advice.";
+"article.sources.link" = "View Sources and Review Status";
 
 /* Pro */
 "pro.title" = "Upgrade to Pro";
@@ -219,7 +241,7 @@
 "pro.restoreNoPurchase" = "No previous purchase found.";
 
 "pro.feature.courses" = "All Training Courses";
-"pro.feature.courses.desc" = "Unlock 8 advanced courses for intermediate to expert levels";
+"pro.feature.courses.desc" = "Unlock 20 advanced courses and the full 6-week plan";
 "pro.feature.custom" = "Custom Training";
 "pro.feature.custom.desc" = "Create your own training program";
 "pro.feature.reminder" = "Daily Reminders";

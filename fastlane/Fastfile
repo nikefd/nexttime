@@ -109,7 +109,11 @@ platform :ios do
       api_key: api_key,
       app_identifier: APP_IDENTIFIER,
       app_version: ENV.fetch("APP_VERSION"),
-      skip_metadata: true,
+      release_notes: {
+        "en-US" => ENV.fetch("APP_STORE_RELEASE_NOTES_EN"),
+        "zh-Hans" => ENV.fetch("APP_STORE_RELEASE_NOTES_ZH")
+      },
+      skip_metadata: false,
       skip_screenshots: true,
       submit_for_review: true,
       automatic_release: true,

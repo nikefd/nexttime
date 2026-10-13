@@ -7,6 +7,16 @@ on:
         description: New App Store version, for example 1.1.0
         required: true
         type: string
+      release_notes_en:
+        description: English What's New text
+        required: true
+        default: New 6-week progressive plan with 24 courses, more natural guidance, personalized safety check-ins, and updated Learn content covering recovery, consent, safety, and sources.
+        type: string
+      release_notes_zh:
+        description: Simplified Chinese What's New text
+        required: true
+        default: 新增 6 周渐进计划与 24 个课程，优化自然语音、个性化状态检查和安全反馈，并更新“了解”页的恢复、同意、安全与资料来源说明。
+        type: string
 
 concurrency:
   group: publish-app-store
@@ -29,6 +39,8 @@ jobs:
       ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
       MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      APP_STORE_RELEASE_NOTES_EN: ${{ inputs.release_notes_en }}
+      APP_STORE_RELEASE_NOTES_ZH: ${{ inputs.release_notes_zh }}
     steps:
       - uses: actions/checkout@v5
       - name: Select Xcode 26.2

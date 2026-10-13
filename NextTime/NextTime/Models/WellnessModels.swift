@@ -128,7 +128,24 @@ struct WellnessCheckIn: Identifiable, Codable, Equatable {
 struct PracticePlanDay: Identifiable, Equatable {
     let day: Int
     let programID: UUID
+    let week: Int
+    let dayInWeek: Int
+    let isRecoveryDay: Bool
     var id: Int { day }
+
+    init(
+        day: Int,
+        programID: UUID,
+        week: Int? = nil,
+        dayInWeek: Int? = nil,
+        isRecoveryDay: Bool = false
+    ) {
+        self.day = day
+        self.programID = programID
+        self.week = week ?? ((day - 1) / 7 + 1)
+        self.dayInWeek = dayInWeek ?? ((day - 1) % 7 + 1)
+        self.isRecoveryDay = isRecoveryDay
+    }
 }
 
 struct PracticePlan: Equatable {
@@ -137,6 +154,20 @@ struct PracticePlan: Equatable {
     func programID(for day: Int) -> UUID? {
         days.first { $0.day == day }?.programID
     }
+}
+
+enum LongTermPlanMode: Equatable {
+    case progressive
+    case maintenance
+}
+
+struct LongTermPlanRecommendation: Equatable {
+    let programID: UUID
+    let mode: LongTermPlanMode
+    let absoluteDay: Int
+    let week: Int
+    let dayInWeek: Int
+    let isRecoveryDay: Bool
 }
 
 struct PartnerCommunicationCard: Identifiable, Equatable {

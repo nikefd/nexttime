@@ -11,10 +11,14 @@ struct TrainingData {
 
     // MARK: - 所有预设训练课程
     static let allPrograms: [TrainingProgram] = [
-        foundationAwareness, foundationCoordination,
-        relaxationBreathing, relaxationRelease,
-        confidenceBodyScan, confidenceCalmRhythm,
-        partnerPause, partnerSharedReset
+        foundationAwareness, foundationCoordination, foundationSteadyControl,
+        foundationEndurance, foundationDailyTransfer, foundationMaintenance,
+        relaxationBreathing, relaxationRelease, relaxationDownshift,
+        relaxationWholeBody, relaxationRecoveryFlow, relaxationRestorative,
+        confidenceBodyScan, confidenceCalmRhythm, confidencePressureReset,
+        confidenceSensationFocus, confidenceFlexiblePacing, confidenceSelfTrust,
+        partnerPause, partnerSharedReset, partnerBoundaries,
+        partnerPaceCheckIn, partnerRepair, partnerSharedChoice
     ]
 
     static let partnerCards: [PartnerCommunicationCard] = [
@@ -54,6 +58,138 @@ struct TrainingData {
         }
     }
 
+    private static func progressiveProgram(
+        idSuffix: String,
+        slug: String,
+        difficulty: DifficultyLevel,
+        order: Int,
+        route: PracticeRoute,
+        stage: Int,
+        isPremium: Bool = true
+    ) -> TrainingProgram {
+        let settleDuration = 45 + stage * 10
+        let focusDuration = 75 + stage * 20
+        let finishDuration = 45 + stage * 10
+        let titleKey = "program.route.\(slug)"
+        let descriptionKey = "\(titleKey).desc"
+        let focusKey = "guided.progressive.\(slug).focus"
+        let reflectionKey = "guided.progressive.\(slug).reflect"
+        let baseSteps = [
+            GuidedPracticeStep(
+                id: "\(slug)-intro",
+                kind: .instruction,
+                titleKey: "guided.prepare.title",
+                guidanceKey: focusKey
+            ),
+            GuidedPracticeStep(
+                id: "\(slug)-settle",
+                kind: .breathe,
+                titleKey: "guided.breathe.title",
+                guidanceKey: "guided.breathe.body",
+                duration: settleDuration
+            )
+        ]
+
+        let routeSteps: [GuidedPracticeStep]
+        switch route {
+        case .foundation:
+            let contractDuration = min(6, 3 + stage)
+            routeSteps = contractionCycles(
+                prefix: slug,
+                contract: contractDuration,
+                relax: contractDuration * 2,
+                count: 7 + stage
+            ) + [
+                GuidedPracticeStep(
+                    id: "\(slug)-integrate",
+                    kind: .bodyScan,
+                    titleKey: "guided.scan.title",
+                    guidanceKey: focusKey,
+                    duration: focusDuration
+                )
+            ]
+        case .relaxation:
+            routeSteps = [
+                GuidedPracticeStep(
+                    id: "\(slug)-scan",
+                    kind: .bodyScan,
+                    titleKey: "guided.scan.title",
+                    guidanceKey: focusKey,
+                    duration: focusDuration
+                ),
+                GuidedPracticeStep(
+                    id: "\(slug)-release",
+                    kind: .relax,
+                    titleKey: "guided.release.title",
+                    guidanceKey: "guided.release.practice.body",
+                    duration: focusDuration
+                )
+            ]
+        case .confidence:
+            routeSteps = [
+                GuidedPracticeStep(
+                    id: "\(slug)-notice",
+                    kind: .bodyScan,
+                    titleKey: "guided.scan.title",
+                    guidanceKey: focusKey,
+                    duration: focusDuration
+                ),
+                GuidedPracticeStep(
+                    id: "\(slug)-pace",
+                    kind: .breathe,
+                    titleKey: "guided.breathe.title",
+                    guidanceKey: "guided.rhythm.breathe.body",
+                    duration: finishDuration
+                )
+            ]
+        case .partner:
+            routeSteps = [
+                GuidedPracticeStep(
+                    id: "\(slug)-consent",
+                    kind: .partnerPrompt,
+                    titleKey: "guided.partner.consent.title",
+                    guidanceKey: "guided.partner.consent.body"
+                ),
+                GuidedPracticeStep(
+                    id: "\(slug)-prompt",
+                    kind: .partnerPrompt,
+                    titleKey: "guided.partner.share.title",
+                    guidanceKey: focusKey
+                ),
+                GuidedPracticeStep(
+                    id: "\(slug)-pause",
+                    kind: .breathe,
+                    titleKey: "guided.partner.breathe.title",
+                    guidanceKey: "guided.partner.breathe.body",
+                    duration: focusDuration + finishDuration
+                )
+            ]
+        }
+
+        return TrainingProgram(
+            id: stableID(idSuffix),
+            name: slug,
+            localizedNameKey: titleKey,
+            description: slug,
+            localizedDescriptionKey: descriptionKey,
+            difficulty: difficulty,
+            sets: [ExerciseSet(contractDuration: 3 + stage, relaxDuration: 6 + stage, repetitions: 7 + stage)],
+            restBetweenSets: 20,
+            order: order,
+            route: route,
+            primaryAction: route == .foundation ? .contract : .breathe,
+            isPremium: isPremium,
+            guidedSteps: baseSteps + routeSteps + [
+                GuidedPracticeStep(
+                    id: "\(slug)-reflect",
+                    kind: .reflection,
+                    titleKey: "guided.reflection.title",
+                    guidanceKey: reflectionKey
+                )
+            ]
+        )
+    }
+
     // MARK: - 里程碑 B：四条练习路线
 
     static let foundationAwareness = TrainingProgram(
@@ -65,8 +201,10 @@ struct TrainingData {
         sets: [ExerciseSet(contractDuration: 3, relaxDuration: 6, repetitions: 5)],
         restBetweenSets: 15, order: 1, route: .foundation,
         guidedSteps: [
-            GuidedPracticeStep(id: "foundation-awareness-intro", kind: .instruction, titleKey: "guided.foundation.intro.title", guidanceKey: "guided.foundation.intro.body")
-        ] + contractionCycles(prefix: "foundation-awareness", contract: 3, relax: 6, count: 5) + [
+            GuidedPracticeStep(id: "foundation-awareness-intro", kind: .instruction, titleKey: "guided.foundation.intro.title", guidanceKey: "guided.foundation.intro.body"),
+            GuidedPracticeStep(id: "foundation-awareness-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.breathe.body", duration: 45)
+        ] + contractionCycles(prefix: "foundation-awareness", contract: 3, relax: 6, count: 10) + [
+            GuidedPracticeStep(id: "foundation-awareness-release", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.relax.body", duration: 60),
             GuidedPracticeStep(id: "foundation-awareness-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.foundation.reflect.body")
         ]
     )
@@ -84,11 +222,17 @@ struct TrainingData {
         restBetweenSets: 20, order: 2, route: .foundation, isPremium: true,
         guidedSteps: [
             GuidedPracticeStep(id: "foundation-coordinate-intro", kind: .instruction, titleKey: "guided.coordinate.intro.title", guidanceKey: "guided.coordinate.intro.body"),
-            GuidedPracticeStep(id: "foundation-coordinate-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.coordinate.breathe.body", duration: 20)
-        ] + contractionCycles(prefix: "foundation-coordinate", contract: 4, relax: 8, count: 4) + [
+            GuidedPracticeStep(id: "foundation-coordinate-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.coordinate.breathe.body", duration: 45)
+        ] + contractionCycles(prefix: "foundation-coordinate", contract: 4, relax: 8, count: 10) + [
+            GuidedPracticeStep(id: "foundation-coordinate-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.scan.practice.body", duration: 60),
             GuidedPracticeStep(id: "foundation-coordinate-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.coordinate.reflect.body")
         ]
     )
+
+    static let foundationSteadyControl = progressiveProgram(idSuffix: "000000000009", slug: "foundation.steady", difficulty: .elementary, order: 9, route: .foundation, stage: 2)
+    static let foundationEndurance = progressiveProgram(idSuffix: "000000000010", slug: "foundation.endurance", difficulty: .intermediate, order: 10, route: .foundation, stage: 3)
+    static let foundationDailyTransfer = progressiveProgram(idSuffix: "000000000011", slug: "foundation.transfer", difficulty: .intermediate, order: 11, route: .foundation, stage: 4)
+    static let foundationMaintenance = progressiveProgram(idSuffix: "000000000012", slug: "foundation.maintenance", difficulty: .advanced, order: 12, route: .foundation, stage: 5)
 
     static let relaxationBreathing = TrainingProgram(
         id: stableID("000000000003"), name: "Breathing Reset",
@@ -100,9 +244,9 @@ struct TrainingData {
         restBetweenSets: 15, order: 3, route: .relaxation, primaryAction: .breathe,
         guidedSteps: [
             GuidedPracticeStep(id: "breathing-intro", kind: .instruction, titleKey: "guided.breathing.intro.title", guidanceKey: "guided.breathing.intro.body"),
-            GuidedPracticeStep(id: "breathing-settle", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.breathing.slow.body", duration: 40),
-            GuidedPracticeStep(id: "breathing-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.breathing.scan.body", duration: 35),
-            GuidedPracticeStep(id: "breathing-release", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.breathing.release.body", duration: 35),
+            GuidedPracticeStep(id: "breathing-settle", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.breathing.slow.body", duration: 60),
+            GuidedPracticeStep(id: "breathing-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.breathing.scan.body", duration: 75),
+            GuidedPracticeStep(id: "breathing-release", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.breathing.release.body", duration: 90),
             GuidedPracticeStep(id: "breathing-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.breathing.reflect.body")
         ]
     )
@@ -121,12 +265,17 @@ struct TrainingData {
         primaryAction: .breathe, isPremium: true,
         guidedSteps: [
             GuidedPracticeStep(id: "release-intro", kind: .instruction, titleKey: "guided.release.intro.title", guidanceKey: "guided.release.intro.body"),
-            GuidedPracticeStep(id: "release-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.release.breathe.body", duration: 35),
-            GuidedPracticeStep(id: "release-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.release.scan.body", duration: 45),
-            GuidedPracticeStep(id: "release-practice", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.release.practice.body", duration: 50),
+            GuidedPracticeStep(id: "release-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.release.breathe.body", duration: 75),
+            GuidedPracticeStep(id: "release-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.release.scan.body", duration: 90),
+            GuidedPracticeStep(id: "release-practice", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.release.practice.body", duration: 120),
             GuidedPracticeStep(id: "release-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.release.reflect.body")
         ]
     )
+
+    static let relaxationDownshift = progressiveProgram(idSuffix: "000000000013", slug: "relaxation.downshift", difficulty: .elementary, order: 13, route: .relaxation, stage: 2)
+    static let relaxationWholeBody = progressiveProgram(idSuffix: "000000000014", slug: "relaxation.wholebody", difficulty: .intermediate, order: 14, route: .relaxation, stage: 3)
+    static let relaxationRecoveryFlow = progressiveProgram(idSuffix: "000000000015", slug: "relaxation.recovery", difficulty: .intermediate, order: 15, route: .relaxation, stage: 4)
+    static let relaxationRestorative = progressiveProgram(idSuffix: "000000000016", slug: "relaxation.restorative", difficulty: .advanced, order: 16, route: .relaxation, stage: 5)
 
     static let confidenceBodyScan = TrainingProgram(
         id: stableID("000000000005"), name: "Body Scan",
@@ -138,8 +287,9 @@ struct TrainingData {
         restBetweenSets: 15, order: 5, route: .confidence, primaryAction: .breathe,
         guidedSteps: [
             GuidedPracticeStep(id: "scan-intro", kind: .instruction, titleKey: "guided.scan.intro.title", guidanceKey: "guided.scan.intro.body"),
-            GuidedPracticeStep(id: "scan-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.scan.breathe.body", duration: 30),
-            GuidedPracticeStep(id: "scan-body", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.scan.practice.body", duration: 60),
+            GuidedPracticeStep(id: "scan-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.scan.breathe.body", duration: 60),
+            GuidedPracticeStep(id: "scan-body", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.scan.practice.body", duration: 150),
+            GuidedPracticeStep(id: "scan-release", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.relax.body", duration: 60),
             GuidedPracticeStep(id: "scan-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.scan.reflect.body")
         ]
     )
@@ -158,12 +308,17 @@ struct TrainingData {
         primaryAction: .breathe, isPremium: true,
         guidedSteps: [
             GuidedPracticeStep(id: "rhythm-intro", kind: .instruction, titleKey: "guided.rhythm.intro.title", guidanceKey: "guided.rhythm.intro.body"),
-            GuidedPracticeStep(id: "rhythm-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.rhythm.breathe.body", duration: 45),
-            GuidedPracticeStep(id: "rhythm-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.rhythm.scan.body", duration: 45),
-            GuidedPracticeStep(id: "rhythm-release", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.rhythm.release.body", duration: 35),
+            GuidedPracticeStep(id: "rhythm-breathe", kind: .breathe, titleKey: "guided.breathe.title", guidanceKey: "guided.rhythm.breathe.body", duration: 75),
+            GuidedPracticeStep(id: "rhythm-scan", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.rhythm.scan.body", duration: 90),
+            GuidedPracticeStep(id: "rhythm-release", kind: .relax, titleKey: "guided.release.title", guidanceKey: "guided.rhythm.release.body", duration: 90),
             GuidedPracticeStep(id: "rhythm-reflect", kind: .reflection, titleKey: "guided.reflection.title", guidanceKey: "guided.rhythm.reflect.body")
         ]
     )
+
+    static let confidencePressureReset = progressiveProgram(idSuffix: "000000000017", slug: "confidence.pressure", difficulty: .elementary, order: 17, route: .confidence, stage: 2)
+    static let confidenceSensationFocus = progressiveProgram(idSuffix: "000000000018", slug: "confidence.sensation", difficulty: .intermediate, order: 18, route: .confidence, stage: 3)
+    static let confidenceFlexiblePacing = progressiveProgram(idSuffix: "000000000019", slug: "confidence.flexible", difficulty: .intermediate, order: 19, route: .confidence, stage: 4)
+    static let confidenceSelfTrust = progressiveProgram(idSuffix: "000000000020", slug: "confidence.selftrust", difficulty: .advanced, order: 20, route: .confidence, stage: 5)
 
     static let partnerPause = TrainingProgram(
         id: stableID("000000000007"), name: "Shared Pause",
@@ -176,8 +331,9 @@ struct TrainingData {
         guidedSteps: [
             GuidedPracticeStep(id: "partner-pause-intro", kind: .instruction, titleKey: "guided.partner.intro.title", guidanceKey: "guided.partner.intro.body"),
             GuidedPracticeStep(id: "partner-pause-consent", kind: .partnerPrompt, titleKey: "guided.partner.consent.title", guidanceKey: "guided.partner.consent.body"),
-            GuidedPracticeStep(id: "partner-pause-breathe", kind: .breathe, titleKey: "guided.partner.breathe.title", guidanceKey: "guided.partner.breathe.body", duration: 30),
+            GuidedPracticeStep(id: "partner-pause-breathe", kind: .breathe, titleKey: "guided.partner.breathe.title", guidanceKey: "guided.partner.breathe.body", duration: 120),
             GuidedPracticeStep(id: "partner-pause-prompt", kind: .partnerPrompt, titleKey: "guided.partner.share.title", guidanceKey: "guided.partner.share.body"),
+            GuidedPracticeStep(id: "partner-pause-settle", kind: .bodyScan, titleKey: "guided.scan.title", guidanceKey: "guided.scan.practice.body", duration: 60),
             GuidedPracticeStep(id: "partner-pause-reflect", kind: .reflection, titleKey: "guided.partner.finish.title", guidanceKey: "guided.partner.finish.body")
         ]
     )
@@ -197,12 +353,18 @@ struct TrainingData {
         guidedSteps: [
             GuidedPracticeStep(id: "partner-reset-intro", kind: .instruction, titleKey: "guided.partner.reset.intro.title", guidanceKey: "guided.partner.reset.intro.body"),
             GuidedPracticeStep(id: "partner-reset-consent", kind: .partnerPrompt, titleKey: "guided.partner.consent.title", guidanceKey: "guided.partner.consent.body"),
-            GuidedPracticeStep(id: "partner-reset-breathe", kind: .breathe, titleKey: "guided.partner.breathe.title", guidanceKey: "guided.partner.reset.breathe.body", duration: 40),
+            GuidedPracticeStep(id: "partner-reset-breathe", kind: .breathe, titleKey: "guided.partner.breathe.title", guidanceKey: "guided.partner.reset.breathe.body", duration: 120),
             GuidedPracticeStep(id: "partner-reset-speaker", kind: .partnerPrompt, titleKey: "guided.partner.speaker.title", guidanceKey: "guided.partner.speaker.body"),
             GuidedPracticeStep(id: "partner-reset-listener", kind: .partnerPrompt, titleKey: "guided.partner.listener.title", guidanceKey: "guided.partner.listener.body"),
+            GuidedPracticeStep(id: "partner-reset-pause", kind: .breathe, titleKey: "guided.partner.breathe.title", guidanceKey: "guided.partner.breathe.body", duration: 60),
             GuidedPracticeStep(id: "partner-reset-reflect", kind: .reflection, titleKey: "guided.partner.finish.title", guidanceKey: "guided.partner.reset.finish.body")
         ]
     )
+
+    static let partnerBoundaries = progressiveProgram(idSuffix: "000000000021", slug: "partner.boundaries", difficulty: .elementary, order: 21, route: .partner, stage: 2)
+    static let partnerPaceCheckIn = progressiveProgram(idSuffix: "000000000022", slug: "partner.pace", difficulty: .intermediate, order: 22, route: .partner, stage: 3)
+    static let partnerRepair = progressiveProgram(idSuffix: "000000000023", slug: "partner.repair", difficulty: .intermediate, order: 23, route: .partner, stage: 4)
+    static let partnerSharedChoice = progressiveProgram(idSuffix: "000000000024", slug: "partner.choice", difficulty: .advanced, order: 24, route: .partner, stage: 5)
 
     static func programs(for route: PracticeRoute) -> [TrainingProgram] {
         allPrograms.filter { $0.route == route }.sorted { $0.order < $1.order }
@@ -217,6 +379,102 @@ struct TrainingData {
             return PracticePlanDay(day: day, programID: program.id)
         }
         return PracticePlan(days: days)
+    }
+
+    static func sixWeekPlan(for goals: Set<WellnessGoal>) -> PracticePlan {
+        let selectedRoutes = PracticeRoute.routes(for: goals)
+        let focusRoutes = selectedRoutes.isEmpty ? PracticeRoute.allCases : selectedRoutes
+        var routeCycle = focusRoutes
+        for supportRoute in [PracticeRoute.relaxation, .confidence] where !routeCycle.contains(supportRoute) {
+            routeCycle.append(supportRoute)
+        }
+
+        var practiceOrdinal = 0
+        let days = (1...42).map { day -> PracticePlanDay in
+            let week = (day - 1) / 7 + 1
+            let dayInWeek = (day - 1) % 7 + 1
+            let isRecoveryDay = dayInWeek == 3 || dayInWeek == 7
+            let route: PracticeRoute
+            let stage: Int
+
+            if isRecoveryDay {
+                route = .relaxation
+                stage = min(5, (week - 1) + (dayInWeek == 7 ? 1 : 0))
+            } else {
+                route = routeCycle[practiceOrdinal % routeCycle.count]
+                stage = min(5, (week - 1) + (practiceOrdinal % 2))
+                practiceOrdinal += 1
+            }
+
+            let routePrograms = programs(for: route)
+            let program = routePrograms[min(stage, routePrograms.count - 1)]
+            return PracticePlanDay(
+                day: day,
+                programID: program.id,
+                week: week,
+                dayInWeek: dayInWeek,
+                isRecoveryDay: isRecoveryDay
+            )
+        }
+        return PracticePlan(days: days)
+    }
+
+    static func longTermRecommendation(
+        for goals: Set<WellnessGoal>,
+        createdAt: Date,
+        records: [TrainingRecord],
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> LongTermPlanRecommendation {
+        let elapsedDays = max(0, calendar.dateComponents(
+            [.day],
+            from: calendar.startOfDay(for: createdAt),
+            to: calendar.startOfDay(for: now)
+        ).day ?? 0)
+        let absoluteDay = elapsedDays + 1
+        let recentIDs = records
+            .filter(\.isCompleted)
+            .sorted { $0.completedAt > $1.completedAt }
+            .prefix(4)
+            .map(\.programId)
+        let recentSet = Set(recentIDs)
+
+        if absoluteDay <= 42 {
+            let plan = sixWeekPlan(for: goals)
+            let planDay = plan.days[absoluteDay - 1]
+            let planned = allPrograms.first { $0.id == planDay.programID } ?? foundationAwareness
+            let allowedRoutes = Set(PracticeRoute.routes(for: goals) + [.relaxation, .confidence])
+            let alternatives = allPrograms.filter {
+                allowedRoutes.contains($0.route)
+                    && $0.difficulty.rawValue <= min(5, planDay.week + 1)
+                    && !recentSet.contains($0.id)
+            }
+            let selected = recentSet.contains(planned.id) ? (alternatives.first ?? planned) : planned
+            return LongTermPlanRecommendation(
+                programID: selected.id,
+                mode: .progressive,
+                absoluteDay: absoluteDay,
+                week: planDay.week,
+                dayInWeek: planDay.dayInWeek,
+                isRecoveryDay: planDay.isRecoveryDay
+            )
+        }
+
+        let selectedRoutes = PracticeRoute.routes(for: goals)
+        let allowedRoutes = Set((selectedRoutes.isEmpty ? PracticeRoute.allCases : selectedRoutes) + [.relaxation, .confidence])
+        let candidates = allPrograms.filter { allowedRoutes.contains($0.route) }
+        let rotation = max(0, absoluteDay - 43)
+        let rotated = Array(candidates.dropFirst(rotation % candidates.count))
+            + Array(candidates.prefix(rotation % candidates.count))
+        let selected = rotated.first { !recentSet.contains($0.id) } ?? rotated[0]
+        return LongTermPlanRecommendation(
+            programID: selected.id,
+            mode: .maintenance,
+            absoluteDay: absoluteDay,
+            week: 6,
+            dayInWeek: (absoluteDay - 1) % 7 + 1,
+            isRecoveryDay: selected.route == .relaxation
+        )
     }
 
     // MARK: - 初级课程 (Beginner)

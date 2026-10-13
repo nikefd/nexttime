@@ -15,7 +15,10 @@ struct HomeView: View {
     @State private var recommendationKind: PracticeRecommendationKind = .onPlan
     @State private var selectedProgram: TrainingProgram?
     @State private var showProUpgrade = false
-    @State private var planDay = 1
+    @State private var planWeek = 1
+    @State private var planDayInWeek = 1
+    @State private var planMode: LongTermPlanMode = .progressive
+    @State private var isRecoveryDay = false
     @State private var completedPlanDays = 0
     @State private var comfort = 3
     @State private var tension = 3
@@ -57,23 +60,38 @@ struct HomeView: View {
                 Text(String(localized: "home.plan.title"))
                     .font(.headline)
                 Spacer()
-                Text(String(localized: "home.plan.day \(planDay)"))
+                Text(planPositionLabel)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.blue)
             }
 
-            ProgressView(value: Double(completedPlanDays), total: 7)
+            ProgressView(value: Double(completedPlanDays), total: 42)
                 .tint(.blue)
                 .accessibilityLabel(String(localized: "home.plan.progress"))
-                .accessibilityValue("\(completedPlanDays)/7")
+                .accessibilityValue("\(completedPlanDays)/42")
 
             Text(String(localized: "home.plan.message \(completedPlanDays)"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+            if isRecoveryDay && planMode == .progressive {
+                Label(String(localized: "home.plan.recoveryDay"), systemImage: "leaf.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.green)
+            }
         }
         .padding()
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var planPositionLabel: String {
+        switch planMode {
+        case .progressive:
+            return String(localized: "home.plan.weekDay \(planWeek) \(planDayInWeek)")
+        case .maintenance:
+            return String(localized: "home.plan.maintenance")
+        }
     }
 
     private var checkInSection: some View {
@@ -299,19 +317,21 @@ struct HomeView: View {
         let records = DataService.shared.loadRecords()
         let profile = DataService.shared.loadWellnessProfile()
         let goals = profile?.selectedGoals ?? []
-        let plan = TrainingData.sevenDayPlan(for: goals)
-        if let createdAt = profile?.createdAt {
-            let elapsedDays = Calendar.current.dateComponents(
-                [.day],
-                from: Calendar.current.startOfDay(for: createdAt),
-                to: Calendar.current.startOfDay(for: Date())
-            ).day ?? 0
-            planDay = min(max(elapsedDays + 1, 1), 7)
-        }
-        let completedIDs = Set(records.filter(\.isCompleted).map(\.programId))
-        completedPlanDays = plan.days.filter { completedIDs.contains($0.programID) }.count
-        let targetID = plan.programID(for: planDay)
-            ?? TrainingData.recommendedProgram(basedOn: records).id
+        let createdAt = profile?.createdAt ?? Date()
+        let planRecommendation = TrainingData.longTermRecommendation(
+            for: goals,
+            createdAt: createdAt,
+            records: records
+        )
+        planWeek = planRecommendation.week
+        planDayInWeek = planRecommendation.dayInWeek
+        planMode = planRecommendation.mode
+        isRecoveryDay = planRecommendation.isRecoveryDay
+        let completedDates = Set(records.filter(\.isCompleted).map {
+            Calendar.current.startOfDay(for: $0.completedAt)
+        })
+        completedPlanDays = min(completedDates.count, 42)
+        let targetID = planRecommendation.programID
         let recommendation = PracticeRecommendationEngine.recommend(
             plannedProgramID: targetID,
             relaxationProgramID: TrainingData.relaxationBreathing.id,

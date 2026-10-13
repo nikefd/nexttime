@@ -120,6 +120,80 @@ struct NextTimeTests {
         #expect(Set(programRoutes) == [.relaxation, .partner])
     }
 
+    @Test func milestoneFProvidesTwentyFourSubstantialCourses() {
+        #expect(TrainingData.allPrograms.count == 24)
+        #expect(Set(TrainingData.allPrograms.map(\.id)).count == 24)
+
+        for route in PracticeRoute.allCases {
+            let programs = TrainingData.programs(for: route)
+            #expect(programs.count == 6)
+            #expect(programs.allSatisfy { $0.totalDuration >= 180 })
+            #expect(programs.allSatisfy { $0.totalDuration <= 12 * 60 })
+        }
+    }
+
+    @Test func sixWeekPlanProgressesAndIncludesRecoveryDays() {
+        let plan = TrainingData.sixWeekPlan(for: [.pelvicFoundation])
+
+        #expect(plan.days.count == 42)
+        #expect(Set(plan.days.map(\.week)) == Set(1...6))
+        #expect(plan.days.filter(\.isRecoveryDay).count == 12)
+        #expect(Set(plan.days.map(\.programID)).count > 7)
+        #expect(plan.days.allSatisfy { day in
+            TrainingData.allPrograms.contains { $0.id == day.programID }
+        })
+    }
+
+    @Test func longTermPlanAvoidsRecentlyCompletedCourse() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let start = Date(timeIntervalSince1970: 1_800_000_000)
+        let planned = TrainingData.longTermRecommendation(
+            for: [.pelvicFoundation],
+            createdAt: start,
+            records: [],
+            now: start,
+            calendar: calendar
+        )
+        let recent = TrainingRecord(
+            programId: planned.programID,
+            programName: "Recent",
+            completedAt: start,
+            duration: 180,
+            completedSets: 1,
+            totalSets: 1,
+            isCompleted: true
+        )
+        let adjusted = TrainingData.longTermRecommendation(
+            for: [.pelvicFoundation],
+            createdAt: start,
+            records: [recent],
+            now: start,
+            calendar: calendar
+        )
+
+        #expect(adjusted.mode == .progressive)
+        #expect(adjusted.programID != planned.programID)
+    }
+
+    @Test func planMovesIntoMaintenanceAfterSixWeeks() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let start = Date(timeIntervalSince1970: 1_800_000_000)
+        let later = calendar.date(byAdding: .day, value: 60, to: start)!
+        let recommendation = TrainingData.longTermRecommendation(
+            for: [.relaxation],
+            createdAt: start,
+            records: [],
+            now: later,
+            calendar: calendar
+        )
+
+        #expect(recommendation.mode == .maintenance)
+        #expect(recommendation.absoluteDay == 61)
+        #expect(TrainingData.allPrograms.contains { $0.id == recommendation.programID })
+    }
+
     @Test func storesWellnessCheckInsAndPartnerCardProgressLocally() throws {
         let suiteName = "NextTimeTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suiteName))

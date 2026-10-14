@@ -2,6 +2,12 @@ name: Update App Store Metadata
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - fastlane/Fastfile
+      - fastlane/store_metadata/**
+      - .github/workflows/store-metadata.yml
 
 concurrency:
   group: update-app-store-metadata

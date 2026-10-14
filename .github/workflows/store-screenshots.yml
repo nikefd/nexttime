@@ -3,12 +3,7 @@ name: Capture App Store Screenshots
 on:
   workflow_dispatch:
   push:
-    branches: [main]
-    paths:
-      - NextTime/NextTime/NextTimeApp.swift
-      - NextTime/NextTimeUITests/**
-      - fastlane/Snapfile
-      - .github/workflows/store-screenshots.yml
+    tags: ["screenshots-v*"]
 
 concurrency:
   group: capture-app-store-screenshots
@@ -23,6 +18,9 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
+      - name: Mark screenshot workflow as started
+        shell: bash
+        run: git push --force origin HEAD:refs/heads/automation/store-screenshot-results
       - name: Select Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - uses: ruby/setup-ruby@v1

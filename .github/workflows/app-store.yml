@@ -1,6 +1,8 @@
 name: Submit App Store Release
 
 on:
+  push:
+    tags: ["release-v*"]
   workflow_dispatch:
     inputs:
       version:
@@ -28,15 +30,25 @@ jobs:
     env:
       APP_IDENTIFIER: com.zhangyangbin.NextTime
       APPLE_TEAM_ID: V59XFX9635
-      APP_VERSION: ${{ inputs.version }}
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
       MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-      APP_STORE_RELEASE_NOTES_ZH: ${{ inputs.release_notes_zh }}
+      MANUAL_VERSION: ${{ inputs.version }}
+      MANUAL_RELEASE_NOTES_ZH: ${{ inputs.release_notes_zh }}
     steps:
       - uses: actions/checkout@v5
+      - name: Resolve release details
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "APP_VERSION=$MANUAL_VERSION" >> "$GITHUB_ENV"
+            echo "APP_STORE_RELEASE_NOTES_ZH=$MANUAL_RELEASE_NOTES_ZH" >> "$GITHUB_ENV"
+          else
+            echo "APP_VERSION=${GITHUB_REF_NAME#release-v}" >> "$GITHUB_ENV"
+            echo "APP_STORE_RELEASE_NOTES_ZH=更新 App Store 商店页与产品展示，突出 6 周渐进计划、24 节课程、自然语音、本地隐私和一次买断 Pro。" >> "$GITHUB_ENV"
+          fi
       - name: Select Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - uses: ruby/setup-ruby@v1
@@ -56,5 +68,5 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v7
         with:
-          name: NextTime-${{ inputs.version }}
+          name: NextTime-${{ env.APP_VERSION }}
           path: artifacts/*.ipa

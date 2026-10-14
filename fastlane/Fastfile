@@ -22,6 +22,12 @@ def available_iphone_destination
   UI.user_error!("No available iPhone simulator was found") unless iphone
   "platform=iOS Simulator,id=#{iphone.fetch("udid")}"
 end
+
+def store_metadata_value(filename)
+  path = File.expand_path("store_metadata/zh-Hans/#{filename}", __dir__)
+  File.read(path, encoding: "UTF-8").strip
+end
+
 platform :ios do
   desc "Create or repair the encrypted App Store signing assets in Match"
   lane :bootstrap_signing do
@@ -103,10 +109,6 @@ platform :ios do
   lane :store_metadata do
     api_key = app_store_api_key
     locale = "zh-Hans"
-    metadata_dir = File.expand_path("store_metadata/#{locale}", __dir__)
-    read_metadata = lambda do |filename|
-      File.read(File.join(metadata_dir, filename), encoding: "UTF-8").strip
-    end
 
     upload_to_app_store(
       api_key: api_key,
@@ -117,11 +119,11 @@ platform :ios do
       submit_for_review: false,
       run_precheck_before_submit: false,
       force: true,
-      description: { locale => read_metadata.call("description.txt") },
-      promotional_text: { locale => read_metadata.call("promotional_text.txt") },
-      support_url: { locale => read_metadata.call("support_url.txt") },
-      marketing_url: { locale => read_metadata.call("marketing_url.txt") },
-      privacy_url: { locale => read_metadata.call("privacy_url.txt") }
+      description: { locale => store_metadata_value("description.txt") },
+      promotional_text: { locale => store_metadata_value("promotional_text.txt") },
+      support_url: { locale => store_metadata_value("support_url.txt") },
+      marketing_url: { locale => store_metadata_value("marketing_url.txt") },
+      privacy_url: { locale => store_metadata_value("privacy_url.txt") }
     )
   end
 
@@ -130,16 +132,28 @@ platform :ios do
     UI.user_error!("APP_VERSION is required for an App Store release") if ENV["APP_VERSION"].to_s.empty?
 
     api_key = app_store_api_key
+    locale = "zh-Hans"
     prepare_release(api_key: api_key)
     upload_to_app_store(
       api_key: api_key,
       app_identifier: APP_IDENTIFIER,
       app_version: ENV.fetch("APP_VERSION"),
       release_notes: {
-        "zh-Hans" => ENV.fetch("APP_STORE_RELEASE_NOTES_ZH")
+        locale => ENV.fetch("APP_STORE_RELEASE_NOTES_ZH")
       },
+      description: { locale => store_metadata_value("description.txt") },
+      subtitle: { locale => store_metadata_value("subtitle.txt") },
+      keywords: { locale => store_metadata_value("keywords.txt") },
+      promotional_text: { locale => store_metadata_value("promotional_text.txt") },
+      support_url: { locale => store_metadata_value("support_url.txt") },
+      marketing_url: { locale => store_metadata_value("marketing_url.txt") },
+      privacy_url: { locale => store_metadata_value("privacy_url.txt") },
+      primary_category: "Health & Fitness",
+      secondary_category: "Utilities",
+      screenshots_path: File.expand_path("screenshots", __dir__),
       skip_metadata: false,
-      skip_screenshots: true,
+      skip_screenshots: false,
+      overwrite_screenshots: true,
       submit_for_review: true,
       automatic_release: true,
       force: true,

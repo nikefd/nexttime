@@ -6,10 +6,6 @@ languages([
   "zh-Hans"
 ])
 
-locales([
-  "zh_CN"
-])
-
 project("NextTime/NextTime.xcodeproj")
 scheme("NextTime")
 test_target_name("NextTimeUITests")

@@ -82,7 +82,7 @@ final class NextTimeUITests: XCTestCase {
     func testCaptureStoreScreenshots() throws {
         let app = XCUIApplication()
         setupSnapshot(app)
-        app.launchArguments.append("--store-screenshot-seed")
+        app.launchArguments += ["--store-screenshot-seed", "-AppleLocale", "zh_CN"]
         app.launch()
 
         XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))

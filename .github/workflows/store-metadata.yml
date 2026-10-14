@@ -1,0 +1,30 @@
+name: Update App Store Metadata
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: update-app-store-metadata
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: macos-26
+    timeout-minutes: 20
+    environment: app-store-production
+    env:
+      APP_IDENTIFIER: com.zhangyangbin.NextTime
+      APPLE_TEAM_ID: V59XFX9635
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Update live metadata
+        run: bundle exec fastlane ios store_metadata

@@ -99,6 +99,32 @@ platform :ios do
     )
   end
 
+  desc "Update editable metadata on the live App Store product page"
+  lane :store_metadata do
+    api_key = app_store_api_key
+    locale = "zh-Hans"
+    metadata_dir = File.expand_path("store_metadata/#{locale}", __dir__)
+    read_metadata = lambda do |filename|
+      File.read(File.join(metadata_dir, filename), encoding: "UTF-8").strip
+    end
+
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: APP_IDENTIFIER,
+      edit_live: true,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      run_precheck_before_submit: false,
+      force: true,
+      description: { locale => read_metadata.call("description.txt") },
+      promotional_text: { locale => read_metadata.call("promotional_text.txt") },
+      support_url: { locale => read_metadata.call("support_url.txt") },
+      marketing_url: { locale => read_metadata.call("marketing_url.txt") },
+      privacy_url: { locale => read_metadata.call("privacy_url.txt") }
+    )
+  end
+
   desc "Build, submit for App Review, and release automatically after approval"
   lane :release do
     UI.user_error!("APP_VERSION is required for an App Store release") if ENV["APP_VERSION"].to_s.empty?

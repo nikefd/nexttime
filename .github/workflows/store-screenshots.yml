@@ -31,10 +31,14 @@ jobs:
       - name: Capture current Chinese UI
         id: capture
         continue-on-error: true
+        timeout-minutes: 20
         shell: bash
+        env:
+          FASTLANE_SKIP_UPDATE_CHECK: "1"
         run: |
           set -o pipefail
-          bundle exec fastlane snapshot 2>&1 | tee store-screenshot-run.log
+          xcodebuild -version | tee store-screenshot-run.log
+          bundle exec fastlane snapshot 2>&1 | tee -a store-screenshot-run.log
       - name: Upload screenshot artifact
         if: steps.capture.outcome == 'success'
         uses: actions/upload-artifact@v7

@@ -79,6 +79,42 @@ final class NextTimeUITests: XCTestCase {
     }
 
     @MainActor
+    func testCaptureStoreScreenshots() throws {
+        let app = XCUIApplication()
+        setupSnapshot(app)
+        app.launchArguments.append("--store-screenshot-seed")
+        app.launch()
+
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
+        snapshot("01-six-week-plan")
+
+        app.tabBars.buttons["练习"].tap()
+        XCTAssertTrue(app.navigationBars["训练课程"].waitForExistence(timeout: 5))
+        snapshot("02-twenty-four-courses")
+
+        let foundationCourse = app.staticTexts["盆底觉察入门"]
+        XCTAssertTrue(foundationCourse.waitForExistence(timeout: 5))
+        foundationCourse.tap()
+        XCTAssertTrue(app.staticTexts["找到轻柔的控制"].waitForExistence(timeout: 5))
+        snapshot("03-natural-guidance")
+
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
+        app.tabBars.buttons["设置"].tap()
+        XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
+        snapshot("04-local-privacy")
+
+        let upgradeButton = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS %@", "升级 Pro")
+        ).firstMatch
+        XCTAssertTrue(upgradeButton.waitForExistence(timeout: 5))
+        upgradeButton.tap()
+        XCTAssertTrue(app.navigationBars["升级 Pro"].waitForExistence(timeout: 5))
+        snapshot("05-one-time-pro")
+    }
+
+    @MainActor
     func testLaunchPerformance() throws {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {

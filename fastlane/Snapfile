@@ -1,0 +1,21 @@
+devices([
+  "iPhone 16 Pro Max"
+])
+
+languages([
+  "zh-Hans"
+])
+
+locales([
+  "zh_CN"
+])
+
+project("NextTime/NextTime.xcodeproj")
+scheme("NextTime")
+test_target_name("NextTimeUITests")
+only_testing(["NextTimeUITests/NextTimeUITests/testCaptureStoreScreenshots"])
+output_directory("./fastlane/screenshots")
+clear_previous_screenshots(true)
+skip_open_summary(true)
+stop_after_first_error(true)
+override_status_bar(true)

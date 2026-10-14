@@ -15,7 +15,10 @@ struct NextTimeApp: App {
 
     init() {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--uitesting-reset-state") {
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("--store-screenshot-seed") {
+            seedStoreScreenshotData()
+        } else if arguments.contains("--uitesting-reset-state") {
             DataService.shared.clearAllData()
         }
         #endif
@@ -38,6 +41,48 @@ struct NextTimeApp: App {
         SpeechService.shared.volume = settings.voiceVolume
         SpeechService.shared.setVoice(identifier: settings.selectedVoice)
     }
+
+    #if DEBUG
+    private func seedStoreScreenshotData(now: Date = Date()) {
+        let dataService = DataService.shared
+        dataService.clearAllData()
+        UserDefaults.standard.set(false, forKey: "isPro")
+
+        let calendar = Calendar.current
+        let profileDate = calendar.date(byAdding: .day, value: -18, to: now) ?? now
+        dataService.completeOnboarding(
+            selectedGoals: Set(WellnessGoal.allCases),
+            now: profileDate
+        )
+
+        for dayOffset in 1...16 {
+            let program = TrainingData.allPrograms[(dayOffset - 1) % TrainingData.allPrograms.count]
+            let completedAt = calendar.date(byAdding: .day, value: -dayOffset, to: now) ?? now
+            dataService.saveRecord(
+                TrainingRecord(
+                    programId: program.id,
+                    programName: program.name,
+                    completedAt: completedAt,
+                    duration: program.totalDuration,
+                    completedSets: max(program.sets.count, 1),
+                    totalSets: max(program.sets.count, 1),
+                    isCompleted: true,
+                    route: program.route
+                )
+            )
+        }
+
+        dataService.saveCheckIn(
+            WellnessCheckIn(
+                createdAt: now,
+                moment: .beforePractice,
+                comfort: 4,
+                tension: 2,
+                energy: 4
+            )
+        )
+    }
+    #endif
 }
 
 // MARK: - App Delegate for Background Support

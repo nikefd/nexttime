@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   update:
@@ -33,4 +33,24 @@ jobs:
         with:
           bundler-cache: true
       - name: Update live metadata
-        run: bundle exec fastlane ios store_metadata
+        id: publish
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          bundle exec fastlane ios store_metadata 2>&1 | tee store-metadata-run.log
+      - name: Publish metadata result branch
+        if: always()
+        shell: bash
+        run: |
+          install -d fastlane/store_metadata
+          printf '%s\n' "${{ steps.publish.outcome }}" > fastlane/store_metadata/LAST_RUN_STATUS.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B automation/store-metadata-results
+          git add -f fastlane/store_metadata/LAST_RUN_STATUS.txt store-metadata-run.log
+          git commit --allow-empty -m "chore: publish App Store metadata result"
+          git push --force origin HEAD:refs/heads/automation/store-metadata-results
+      - name: Fail when metadata publishing failed
+        if: steps.publish.outcome != 'success'
+        run: exit 1

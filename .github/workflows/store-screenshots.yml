@@ -13,7 +13,24 @@ permissions:
   contents: write
 
 jobs:
+  mark-queued:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Publish queued status
+        shell: bash
+        run: |
+          install -d fastlane/screenshots
+          printf '%s\n' queued > fastlane/screenshots/LAST_RUN_STATUS.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B automation/store-screenshot-results
+          git add -f fastlane/screenshots/LAST_RUN_STATUS.txt
+          git commit -m "chore: mark App Store screenshots queued"
+          git push --force origin HEAD:refs/heads/automation/store-screenshot-results
+
   capture:
+    needs: mark-queued
     runs-on: macos-26
     timeout-minutes: 30
     steps:

@@ -1,6 +1,6 @@
 # 下一次 (NextTime)
 
-专业的凯格尔盆底肌训练助手 / Your Kegel Pelvic Floor Training Companion
+本地优先的盆底训练、放松与亲密健康助手 / A local-first pelvic wellness companion
 
 <p align="center">
   <img src="docs/icon.png" alt="NextTime Icon" width="120">
@@ -8,16 +8,17 @@
 
 ## Features / 功能特点
 
-- 📚 **14 Training Programs** - From beginner to expert / 14个训练课程，从入门到专家
-- 🔊 **Voice Guidance** - Clear prompts, no need to watch screen / 语音提示，无需看屏幕
+- 📚 **24 Guided Sessions** - A progressive six-week plan / 24 节引导练习与六周渐进计划
+- 🧭 **Four Routes** - Foundation, relaxation, endurance, and recovery / 基础、放松、耐力与恢复四条路线
+- 🔊 **Natural Voice Guidance** - Practice without watching the screen / 自然语音引导，无需盯着屏幕
 - 📳 **Haptic Feedback** - Vibration during contraction / 收缩时震动反馈
-- 🔒 **Privacy Mode** - Dark screen for discreet training / 隐私模式，训练更隐蔽
-- 📊 **Statistics** - Track your progress / 训练统计，追踪进步
-- 📖 **Learn** - Understand Kegel exercises / 知识科普
+- 🔒 **Local-first Privacy** - Optional Face ID, discreet notifications, and on-device records / Face ID、隐蔽通知与本地记录
+- 🤝 **Partner Cards** - Account-free communication prompts on one device / 同设备、无账号的伴侣沟通卡
+- 📊 **Progress and Check-ins** - Optional local tracking with safety feedback / 可跳过的本地进展与状态记录
 
 ## Requirements / 系统要求
 
-- iOS 15.0+
+- iOS 16.0+
 - iPhone
 
 ## Tech Stack / 技术栈
@@ -40,4 +41,4 @@ GitHub Actions and Fastlane run tests, publish tagged builds to TestFlight, and 
 
 ## License / 许可
 
-Copyright © 2025. All rights reserved.
+Copyright © 2026. All rights reserved. Source availability does not grant permission to copy, redistribute, or create derivative works.

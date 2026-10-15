@@ -38,7 +38,7 @@ jobs:
       MANUAL_VERSION: ${{ inputs.version }}
       MANUAL_RELEASE_NOTES_ZH: ${{ inputs.release_notes_zh }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Resolve release details
         shell: bash
         run: |
@@ -51,7 +51,7 @@ jobs:
           fi
       - name: Select Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1
         with:
           bundler-cache: true
       - name: Prepare Match SSH key
@@ -66,7 +66,7 @@ jobs:
       - name: Build and submit for review
         run: bundle exec fastlane ios release
       - name: Upload IPA artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: NextTime-${{ env.APP_VERSION }}
           path: artifacts/*.ipa

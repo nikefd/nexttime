@@ -16,7 +16,7 @@ jobs:
   mark-queued:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Publish queued status
         shell: bash
         run: |
@@ -34,13 +34,13 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Mark screenshot workflow as started
         shell: bash
         run: git push --force origin HEAD:refs/heads/automation/store-screenshot-results
       - name: Select Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1
         with:
           bundler-cache: true
       - name: Capture current Chinese UI
@@ -56,7 +56,7 @@ jobs:
           bundle exec fastlane snapshot 2>&1 | tee -a store-screenshot-run.log
       - name: Upload screenshot artifact
         if: steps.capture.outcome == 'success'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: nexttime-app-store-screenshots
           path: fastlane/screenshots/zh-Hans/*.png

@@ -45,6 +45,9 @@ jobs:
             echo "APP_VERSION=$MANUAL_VERSION" >> "$GITHUB_ENV"
           else
             echo "APP_VERSION=${GITHUB_REF_NAME#beta-v}" >> "$GITHUB_ENV"
+            if [[ -z "$RELEASE_NOTES" ]]; then
+              echo "RELEASE_NOTES=全新个人训练首页：打开即可看到今日练习并一键开始；训练主线精简为 18 节个人练习与 3 条路线，并优化进展、隐私和 Pro 展示。" >> "$GITHUB_ENV"
+            fi
           fi
       - name: Select Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app

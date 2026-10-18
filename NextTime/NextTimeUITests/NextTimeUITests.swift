@@ -102,11 +102,16 @@ final class NextTimeUITests: XCTestCase {
         app.launchArguments += [
             "--store-screenshot-seed",
             "--store-screenshot-pro",
+            "--store-screenshot-price-cn",
+            "-AppleInterfaceStyle", "Light",
             "-AppleLanguages", "(zh-Hans)",
             "-AppleLocale", "zh_CN"
         ]
         app.launch()
 
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
+        app.terminate()
+        app.launch()
         XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["home.start-today"].waitForExistence(timeout: 5))
         snapshot("01-today-practice")

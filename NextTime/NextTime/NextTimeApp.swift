@@ -30,6 +30,11 @@ struct NextTimeApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(appLockManager)
+                .preferredColorScheme(
+                    ProcessInfo.processInfo.arguments.contains("--store-screenshot-seed")
+                        ? .light
+                        : nil
+                )
         }
     }
 

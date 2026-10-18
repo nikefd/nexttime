@@ -13,22 +13,22 @@ FONT = "/System/Library/Fonts/Hiragino Sans GB.ttc"
 
 SHOTS = [
     (
-        "01-natural-guidance.png",
+        "01-today-practice.png",
+        SOURCE_DIR / "today.jpg",
+        "打开就知道，今天练什么",
+        "一键开始 · 每天只做当前这一项",
+    ),
+    (
+        "02-natural-guidance.png",
         SOURCE_DIR / "guidance.jpg",
-        "跟着自然引导，每天练几分钟",
-        "呼吸、收缩与放松节奏更清楚",
+        "像正常说话一样自然引导",
+        "呼吸、放松与动作节奏更清楚",
     ),
     (
-        "02-twenty-four-courses.png",
-        SOURCE_DIR / "courses.jpg",
-        "24 节课程，循序渐进",
-        "控制、放松、耐力与恢复路线",
-    ),
-    (
-        "03-six-week-plan.png",
-        SOURCE_DIR / "home.jpg",
-        "6 周计划，建立长期习惯",
-        "每天一小步 · 本地记录 · 避开近期重复",
+        "03-personal-progress.png",
+        SOURCE_DIR / "progress.jpg",
+        "18 节个人训练，循序渐进",
+        "3 条个人路线 · 6 周计划 · 避开近期重复",
     ),
     (
         "04-local-privacy.png",
@@ -40,7 +40,7 @@ SHOTS = [
         "05-one-time-pro.png",
         SOURCE_DIR / "pro.jpg",
         "一次买断，终身解锁",
-        "20 节进阶课 · 自定义训练 · 详细统计",
+        "完整个性化计划 · 自定义训练 · 详细统计",
     ),
 ]
 

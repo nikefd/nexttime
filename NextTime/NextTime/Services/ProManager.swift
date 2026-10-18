@@ -176,6 +176,11 @@ class ProManager: ObservableObject {
 
     // MARK: - 获取价格显示
     var priceDisplayString: String {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--store-screenshot-price-cn") {
+            return "¥12.00"
+        }
+        #endif
         guard let product = products.first else {
             return "¥25"
         }

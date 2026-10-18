@@ -211,7 +211,7 @@ struct RecordRow: View {
                 .font(.title3)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(record.programName)
+                Text(localizedProgramName)
                     .font(.headline)
 
                 HStack(spacing: 8) {
@@ -247,6 +247,13 @@ struct RecordRow: View {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
         return formatter.string(from: date)
+    }
+
+    private var localizedProgramName: String {
+        guard let program = TrainingData.personalPrograms.first(where: { $0.id == record.programId }) else {
+            return record.programName
+        }
+        return NSLocalizedString(program.localizedNameKey, comment: "")
     }
 }
 

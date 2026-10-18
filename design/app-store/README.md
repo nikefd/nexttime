@@ -1,6 +1,8 @@
 # App Store screenshot kit
 
-The five source screenshots in `source/` were captured from the current Chinese app UI.
+The five active source screenshots in `source/` (`today.jpg`, `guidance.jpg`,
+`progress.jpg`, `settings.jpg`, and `pro.jpg`) were captured from the current
+Chinese app UI in light mode.
 `marketing-background.png` was generated as a text-free brand background. The final,
 App Store-ready PNG files live in `fastlane/screenshots/zh-Hans/`.
 

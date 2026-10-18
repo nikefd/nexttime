@@ -110,14 +110,15 @@ struct NextTimeTests {
         #expect(discreet.body != detailed.body)
     }
 
-    @Test func sevenDayPlanFollowsSelectedRoutes() {
+    @Test func sevenDayPlanIgnoresLegacyPartnerGoal() {
         let plan = TrainingData.sevenDayPlan(for: [.relaxation, .partnerConnection])
         let programRoutes = plan.days.compactMap { day in
             TrainingData.allPrograms.first { $0.id == day.programID }?.route
         }
 
         #expect(plan.days.count == 7)
-        #expect(Set(programRoutes) == [.relaxation, .partner])
+        #expect(Set(programRoutes) == [.relaxation])
+        #expect(programRoutes.allSatisfy { $0 != .partner })
     }
 
     @Test func milestoneFProvidesTwentyFourSubstantialCourses() {
@@ -130,6 +131,18 @@ struct NextTimeTests {
             #expect(programs.allSatisfy { $0.totalDuration >= 180 })
             #expect(programs.allSatisfy { $0.totalDuration <= 12 * 60 })
         }
+    }
+
+    @Test func personalExperienceUsesOnlyEighteenIndividualPrograms() {
+        #expect(TrainingData.personalPrograms.count == 18)
+        #expect(TrainingData.personalPrograms.allSatisfy { $0.route != .partner })
+        #expect(WellnessGoal.personalCases == [.pelvicFoundation, .relaxation, .bodyConfidence])
+        #expect(PracticeRoute.personalCases == [.foundation, .relaxation, .confidence])
+
+        let legacyPartnerPlan = TrainingData.sixWeekPlan(for: [.partnerConnection])
+        #expect(legacyPartnerPlan.days.allSatisfy { day in
+            TrainingData.personalPrograms.contains { $0.id == day.programID }
+        })
     }
 
     @Test func sixWeekPlanProgressesAndIncludesRecoveryDays() {
@@ -191,7 +204,7 @@ struct NextTimeTests {
 
         #expect(recommendation.mode == .maintenance)
         #expect(recommendation.absoluteDay == 61)
-        #expect(TrainingData.allPrograms.contains { $0.id == recommendation.programID })
+        #expect(TrainingData.personalPrograms.contains { $0.id == recommendation.programID })
     }
 
     @Test func storesWellnessCheckInsAndPartnerCardProgressLocally() throws {

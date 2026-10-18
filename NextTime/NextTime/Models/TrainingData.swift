@@ -21,6 +21,9 @@ struct TrainingData {
         partnerPaceCheckIn, partnerRepair, partnerSharedChoice
     ]
 
+    /// 当前产品只面向个人训练；伴侣课程保留用于旧记录解码与兼容。
+    static let personalPrograms: [TrainingProgram] = allPrograms.filter { $0.route != .partner }
+
     static let partnerCards: [PartnerCommunicationCard] = [
         .init(id: "appreciation", titleKey: "partner.card.appreciation.title", promptKey: "partner.card.appreciation.prompt"),
         .init(id: "comfort", titleKey: "partner.card.comfort.title", promptKey: "partner.card.comfort.prompt"),
@@ -372,7 +375,7 @@ struct TrainingData {
 
     static func sevenDayPlan(for goals: Set<WellnessGoal>) -> PracticePlan {
         let selectedRoutes = PracticeRoute.routes(for: goals)
-        let routeCycle = selectedRoutes.isEmpty ? PracticeRoute.allCases : selectedRoutes
+        let routeCycle = selectedRoutes.isEmpty ? PracticeRoute.personalCases : selectedRoutes
         let days = (1...7).map { day -> PracticePlanDay in
             let route = routeCycle[(day - 1) % routeCycle.count]
             let program = programs(for: route).first ?? foundationAwareness
@@ -383,7 +386,7 @@ struct TrainingData {
 
     static func sixWeekPlan(for goals: Set<WellnessGoal>) -> PracticePlan {
         let selectedRoutes = PracticeRoute.routes(for: goals)
-        let focusRoutes = selectedRoutes.isEmpty ? PracticeRoute.allCases : selectedRoutes
+        let focusRoutes = selectedRoutes.isEmpty ? PracticeRoute.personalCases : selectedRoutes
         var routeCycle = focusRoutes
         for supportRoute in [PracticeRoute.relaxation, .confidence] where !routeCycle.contains(supportRoute) {
             routeCycle.append(supportRoute)
@@ -442,9 +445,9 @@ struct TrainingData {
         if absoluteDay <= 42 {
             let plan = sixWeekPlan(for: goals)
             let planDay = plan.days[absoluteDay - 1]
-            let planned = allPrograms.first { $0.id == planDay.programID } ?? foundationAwareness
+            let planned = personalPrograms.first { $0.id == planDay.programID } ?? foundationAwareness
             let allowedRoutes = Set(PracticeRoute.routes(for: goals) + [.relaxation, .confidence])
-            let alternatives = allPrograms.filter {
+            let alternatives = personalPrograms.filter {
                 allowedRoutes.contains($0.route)
                     && $0.difficulty.rawValue <= min(5, planDay.week + 1)
                     && !recentSet.contains($0.id)
@@ -461,8 +464,8 @@ struct TrainingData {
         }
 
         let selectedRoutes = PracticeRoute.routes(for: goals)
-        let allowedRoutes = Set((selectedRoutes.isEmpty ? PracticeRoute.allCases : selectedRoutes) + [.relaxation, .confidence])
-        let candidates = allPrograms.filter { allowedRoutes.contains($0.route) }
+        let allowedRoutes = Set((selectedRoutes.isEmpty ? PracticeRoute.personalCases : selectedRoutes) + [.relaxation, .confidence])
+        let candidates = personalPrograms.filter { allowedRoutes.contains($0.route) }
         let rotation = max(0, absoluteDay - 43)
         let rotated = Array(candidates.dropFirst(rotation % candidates.count))
             + Array(candidates.prefix(rotation % candidates.count))
@@ -729,7 +732,7 @@ struct TrainingData {
 
     // MARK: - 按难度获取课程
     static func programs(for difficulty: DifficultyLevel) -> [TrainingProgram] {
-        return allPrograms.filter { $0.difficulty == difficulty }.sorted { $0.order < $1.order }
+        return personalPrograms.filter { $0.difficulty == difficulty }.sorted { $0.order < $1.order }
     }
 
     // MARK: - 获取推荐课程（基于用户训练记录）
@@ -743,13 +746,13 @@ struct TrainingData {
         let completedProgramIds = Set(records.filter { $0.isCompleted }.map { $0.programId })
 
         // 找到第一个未完成的课程
-        for program in allPrograms.sorted(by: { $0.order < $1.order }) {
+        for program in personalPrograms.sorted(by: { $0.order < $1.order }) {
             if !completedProgramIds.contains(program.id) {
                 return program
             }
         }
 
         // 如果都完成了，从第一条路线重新开始温和练习
-        return allPrograms.first ?? foundationAwareness
+        return personalPrograms.first ?? foundationAwareness
     }
 }

@@ -76,32 +76,54 @@ final class NextTimeUITests: XCTestCase {
         XCTAssertTrue(foundationGoal.label.contains("建立盆底基础"))
         XCTAssertTrue(relaxationGoal.label.contains("学会充分放松"))
         XCTAssertFalse(foundationGoal.label.contains("Build pelvic floor foundations"))
+        XCTAssertFalse(app.buttons["onboarding.goal.partnerConnection"].exists)
+    }
+
+    @MainActor
+    func testTodayAdvancedPracticeRequiresPro() throws {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "--store-screenshot-seed",
+            "-AppleLanguages", "(zh-Hans)",
+            "-AppleLocale", "zh_CN"
+        ]
+        app.launch()
+
+        let unlockButton = app.buttons["home.unlock-today"]
+        XCTAssertTrue(unlockButton.waitForExistence(timeout: 8))
+        unlockButton.tap()
+        XCTAssertTrue(app.navigationBars["升级 Pro"].waitForExistence(timeout: 5))
     }
 
     @MainActor
     func testCaptureStoreScreenshots() throws {
         let app = XCUIApplication()
         setupSnapshot(app)
-        app.launchArguments += ["--store-screenshot-seed", "-AppleLocale", "zh_CN"]
+        app.launchArguments += [
+            "--store-screenshot-seed",
+            "--store-screenshot-pro",
+            "-AppleLanguages", "(zh-Hans)",
+            "-AppleLocale", "zh_CN"
+        ]
         app.launch()
 
         XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
-        snapshot("01-six-week-plan")
+        XCTAssertTrue(app.buttons["home.start-today"].waitForExistence(timeout: 5))
+        snapshot("01-today-practice")
 
-        app.tabBars.buttons["练习"].tap()
-        XCTAssertTrue(app.navigationBars["训练课程"].waitForExistence(timeout: 5))
-        snapshot("02-twenty-four-courses")
-
-        let foundationCourse = app.staticTexts["盆底觉察入门"]
-        XCTAssertTrue(foundationCourse.waitForExistence(timeout: 5))
-        foundationCourse.tap()
-        XCTAssertTrue(app.staticTexts["找到轻柔的控制"].waitForExistence(timeout: 5))
-        snapshot("03-natural-guidance")
+        app.buttons["home.start-today"].tap()
+        XCTAssertTrue(app.buttons["training.exit"].waitForExistence(timeout: 5))
+        snapshot("02-natural-guidance")
 
         app.terminate()
+        app.launchArguments.removeAll { $0 == "--store-screenshot-pro" }
         app.launch()
         XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
-        app.tabBars.buttons["设置"].tap()
+        app.tabBars.buttons.element(boundBy: 1).tap()
+        XCTAssertTrue(app.navigationBars["进展"].waitForExistence(timeout: 5))
+        snapshot("03-personal-progress")
+
+        app.tabBars.buttons.element(boundBy: 3).tap()
         XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
         snapshot("04-local-privacy")
 

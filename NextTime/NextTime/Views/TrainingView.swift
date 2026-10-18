@@ -87,6 +87,7 @@ struct TrainingView: View {
             Button { showExitAlert = true } label: {
                 Image(systemName: "xmark.circle.fill").font(.title2)
             }
+            .accessibilityIdentifier("training.exit")
             Spacer()
             VStack(spacing: 2) {
                 Text(NSLocalizedString(program.localizedNameKey, comment: "")).font(.headline)

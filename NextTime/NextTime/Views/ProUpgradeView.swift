@@ -79,7 +79,7 @@ struct ProUpgradeView: View {
     private var featuresSection: some View {
         VStack(spacing: 16) {
             FeatureRow(
-                icon: "figure.strengthtraining.traditional",
+                icon: "sparkles",
                 color: .blue,
                 title: String(localized: "pro.feature.courses"),
                 description: String(localized: "pro.feature.courses.desc")

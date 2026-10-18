@@ -2,19 +2,16 @@
 //  HomeView.swift
 //  NextTime
 //
-//  首页视图
+//  以“今天只做这一件事”为核心的个人训练首页。
 //
 
 import SwiftUI
 
 struct HomeView: View {
-    @ObservedObject private var trainingManager = TrainingManager.shared
     @ObservedObject private var proManager = ProManager.shared
-    @State private var statistics = TrainingStatistics()
     @State private var recommendedProgram: TrainingProgram?
     @State private var recommendationKind: PracticeRecommendationKind = .onPlan
     @State private var selectedProgram: TrainingProgram?
-    @State private var showProUpgrade = false
     @State private var planWeek = 1
     @State private var planDayInWeek = 1
     @State private var planMode: LongTermPlanMode = .progressive
@@ -24,65 +21,202 @@ struct HomeView: View {
     @State private var tension = 3
     @State private var energy = 3
     @State private var checkInSavedToday = false
+    @State private var showCheckIn = false
+    @State private var showProUpgrade = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    planSection
-
-                    checkInSection
-
-                    // 统计卡片
-                    statisticsSection
-
-                    // 快速开始
-                    quickStartSection
-
-                    // 今日提醒
-                    reminderSection
+                VStack(spacing: 18) {
+                    todayPracticeSection
+                    compactPlanSection
+                    adjustmentSection
                 }
                 .padding()
             }
-            .navigationTitle(String(localized: "app.name"))
-            .onAppear {
-                loadData()
-            }
-            .fullScreenCover(item: $selectedProgram) { program in
+            .navigationTitle(String(localized: "home.today.title"))
+            .onAppear(perform: loadData)
+            .fullScreenCover(item: $selectedProgram, onDismiss: loadData) { program in
                 TrainingView(program: program)
+            }
+            .sheet(isPresented: $showCheckIn) {
+                checkInSheet
+            }
+            .sheet(isPresented: $showProUpgrade) {
+                ProUpgradeView()
             }
         }
     }
 
-    private var planSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+    private var todayPracticeSection: some View {
+        VStack(alignment: .leading, spacing: 18) {
             HStack {
-                Text(String(localized: "home.plan.title"))
-                    .font(.headline)
-                Spacer()
-                Text(planPositionLabel)
+                Label(recommendationKind.title, systemImage: recommendationIcon)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(recommendationColor)
+                Spacer()
+                Label(String(localized: "recommendation.localOnly"), systemImage: "iphone")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            if let program = recommendedProgram {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(NSLocalizedString(program.localizedNameKey, comment: ""))
+                        .font(.largeTitle.bold())
+                    Text(recommendationKind.detail)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                HStack(spacing: 16) {
+                    Label(program.formattedDuration, systemImage: "clock")
+                    Label(String(localized: "program.steps \(program.resolvedGuidedSteps.count)"), systemImage: "list.number")
+                    if isRecoveryDay && planMode == .progressive {
+                        Label(String(localized: "home.today.recovery"), systemImage: "leaf.fill")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+                if recommendationKind.canStartPractice {
+                    Button {
+                        if proManager.isProgramLocked(program) {
+                            showProUpgrade = true
+                        } else {
+                            selectedProgram = program
+                        }
+                    } label: {
+                        Label(
+                            proManager.isProgramLocked(program)
+                                ? String(localized: "home.today.unlock")
+                                : String(localized: "home.today.start"),
+                            systemImage: proManager.isProgramLocked(program) ? "crown.fill" : "play.fill"
+                        )
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.roundedRectangle(radius: 16))
+                    .accessibilityIdentifier(
+                        proManager.isProgramLocked(program) ? "home.unlock-today" : "home.start-today"
+                    )
+                } else {
+                    Label(String(localized: "home.today.paused"), systemImage: "cross.case.fill")
+                        .font(.headline)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity, minHeight: 180)
+            }
+        }
+        .padding(20)
+        .background(
+            LinearGradient(
+                colors: [recommendationColor.opacity(0.16), Color(.secondarySystemBackground)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 22))
+    }
+
+    private var compactPlanSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(String(localized: "home.plan.title"))
+                        .font(.headline)
+                    Text(planPositionLabel)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text("\(completedPlanDays)/42")
+                    .font(.subheadline.monospacedDigit().weight(.semibold))
             }
 
             ProgressView(value: Double(completedPlanDays), total: 42)
                 .tint(.blue)
                 .accessibilityLabel(String(localized: "home.plan.progress"))
                 .accessibilityValue("\(completedPlanDays)/42")
-
-            Text(String(localized: "home.plan.message \(completedPlanDays)"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            if isRecoveryDay && planMode == .progressive {
-                Label(String(localized: "home.plan.recoveryDay"), systemImage: "leaf.fill")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.green)
-            }
         }
         .padding()
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var adjustmentSection: some View {
+        Button {
+            showCheckIn = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: checkInSavedToday ? "checkmark.circle.fill" : "slider.horizontal.3")
+                    .foregroundStyle(checkInSavedToday ? .green : .blue)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(checkInSavedToday
+                         ? String(localized: "home.today.adjusted")
+                         : String(localized: "home.today.adjust"))
+                        .font(.subheadline.weight(.semibold))
+                    Text(String(localized: "home.today.adjust.detail"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var checkInSheet: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    Text(String(localized: "home.today.checkin.intro"))
+                        .foregroundStyle(.secondary)
+                    WellnessRatingRow(title: String(localized: "checkin.comfort"), value: $comfort)
+                    WellnessRatingRow(title: String(localized: "checkin.tension"), value: $tension)
+                    WellnessRatingRow(title: String(localized: "checkin.energy"), value: $energy)
+                    Button(String(localized: "home.today.apply")) {
+                        DataService.shared.saveCheckIn(
+                            WellnessCheckIn(
+                                moment: .beforePractice,
+                                comfort: comfort,
+                                tension: tension,
+                                energy: energy
+                            )
+                        )
+                        checkInSavedToday = true
+                        loadData()
+                        showCheckIn = false
+                    }
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.roundedRectangle(radius: 14))
+                }
+                .padding()
+            }
+            .navigationTitle(String(localized: "home.today.adjust"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(String(localized: "alert.cancel")) { showCheckIn = false }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 
     private var planPositionLabel: String {
@@ -92,177 +226,6 @@ struct HomeView: View {
         case .maintenance:
             return String(localized: "home.plan.maintenance")
         }
-    }
-
-    private var checkInSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(String(localized: "checkin.before.title"))
-                .font(.headline)
-            Text(String(localized: "checkin.optional"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            if checkInSavedToday {
-                Label(String(localized: "checkin.saved"), systemImage: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
-            } else {
-                WellnessRatingRow(title: String(localized: "checkin.comfort"), value: $comfort)
-                WellnessRatingRow(title: String(localized: "checkin.tension"), value: $tension)
-                WellnessRatingRow(title: String(localized: "checkin.energy"), value: $energy)
-                Button(String(localized: "checkin.save")) {
-                    DataService.shared.saveCheckIn(
-                        WellnessCheckIn(
-                            moment: .beforePractice,
-                            comfort: comfort,
-                            tension: tension,
-                            energy: energy
-                        )
-                    )
-                    checkInSavedToday = true
-                    loadData()
-                }
-                .buttonStyle(.bordered)
-            }
-        }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-    }
-
-    // MARK: - 统计卡片
-    private var statisticsSection: some View {
-        VStack(spacing: 16) {
-            HStack(spacing: 16) {
-                StatCard(
-                    title: String(localized: "stats.totalSessions"),
-                    value: "\(statistics.totalSessions)",
-                    icon: "checkmark.circle.fill",
-                    color: .green
-                )
-
-                StatCard(
-                    title: String(localized: "stats.totalMinutes"),
-                    value: "\(statistics.totalMinutes)",
-                    icon: "clock.fill",
-                    color: .blue
-                )
-            }
-
-            HStack(spacing: 16) {
-                StatCard(
-                    title: String(localized: "stats.currentStreak"),
-                    value: "\(statistics.currentStreak)",
-                    icon: "flame.fill",
-                    color: .orange
-                )
-
-                StatCard(
-                    title: String(localized: "stats.thisWeek"),
-                    value: "\(statistics.thisWeekSessions)",
-                    icon: "calendar",
-                    color: .purple
-                )
-            }
-
-            // 详细统计入口（Pro 功能）
-            NavigationLink {
-                if proManager.canViewDetailedStats {
-                    StatsDetailView()
-                } else {
-                    ProUpgradeView()
-                }
-            } label: {
-                HStack {
-                    Image(systemName: "chart.bar.fill")
-                        .foregroundStyle(.blue)
-                    Text(String(localized: "home.viewDetailedStats"))
-                        .font(.subheadline)
-                    Spacer()
-                    if !proManager.canViewDetailedStats {
-                        Image(systemName: "crown.fill")
-                            .font(.caption)
-                            .foregroundStyle(.yellow)
-                    }
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
-                .padding()
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-            .buttonStyle(.plain)
-        }
-    }
-
-    // MARK: - 本地个性化推荐
-    private var quickStartSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(String(localized: "recommendation.section.title"))
-                    .font(.headline)
-                Spacer()
-                Label(String(localized: "recommendation.localOnly"), systemImage: "iphone")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-
-            VStack(alignment: .leading, spacing: 6) {
-                Label(recommendationKind.title, systemImage: recommendationIcon)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(recommendationColor)
-                Text(recommendationKind.detail)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(recommendationColor.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-
-            if let program = recommendedProgram {
-                if recommendationKind.canStartPractice {
-                    Button { selectedProgram = program } label: {
-                        recommendationProgramCard(program: program, showsPlay: true)
-                    }
-                    .buttonStyle(.plain)
-                } else {
-                    recommendationProgramCard(program: program, showsPlay: false)
-                        .accessibilityElement(children: .combine)
-                }
-            }
-        }
-    }
-
-    private func recommendationProgramCard(program: TrainingProgram, showsPlay: Bool) -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(NSLocalizedString(program.localizedNameKey, comment: ""))
-                    .font(.title3.weight(.semibold))
-                Text(program.difficulty.localizedName)
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.85))
-                HStack {
-                    Label(String(localized: "program.steps \(program.resolvedGuidedSteps.count)"), systemImage: "list.number")
-                    Label(program.formattedDuration, systemImage: "clock")
-                }
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.85))
-            }
-            Spacer()
-            Image(systemName: showsPlay ? "play.circle.fill" : "cross.case.fill")
-                .font(.system(size: 46))
-        }
-        .padding()
-        .background(
-            LinearGradient(
-                colors: recommendationKind.canStartPractice ? [.blue, .blue.opacity(0.8)] : [.orange, .red.opacity(0.75)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .foregroundStyle(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private var recommendationIcon: String {
@@ -285,35 +248,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - 今日提醒
-    private var reminderSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(String(localized: "home.tips"))
-                .font(.headline)
-
-            VStack(alignment: .leading, spacing: 8) {
-                tipRow(icon: "lightbulb.fill", text: String(localized: "tip.consistency"))
-                tipRow(icon: "figure.walk", text: String(localized: "tip.anytime"))
-                tipRow(icon: "ear.fill", text: String(localized: "tip.noScreen"))
-            }
-            .padding()
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-        }
-    }
-
-    private func tipRow(icon: String, text: String) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundStyle(.blue)
-                .frame(width: 24)
-            Text(text)
-                .font(.subheadline)
-        }
-    }
-
     private func loadData() {
-        statistics = DataService.shared.calculateStatistics()
         let records = DataService.shared.loadRecords()
         let profile = DataService.shared.loadWellnessProfile()
         let goals = profile?.selectedGoals ?? []
@@ -331,18 +266,18 @@ struct HomeView: View {
             Calendar.current.startOfDay(for: $0.completedAt)
         })
         completedPlanDays = min(completedDates.count, 42)
-        let targetID = planRecommendation.programID
+        let checkIns = DataService.shared.loadCheckIns()
         let recommendation = PracticeRecommendationEngine.recommend(
-            plannedProgramID: targetID,
+            plannedProgramID: planRecommendation.programID,
             relaxationProgramID: TrainingData.relaxationBreathing.id,
             bodyScanProgramID: TrainingData.confidenceBodyScan.id,
-            checkIns: DataService.shared.loadCheckIns(),
+            checkIns: checkIns,
             safetyEvents: DataService.shared.loadSafetyEvents()
         )
-        recommendedProgram = TrainingData.allPrograms.first { $0.id == recommendation.programID }
+        recommendedProgram = TrainingData.personalPrograms.first { $0.id == recommendation.programID }
             ?? TrainingData.relaxationBreathing
         recommendationKind = recommendation.kind
-        checkInSavedToday = DataService.shared.loadCheckIns().contains {
+        checkInSavedToday = checkIns.contains {
             $0.moment == .beforePractice && Calendar.current.isDateInToday($0.createdAt)
         }
     }
@@ -375,41 +310,6 @@ struct WellnessRatingRow: View {
                 }
             }
         }
-    }
-}
-
-// MARK: - 统计卡片组件
-struct StatCard: View {
-    let title: String
-    let value: String
-    let icon: String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundStyle(color)
-                Spacer()
-            }
-
-            HStack {
-                Text(value)
-                    .font(.title)
-                    .fontWeight(.bold)
-                Spacer()
-            }
-
-            HStack {
-                Text(title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Spacer()
-            }
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

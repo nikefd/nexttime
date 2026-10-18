@@ -168,8 +168,8 @@
 
 /* Articles */
 "article.plan.intro" = "下一次会根据你的目标、练习历史和当日状态提供建议。计划用于建立节奏，不是必须完成的医疗处方。";
-"article.plan.1.title" = "24 个课程，4 条路线";
-"article.plan.1.content" = "课程分为盆底基础、充分放松、身体觉察与伴侣沟通四条路线，每条路线 6 个课程。单次练习约 3–12 分钟。";
+"article.plan.1.title" = "每天一项，3 条个人路线";
+"article.plan.1.content" = "系统从盆底基础、充分放松和身体觉察三条路线的 18 节练习中，每天自动安排一项。单次练习约 3–12 分钟，无需自己选课。";
 "article.plan.2.title" = "6 周渐进安排";
 "article.plan.2.content" = "计划覆盖 42 天，并随周次逐步增加变化。每周安排 2 个恢复日，让身体有时间整合练习。";
 "article.plan.3.title" = "建议会减少重复";
@@ -203,13 +203,13 @@
 "article.wellbeing.3.title" = "日常活动";
 "article.wellbeing.3.content" = "规律活动、减少久坐和舒适的呼吸习惯有助于整体健康。根据自己的能力循序渐进；如有疾病、术后或产后需求，请遵循专业人员建议。";
 
-"article.partner.intro" = "好的亲密沟通以安全、尊重和双方自愿为前提。练习是为了帮助表达与倾听，而不是说服对方。";
+"article.partner.intro" = "好的亲密沟通以安全、尊重和双方自愿为前提。这里提供必要的健康教育，帮助你理解表达、倾听与边界，而不是安排多人训练。";
 "article.partner.1.title" = "同意必须持续存在";
 "article.partner.1.content" = "同意应当清晰、自愿、具体，并且可以随时撤回。沉默、犹豫、过去的同意或处于压力之下，都不能代替当下的同意。";
 "article.partner.2.title" = "说出感受与边界";
 "article.partner.2.content" = "可以用“我现在感觉……”和“我希望……”描述自己的体验，也给对方完整拒绝或暂停的空间。任何一方说停，都应立即停止。";
-"article.partner.3.title" = "互动内容保持本地";
-"article.partner.3.content" = "伴侣提示卡可以共同阅读，但下一次不会记录你们的具体回答，也不会把练习目标和历史上传到云端。请仍然根据实际环境保护屏幕隐私。";
+"article.partner.3.title" = "不替你记录私密对话";
+"article.partner.3.content" = "下一次专注个人训练，不要求输入或保存伴侣对话。请根据实际环境保护屏幕隐私，也不要在设备上留下他人的敏感信息。";
 
 "article.safety.intro" = "下一次提供健康教育和练习引导，不诊断疾病，也不替代医生或盆底治疗师。身体反馈始终优先。";
 "article.safety.1.title" = "出现这些情况请停止";
@@ -240,8 +240,8 @@
 "pro.restoreSuccess" = "你的 Pro 购买已恢复！";
 "pro.restoreNoPurchase" = "未找到之前的购买记录。";
 
-"pro.feature.courses" = "全部训练课程";
-"pro.feature.courses.desc" = "解锁 20 个进阶课程和完整 6 周计划";
+"pro.feature.courses" = "完整个性化计划";
+"pro.feature.courses.desc" = "由系统每天安排进阶内容，无需自己选课";
 "pro.feature.custom" = "自定义训练";
 "pro.feature.custom.desc" = "创建你自己的训练计划";
 "pro.feature.reminder" = "每日提醒";
@@ -413,6 +413,16 @@
 "home.plan.recoveryDay" = "今天以恢复和放松为主";
 "home.plan.progress" = "6 周计划进度";
 "home.plan.message %lld" = "已完成 %lld/42 个练习日；系统会避开近期重复。";
+"home.today.title" = "今天";
+"home.today.start" = "开始今日训练";
+"home.today.unlock" = "解锁今日进阶训练";
+"home.today.recovery" = "恢复日";
+"home.today.paused" = "今天先暂停训练";
+"home.today.adjust" = "调整今天的强度";
+"home.today.adjusted" = "已根据今天的状态调整";
+"home.today.adjust.detail" = "可选，用不到一分钟；所有信息仅保存在本机。";
+"home.today.checkin.intro" = "记录现在的舒适度、紧张度和精力，系统会立即调整今天唯一的训练。";
+"home.today.apply" = "保存并调整今日训练";
 "checkin.before.title" = "一分钟状态记录";
 "checkin.after.title" = "练习后感觉如何？";
 "checkin.optional" = "可选，仅保存在当前设备。1 表示较低，5 表示较高。";
@@ -426,7 +436,7 @@
 "checkin.before.short" = "练习前";
 "checkin.after.short" = "练习后";
 
-"progress.routes" = "四条路线";
+"progress.routes" = "三条个人路线";
 "progress.wellnessTrend" = "本地状态趋势";
 "progress.noCheckIns" = "记录一次练习前或练习后状态，趋势会显示在这里。";
 
@@ -564,7 +574,7 @@
 "recommendation.section.title" = "今日本地推荐";
 "recommendation.localOnly" = "仅在本机计算";
 "recommendation.onPlan.title" = "按计划继续";
-"recommendation.onPlan.detail" = "今天的状态没有触发调整，继续当前 7 天计划即可。";
+"recommendation.onPlan.detail" = "今天的状态没有触发调整，按 6 周计划完成这一项即可。";
 "recommendation.lowerIntensity.title" = "今天温和一点";
 "recommendation.lowerIntensity.detail" = "根据今天较低的舒适度或较高的紧张度，已切换为呼吸与放松练习。";
 "recommendation.lowEnergy.title" = "选择低负担练习";

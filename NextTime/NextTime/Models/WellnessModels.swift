@@ -15,6 +15,12 @@ enum WellnessGoal: String, Codable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    static let personalCases: [WellnessGoal] = [
+        .pelvicFoundation,
+        .relaxation,
+        .bodyConfidence
+    ]
+
     var title: String {
         switch self {
         case .pelvicFoundation: return String(localized: "onboarding.goal.pelvicFoundation.title")
@@ -50,6 +56,12 @@ enum PracticeRoute: String, Codable, CaseIterable, Identifiable {
     case partner
 
     var id: String { rawValue }
+
+    static let personalCases: [PracticeRoute] = [
+        .foundation,
+        .relaxation,
+        .confidence
+    ]
     var title: String {
         switch self {
         case .foundation: return String(localized: "route.foundation.title")
@@ -77,15 +89,15 @@ enum PracticeRoute: String, Codable, CaseIterable, Identifiable {
     }
 
     static func routes(for goals: Set<WellnessGoal>) -> [PracticeRoute] {
-        let mapped = goals.map { goal -> PracticeRoute in
+        let mapped = goals.compactMap { goal -> PracticeRoute? in
             switch goal {
             case .pelvicFoundation: return .foundation
             case .relaxation: return .relaxation
             case .bodyConfidence: return .confidence
-            case .partnerConnection: return .partner
+            case .partnerConnection: return nil
             }
         }
-        return mapped.isEmpty ? allCases : allCases.filter(Set(mapped).contains)
+        return mapped.isEmpty ? personalCases : personalCases.filter(Set(mapped).contains)
     }
 }
 

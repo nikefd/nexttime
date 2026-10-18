@@ -18,29 +18,23 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
-            ProgramListView()
-                .tabItem {
-                    Label(String(localized: "tab.programs"), systemImage: "list.bullet")
-                }
-                .tag(1)
-
             HistoryView()
                 .tabItem {
                     Label(String(localized: "tab.history"), systemImage: "clock.fill")
                 }
-                .tag(2)
+                .tag(1)
 
             LearnView()
                 .tabItem {
                     Label(String(localized: "tab.learn"), systemImage: "book.fill")
                 }
-                .tag(3)
+                .tag(2)
 
             SettingsView()
                 .tabItem {
                     Label(String(localized: "tab.settings"), systemImage: "gearshape.fill")
                 }
-                .tag(4)
+                .tag(3)
         }
         .tint(.blue)
     }

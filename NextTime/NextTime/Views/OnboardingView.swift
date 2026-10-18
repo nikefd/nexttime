@@ -115,7 +115,7 @@ struct OnboardingView: View {
                 Text(String(localized: "onboarding.goals.message"))
                     .foregroundStyle(.secondary)
 
-                ForEach(WellnessGoal.allCases) { goal in
+                ForEach(WellnessGoal.personalCases) { goal in
                     Button {
                         if selectedGoals.contains(goal) {
                             selectedGoals.remove(goal)

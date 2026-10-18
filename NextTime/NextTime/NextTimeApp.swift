@@ -46,17 +46,20 @@ struct NextTimeApp: App {
     private func seedStoreScreenshotData(now: Date = Date()) {
         let dataService = DataService.shared
         dataService.clearAllData()
-        UserDefaults.standard.set(false, forKey: "isPro")
+        UserDefaults.standard.set(
+            ProcessInfo.processInfo.arguments.contains("--store-screenshot-pro"),
+            forKey: "isPro"
+        )
 
         let calendar = Calendar.current
         let profileDate = calendar.date(byAdding: .day, value: -18, to: now) ?? now
         dataService.completeOnboarding(
-            selectedGoals: Set(WellnessGoal.allCases),
+            selectedGoals: Set(WellnessGoal.personalCases),
             now: profileDate
         )
 
         for dayOffset in 1...16 {
-            let program = TrainingData.allPrograms[(dayOffset - 1) % TrainingData.allPrograms.count]
+            let program = TrainingData.personalPrograms[(dayOffset - 1) % TrainingData.personalPrograms.count]
             let completedAt = calendar.date(byAdding: .day, value: -dayOffset, to: now) ?? now
             dataService.saveRecord(
                 TrainingRecord(

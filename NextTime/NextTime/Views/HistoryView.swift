@@ -71,7 +71,7 @@ struct HistoryView: View {
             }
 
             Section(String(localized: "progress.routes")) {
-                ForEach(PracticeRoute.allCases) { route in
+                ForEach(PracticeRoute.personalCases) { route in
                     let progress = routeProgress(route)
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {

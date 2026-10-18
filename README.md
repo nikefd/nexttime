@@ -8,12 +8,11 @@
 
 ## Features / 功能特点
 
-- 📚 **24 Guided Sessions** - A progressive six-week plan / 24 节引导练习与六周渐进计划
-- 🧭 **Four Routes** - Foundation, relaxation, endurance, and recovery / 基础、放松、耐力与恢复四条路线
+- ✨ **One Practice Today** - Open the app and start without choosing a course / 打开即看到今日唯一训练，无需选课
+- 📚 **18 Personal Sessions** - A progressive six-week plan across three individual routes / 18 节个人练习与三条渐进路线
 - 🔊 **Natural Voice Guidance** - Practice without watching the screen / 自然语音引导，无需盯着屏幕
 - 📳 **Haptic Feedback** - Vibration during contraction / 收缩时震动反馈
 - 🔒 **Local-first Privacy** - Optional Face ID, discreet notifications, and on-device records / Face ID、隐蔽通知与本地记录
-- 🤝 **Partner Cards** - Account-free communication prompts on one device / 同设备、无账号的伴侣沟通卡
 - 📊 **Progress and Check-ins** - Optional local tracking with safety feedback / 可跳过的本地进展与状态记录
 
 ## Requirements / 系统要求

@@ -168,8 +168,8 @@
 
 /* Articles */
 "article.plan.intro" = "NextTime suggests practice based on your goals, history, and current check-in. The plan helps you build a rhythm; it is not a medical prescription you must complete.";
-"article.plan.1.title" = "24 Courses Across 4 Routes";
-"article.plan.1.content" = "Courses cover pelvic-floor foundations, full release, body awareness, and partner communication, with 6 courses per route. Sessions run about 3–12 minutes.";
+"article.plan.1.title" = "One Daily Practice Across 3 Personal Routes";
+"article.plan.1.content" = "NextTime selects one practice each day from 18 sessions across pelvic-floor foundations, full release, and body awareness. Sessions run about 3–12 minutes, with no course picking required.";
 "article.plan.2.title" = "A Progressive 6-Week Structure";
 "article.plan.2.content" = "The plan spans 42 days and introduces variety as the weeks progress. Two recovery days each week give your body time to absorb the practice.";
 "article.plan.3.title" = "Recommendations Reduce Repetition";
@@ -203,13 +203,13 @@
 "article.wellbeing.3.title" = "Everyday Movement";
 "article.wellbeing.3.content" = "Regular movement, less prolonged sitting, and comfortable breathing support general wellbeing. Progress within your ability; during pregnancy, postpartum recovery, after surgery, or with a medical condition, follow professional advice.";
 
-"article.partner.intro" = "Healthy intimate communication centers safety, respect, and mutual choice. These exercises are for expressing and listening, not persuading someone.";
+"article.partner.intro" = "Healthy intimate communication centers safety, respect, and mutual choice. This essential education explains expression, listening, and boundaries without adding multi-person training.";
 "article.partner.1.title" = "Consent Must Be Ongoing";
 "article.partner.1.content" = "Consent should be clear, voluntary, specific, and revocable at any time. Silence, hesitation, past consent, or agreement under pressure do not replace consent in the present moment.";
 "article.partner.2.title" = "Name Feelings and Boundaries";
 "article.partner.2.content" = "Try “I feel…” and “I would like…” while leaving complete room for the other person to decline or pause. If either person says stop, stop immediately.";
-"article.partner.3.title" = "Partner Responses Stay Unrecorded";
-"article.partner.3.content" = "You can read partner prompt cards together, but NextTime does not record your specific answers or upload practice goals and history to the cloud. Still protect screen privacy in your surroundings.";
+"article.partner.3.title" = "Private Conversations Are Not Recorded";
+"article.partner.3.content" = "NextTime focuses on individual practice and does not ask you to enter or save partner conversations. Protect screen privacy and avoid storing another person's sensitive information on your device.";
 
 "article.safety.intro" = "NextTime provides wellness education and guided practice. It does not diagnose conditions or replace a doctor or pelvic-floor therapist. Your body's feedback comes first.";
 "article.safety.1.title" = "Stop for These Symptoms";
@@ -240,8 +240,8 @@
 "pro.restoreSuccess" = "Your Pro purchase has been restored!";
 "pro.restoreNoPurchase" = "No previous purchase found.";
 
-"pro.feature.courses" = "All Training Courses";
-"pro.feature.courses.desc" = "Unlock 20 advanced courses and the full 6-week plan";
+"pro.feature.courses" = "Complete Personalized Plan";
+"pro.feature.courses.desc" = "Get one advanced practice selected for you each day";
 "pro.feature.custom" = "Custom Training";
 "pro.feature.custom.desc" = "Create your own training program";
 "pro.feature.reminder" = "Daily Reminders";
@@ -413,6 +413,16 @@
 "home.plan.recoveryDay" = "Today emphasizes recovery and release";
 "home.plan.progress" = "6-week plan progress";
 "home.plan.message %lld" = "%lld/42 practice days completed. Recent sessions are avoided.";
+"home.today.title" = "Today";
+"home.today.start" = "Start Today's Practice";
+"home.today.unlock" = "Unlock Today's Advanced Practice";
+"home.today.recovery" = "Recovery day";
+"home.today.paused" = "Pause practice today";
+"home.today.adjust" = "Adjust Today's Intensity";
+"home.today.adjusted" = "Adjusted for how you feel today";
+"home.today.adjust.detail" = "Optional and under a minute. Everything stays on this device.";
+"home.today.checkin.intro" = "Rate your comfort, tension, and energy. NextTime will immediately adjust your single practice for today.";
+"home.today.apply" = "Save and Adjust Today's Practice";
 "checkin.before.title" = "One-Minute Check-In";
 "checkin.after.title" = "How did practice feel?";
 "checkin.optional" = "Optional and stored only on this device. 1 is lower; 5 is higher.";
@@ -426,7 +436,7 @@
 "checkin.before.short" = "Before";
 "checkin.after.short" = "After";
 
-"progress.routes" = "Four Routes";
+"progress.routes" = "Three Personal Routes";
 "progress.wellnessTrend" = "On-Device Wellness Trend";
 "progress.noCheckIns" = "Record a before- or after-practice check-in to see trends here.";
 
@@ -564,7 +574,7 @@
 "recommendation.section.title" = "Today's On-Device Recommendation";
 "recommendation.localOnly" = "Calculated on device";
 "recommendation.onPlan.title" = "Continue Your Plan";
-"recommendation.onPlan.detail" = "Today's check-in did not trigger an adjustment, so you can continue the current 7-day plan.";
+"recommendation.onPlan.detail" = "Today's check-in did not trigger an adjustment. Complete this one practice in your 6-week plan.";
 "recommendation.lowerIntensity.title" = "Keep It Gentle Today";
 "recommendation.lowerIntensity.detail" = "Based on lower comfort or higher tension today, your recommendation has switched to breathing and release.";
 "recommendation.lowEnergy.title" = "Choose a Low-Effort Practice";

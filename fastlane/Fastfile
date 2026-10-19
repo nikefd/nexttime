@@ -136,6 +136,23 @@ platform :ios do
     )
     UI.user_error!("TestFlight #{version} is not valid yet") unless build.processing_state == "VALID"
     UI.user_error!("TestFlight #{version} is not available for internal testing") unless acceptable_internal_states.include?(internal_state)
+
+    internal_groups = app.get_beta_groups.select(&:is_internal_group)
+    groups_with_build = internal_groups.select do |group|
+      group.has_access_to_all_builds || group.fetch_builds.any? { |candidate| candidate.id == build.id }
+    end
+    eligible_testers = groups_with_build.flat_map do |group|
+      Spaceship::ConnectAPI::BetaTester.all(filter: { betaGroups: group.id })
+    end.uniq(&:id)
+    tester_states = eligible_testers.group_by(&:beta_tester_state).transform_values(&:count)
+
+    UI.message(
+      "Internal TestFlight access: internal_groups=#{internal_groups.count}, " \
+      "groups_with_build=#{groups_with_build.count}, " \
+      "eligible_testers=#{eligible_testers.count}, tester_states=#{tester_states}"
+    )
+    UI.user_error!("No internal tester group has access to TestFlight #{version}") if groups_with_build.empty?
+    UI.user_error!("No internal tester account can access TestFlight #{version}") if eligible_testers.empty?
   end
 
   desc "Update editable metadata on the live App Store product page"

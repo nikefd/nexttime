@@ -57,6 +57,7 @@ final class TrainingManager: ObservableObject {
     func pauseTraining() {
         guard isRunning, !isPaused, !progress.isAwaitingContinue else { return }
         isPaused = true
+        speechService.stop()
         timer?.invalidate()
         timer = nil
         stopHapticTimer()
@@ -74,7 +75,7 @@ final class TrainingManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         stopHapticTimer()
-        speechService.stop(immediately: false)
+        speechService.stop()
         progress.currentStepIndex += 1
         progress.isAwaitingContinue = false
         updateLegacyProgress()

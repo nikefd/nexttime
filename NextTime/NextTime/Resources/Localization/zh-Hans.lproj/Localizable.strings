@@ -84,10 +84,10 @@
 "action.rest" = "休息";
 
 /* Voice Prompts */
-"voice.contract" = "轻轻收紧，保持呼吸。";
-"voice.breathe" = "慢慢呼吸，不用用力。";
-"voice.relax" = "慢慢放松，很好。";
-"voice.rest" = "先休息一下，保持自然呼吸。";
+"voice.contract" = "轻收。";
+"voice.breathe" = "自然呼吸。";
+"voice.relax" = "放松。";
+"voice.rest" = "休息。";
 "voice.nextSet %lld" = "第%lld组";
 "voice.complete" = "今天的练习完成了，辛苦了。";
 "voice.getReady" = "准备好以后，我们慢慢开始。";

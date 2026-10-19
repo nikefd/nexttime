@@ -84,10 +84,10 @@
 "action.rest" = "Rest";
 
 /* Voice Prompts */
-"voice.contract" = "Gently engage, and keep breathing.";
-"voice.breathe" = "Breathe slowly, without forcing it.";
-"voice.relax" = "Let go slowly. That's good.";
-"voice.rest" = "Take a short rest, and breathe naturally.";
+"voice.contract" = "Gently engage.";
+"voice.breathe" = "Breathe naturally.";
+"voice.relax" = "Release.";
+"voice.rest" = "Rest.";
 "voice.nextSet %lld" = "Set %lld";
 "voice.complete" = "That's your practice for today. Well done.";
 "voice.getReady" = "When you're ready, we'll begin gently.";

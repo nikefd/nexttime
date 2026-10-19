@@ -109,7 +109,8 @@ final class SpeechService {
     private func speak(text: String, style: SpeechStyle, addsPauses: Bool = true) {
         guard isEnabled else { return }
         if synthesizer.isSpeaking {
-            synthesizer.stopSpeaking(at: .word)
+            // A new action cue must not queue behind the previous step.
+            synthesizer.stopSpeaking(at: style == .cue ? .immediate : .word)
         }
 
         let language = preferredLanguage
@@ -118,8 +119,8 @@ final class SpeechService {
         utterance.volume = volume
         utterance.rate = style.rate(for: language)
         utterance.pitchMultiplier = style.pitch
-        utterance.preUtteranceDelay = addsPauses ? 0.14 : 0
-        utterance.postUtteranceDelay = addsPauses ? 0.12 : 0
+        utterance.preUtteranceDelay = addsPauses && style != .cue ? 0.14 : 0
+        utterance.postUtteranceDelay = addsPauses && style != .cue ? 0.12 : 0
         utterance.prefersAssistiveTechnologySettings = false
         synthesizer.speak(utterance)
     }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProgramListView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var completedProgramIds: Set<UUID> = []
     @State private var selectedProgram: TrainingProgram?
     @State private var showProUpgrade = false
@@ -16,6 +17,15 @@ struct ProgramListView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Text(String(localized: "program.optional"))
+                    Text(String(localized: "pro.comparison.free"))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button(String(localized: "pro.comparison.details")) {
+                        showProUpgrade = true
+                    }
+                }
                 // 自定义训练入口（Pro 功能）
                 Section {
                     NavigationLink {
@@ -56,27 +66,7 @@ struct ProgramListView: View {
                     }
                 }
 
-                Section {
-                    NavigationLink {
-                        PartnerCardsView()
-                    } label: {
-                        Label {
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(String(localized: "partner.cards.title"))
-                                    .font(.headline)
-                                Text(String(localized: "partner.cards.subtitle"))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        } icon: {
-                            Image(systemName: "person.2.wave.2.fill")
-                                .foregroundStyle(.pink)
-                        }
-                    }
-                }
-
-                // 四条本地优先练习路线
-                ForEach(PracticeRoute.allCases) { route in
+                ForEach(PracticeRoute.personalCases) { route in
                     Section {
                         ForEach(TrainingData.programs(for: route)) { program in
                             let isLocked = proManager.isProgramLocked(program)
@@ -108,10 +98,17 @@ struct ProgramListView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle(String(localized: "programs.title"))
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(String(localized: "alert.cancel")) { dismiss() }
+                }
+            }
             .onAppear {
                 completedProgramIds = DataService.shared.loadCompletedProgramIds()
             }
-            .fullScreenCover(item: $selectedProgram) { program in
+            .fullScreenCover(item: $selectedProgram, onDismiss: {
+                completedProgramIds = DataService.shared.loadCompletedProgramIds()
+            }) { program in
                 TrainingView(program: program)
             }
             .sheet(isPresented: $showProUpgrade) {
@@ -156,11 +153,12 @@ struct ProgramRow: View {
                         .font(.headline)
                         .foregroundStyle(isLocked ? .secondary : .primary)
 
-                    if isLocked {
-                        Image(systemName: "crown.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.yellow)
-                    }
+                    Text(program.isPremium ? "Pro" : String(localized: "program.free"))
+                        .font(.caption2.bold())
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(program.isPremium ? Color.yellow.opacity(0.2) : Color.green.opacity(0.15))
+                        .clipShape(Capsule())
                 }
 
                 Text(NSLocalizedString(program.localizedDescriptionKey, comment: ""))

@@ -80,6 +80,27 @@ final class NextTimeUITests: XCTestCase {
     }
 
     @MainActor
+    func testOptionalLibraryShowsFreeAndProPractices() throws {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication()
+        app.launchArguments = ["--store-screenshot-seed", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launch()
+        let browse = app.buttons["home.browse-programs"]
+        XCTAssertTrue(browse.waitForExistence(timeout: 8))
+        if !browse.isHittable { app.swipeUp() }
+        browse.tap()
+        XCTAssertTrue(app.navigationBars["训练课程"].waitForExistence(timeout: 5))
+        app.swipeUp()
+        XCTAssertTrue(app.staticTexts["免费"].firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["Pro"].firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["伴侣沟通卡"].exists)
+        app.swipeDown()
+        app.buttons["查看免费与 Pro 权益"].tap()
+        XCTAssertTrue(app.staticTexts["免费版已包含"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["全部 18 节个人练习"].exists)
+    }
+
+    @MainActor
     func testTodayAdvancedPracticeRequiresPro() throws {
         let app = XCUIApplication()
         app.launchArguments = [

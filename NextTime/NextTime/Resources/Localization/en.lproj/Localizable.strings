@@ -32,6 +32,14 @@
 
 /* Programs */
 "programs.title" = "Training Programs";
+"program.browse" = "Browse All Practices · Optional";
+"program.optional" = "Come here when you want to choose. Otherwise, simply follow today's practice on Home.";
+"program.free" = "Free";
+"pro.comparison.title" = "Already Included for Free";
+"pro.comparison.free" = "Repeat 3 introductory practices: pelvic awareness, relaxed breathing and body scanning. Pro unlocks 15 more practices.";
+"pro.comparison.shared" = "Today's recommendations, basic records, voice guidance and privacy protection are also free.";
+"pro.comparison.details" = "Compare Free and Pro";
+"pro.alreadyUnlocked" = "All Pro benefits are unlocked";
 "program.sets" = "sets";
 "program.courses" = "courses";
 
@@ -231,8 +239,8 @@
 
 /* Pro */
 "pro.title" = "Upgrade to Pro";
-"pro.upgradeTitle" = "Unlock Full Potential";
-"pro.upgradeSubtitle" = "One-time purchase, lifetime access to all features";
+"pro.upgradeTitle" = "Unlock Your Full Practice";
+"pro.upgradeSubtitle" = "Follow today's plan or choose a practice. One purchase, no subscription.";
 "pro.oneTimePurchase" = "One-time purchase, no subscription";
 "pro.buyButton %@" = "Upgrade for %@";
 "pro.restore" = "Restore Purchase";
@@ -240,8 +248,8 @@
 "pro.restoreSuccess" = "Your Pro purchase has been restored!";
 "pro.restoreNoPurchase" = "No previous purchase found.";
 
-"pro.feature.courses" = "Complete Personalized Plan";
-"pro.feature.courses.desc" = "Get one advanced practice selected for you each day";
+"pro.feature.courses" = "All 18 Personal Practices";
+"pro.feature.courses.desc" = "Includes 3 free introductory and 15 Pro practices. Unlock every practice in the 6-week plan, or choose from the library.";
 "pro.feature.custom" = "Custom Training";
 "pro.feature.custom.desc" = "Create your own training program";
 "pro.feature.reminder" = "Daily Reminders";

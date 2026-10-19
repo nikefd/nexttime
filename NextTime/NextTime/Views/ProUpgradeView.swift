@@ -19,11 +19,29 @@ struct ProUpgradeView: View {
                     // 头部
                     headerSection
 
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(String(localized: "pro.comparison.title"))
+                            .font(.headline)
+                        Text(String(localized: "pro.comparison.free"))
+                        Text(String(localized: "pro.comparison.shared"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+
                     // 功能列表
                     featuresSection
 
                     // 价格和购买按钮
-                    purchaseSection
+                    if proManager.isPro {
+                        Label(String(localized: "pro.alreadyUnlocked"), systemImage: "checkmark.seal.fill")
+                            .foregroundStyle(.green)
+                    } else {
+                        purchaseSection
+                    }
 
                     // 恢复购买
                     restoreButton
@@ -106,12 +124,6 @@ struct ProUpgradeView: View {
                 description: String(localized: "pro.feature.stats.desc")
             )
 
-            FeatureRow(
-                icon: "heart.fill",
-                color: .red,
-                title: String(localized: "pro.feature.support"),
-                description: String(localized: "pro.feature.support.desc")
-            )
         }
         .padding()
         .background(Color(.systemGray6))

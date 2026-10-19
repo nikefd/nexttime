@@ -23,6 +23,7 @@ struct HomeView: View {
     @State private var checkInSavedToday = false
     @State private var showCheckIn = false
     @State private var showProUpgrade = false
+    @State private var showPrograms = false
 
     var body: some View {
         NavigationStack {
@@ -31,6 +32,14 @@ struct HomeView: View {
                     todayPracticeSection
                     compactPlanSection
                     adjustmentSection
+                    Button {
+                        showPrograms = true
+                    } label: {
+                        Label(String(localized: "program.browse"), systemImage: "list.bullet.rectangle")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                    }
+                    .accessibilityIdentifier("home.browse-programs")
                 }
                 .padding()
             }
@@ -44,6 +53,9 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showProUpgrade) {
                 ProUpgradeView()
+            }
+            .sheet(isPresented: $showPrograms, onDismiss: loadData) {
+                ProgramListView()
             }
         }
     }

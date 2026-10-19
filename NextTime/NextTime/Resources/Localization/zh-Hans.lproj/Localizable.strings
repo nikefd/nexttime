@@ -32,6 +32,14 @@
 
 /* Programs */
 "programs.title" = "训练课程";
+"program.browse" = "浏览全部课程 · 可选";
+"program.optional" = "想自己选课时再来这里。平时跟着首页的今日训练即可。";
+"program.free" = "免费";
+"pro.comparison.title" = "免费版已包含";
+"pro.comparison.free" = "3 节入门练习可重复使用：盆底觉察、呼吸放松和身体扫描。Pro 再解锁 15 节进阶练习。";
+"pro.comparison.shared" = "今日推荐、基础记录、语音引导和隐私保护，免费版也能使用。";
+"pro.comparison.details" = "查看免费与 Pro 权益";
+"pro.alreadyUnlocked" = "你已解锁全部 Pro 权益";
 "program.sets" = "组";
 "program.courses" = "个课程";
 
@@ -231,8 +239,8 @@
 
 /* Pro */
 "pro.title" = "升级 Pro";
-"pro.upgradeTitle" = "解锁全部功能";
-"pro.upgradeSubtitle" = "一次购买，终身使用所有功能";
+"pro.upgradeTitle" = "解锁完整个人训练";
+"pro.upgradeSubtitle" = "跟随今日安排，也能自由选课。一次购买，无需订阅。";
 "pro.oneTimePurchase" = "一次性购买，无需订阅";
 "pro.buyButton %@" = "升级 %@";
 "pro.restore" = "恢复购买";
@@ -240,8 +248,8 @@
 "pro.restoreSuccess" = "你的 Pro 购买已恢复！";
 "pro.restoreNoPurchase" = "未找到之前的购买记录。";
 
-"pro.feature.courses" = "完整个性化计划";
-"pro.feature.courses.desc" = "由系统每天安排进阶内容，无需自己选课";
+"pro.feature.courses" = "全部 18 节个人练习";
+"pro.feature.courses.desc" = "包含 3 节免费入门与 15 节 Pro 进阶练习，解锁 6 周计划中的全部课程，也可从列表自由选择。";
 "pro.feature.custom" = "自定义训练";
 "pro.feature.custom.desc" = "创建你自己的训练计划";
 "pro.feature.reminder" = "每日提醒";

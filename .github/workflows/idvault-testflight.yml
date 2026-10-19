@@ -1,0 +1,67 @@
+name: Publish IDVault TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: IDVault version
+        required: true
+        default: 0.1.0
+        type: string
+      release_notes:
+        description: Internal TestFlight release notes
+        required: false
+        default: 首个内部测试版本：本地加密证件、应用锁、相机扫描、设备端 OCR 和加密原件附件。
+        type: string
+
+concurrency:
+  group: publish-idvault-testflight
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: macos-26
+    timeout-minutes: 45
+    environment: testflight
+    env:
+      APP_IDENTIFIER: com.zhangyangbin.idvault
+      APPLE_TEAM_ID: V59XFX9635
+      APP_VERSION: ${{ inputs.version }}
+      RELEASE_NOTES: ${{ inputs.release_notes }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+    steps:
+      - name: Check out private IDVault repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: nikefd/id-vault
+          ssh-key: ${{ secrets.IDVAULT_DEPLOY_KEY }}
+      - name: Select Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1
+        with:
+          bundler-cache: true
+      - name: Prepare Match SSH key
+        shell: bash
+        env:
+          MATCH_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
+        run: |
+          install -d -m 700 "$RUNNER_TEMP/match-ssh"
+          printf '%s\n' "$MATCH_KEY" > "$RUNNER_TEMP/match-ssh/id_ed25519"
+          chmod 600 "$RUNNER_TEMP/match-ssh/id_ed25519"
+          echo "MATCH_GIT_PRIVATE_KEY_PATH=$RUNNER_TEMP/match-ssh/id_ed25519" >> "$GITHUB_ENV"
+      - name: Create app record and signing assets
+        run: bundle exec fastlane ios bootstrap_release
+      - name: Build and upload to TestFlight
+        run: bundle exec fastlane ios beta
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: IDVault-${{ env.APP_VERSION }}
+          path: artifacts/*.ipa

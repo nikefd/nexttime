@@ -105,6 +105,30 @@ platform :ios do
     )
   end
 
+  desc "Verify that a TestFlight version finished processing and is ready for internal testing"
+  lane :testflight_status do
+    app_store_api_key
+    version = ENV.fetch("APP_VERSION")
+    app = Spaceship::ConnectAPI::App.find(APP_IDENTIFIER)
+    UI.user_error!("App #{APP_IDENTIFIER} was not found") unless app
+
+    build = Spaceship::ConnectAPI::Build.all(
+      app_id: app.id,
+      version: version,
+      sort: "-uploadedDate",
+      limit: 1
+    ).first
+    UI.user_error!("No TestFlight build was found for #{version}") unless build
+
+    UI.message(
+      "TestFlight #{build.app_version} (#{build.version}): " \
+      "processing_state=#{build.processing_state}, " \
+      "ready_for_internal_testing=#{build.ready_for_internal_testing?}"
+    )
+    UI.user_error!("TestFlight #{version} is not valid yet") unless build.processing_state == "VALID"
+    UI.user_error!("TestFlight #{version} is not ready for internal testing") unless build.ready_for_internal_testing?
+  end
+
   desc "Update editable metadata on the live App Store product page"
   lane :store_metadata do
     api_key = app_store_api_key

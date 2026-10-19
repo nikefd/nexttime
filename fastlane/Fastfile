@@ -105,7 +105,7 @@ platform :ios do
     )
   end
 
-  desc "Verify that a TestFlight version finished processing and is ready for internal testing"
+  desc "Verify that a TestFlight version finished processing and is available for internal testing"
   lane :testflight_status do
     app_store_api_key
     version = ENV.fetch("APP_VERSION")
@@ -120,13 +120,22 @@ platform :ios do
     ).first
     UI.user_error!("No TestFlight build was found for #{version}") unless build
 
+    internal_state = build.build_beta_detail&.internal_build_state
+    external_state = build.build_beta_detail&.external_build_state
+    acceptable_internal_states = [
+      Spaceship::ConnectAPI::BuildBetaDetail::InternalState::READY_FOR_BETA_TESTING,
+      Spaceship::ConnectAPI::BuildBetaDetail::InternalState::IN_BETA_TESTING
+    ]
+
     UI.message(
       "TestFlight #{build.app_version} (#{build.version}): " \
       "processing_state=#{build.processing_state}, " \
-      "ready_for_internal_testing=#{build.ready_for_internal_testing?}"
+      "internal_build_state=#{internal_state}, " \
+      "external_build_state=#{external_state}, " \
+      "uses_non_exempt_encryption=#{build.uses_non_exempt_encryption}"
     )
     UI.user_error!("TestFlight #{version} is not valid yet") unless build.processing_state == "VALID"
-    UI.user_error!("TestFlight #{version} is not ready for internal testing") unless build.ready_for_internal_testing?
+    UI.user_error!("TestFlight #{version} is not available for internal testing") unless acceptable_internal_states.include?(internal_state)
   end
 
   desc "Update editable metadata on the live App Store product page"

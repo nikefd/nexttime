@@ -101,7 +101,7 @@ platform :ios do
       app_identifier: APP_IDENTIFIER,
       changelog: ENV["RELEASE_NOTES"],
       distribute_external: false,
-      skip_waiting_for_build_processing: true
+      skip_waiting_for_build_processing: false
     )
   end
 

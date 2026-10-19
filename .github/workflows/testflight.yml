@@ -46,7 +46,7 @@ jobs:
           else
             echo "APP_VERSION=${GITHUB_REF_NAME#beta-v}" >> "$GITHUB_ENV"
             if [[ -z "$RELEASE_NOTES" ]]; then
-              echo "RELEASE_NOTES=全新个人训练首页：打开即可看到今日练习并一键开始；训练主线精简为 18 节个人练习与 3 条路线，并优化进展、隐私和 Pro 展示。" >> "$GITHUB_ENV"
+              echo "RELEASE_NOTES=首页新增可选课程列表，可自由浏览 18 节个人练习；明确标记免费与 Pro 课程，更新购买页权益说明，已购用户显示已解锁状态。" >> "$GITHUB_ENV"
             fi
           fi
       - name: Select Xcode 26.2

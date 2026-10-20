@@ -191,6 +191,7 @@ platform :ios do
       release_notes: {
         locale => ENV.fetch("APP_STORE_RELEASE_NOTES_ZH")
       },
+      name: { locale => store_metadata_value("name.txt") },
       description: { locale => store_metadata_value("description.txt") },
       subtitle: { locale => store_metadata_value("subtitle.txt") },
       keywords: { locale => store_metadata_value("keywords.txt") },

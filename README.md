@@ -29,7 +29,7 @@
 
 ## Links / 链接
 
-- [App Store](https://apps.apple.com/app/nexttime)
+- [App Store](https://apps.apple.com/cn/app/id6757946762)
 - [Website](https://nikefd.github.io/nexttime-site/)
 - [Privacy Policy](https://nikefd.github.io/nexttime-site/privacy.html)
 - [Support](https://nikefd.github.io/nexttime-site/support.html)

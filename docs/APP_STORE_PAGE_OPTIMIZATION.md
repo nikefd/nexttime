@@ -1,6 +1,74 @@
 # App Store product page optimization
 
-Last updated: 2026-10-14
+Last updated: 2026-10-20
+
+## Current ASO revision (supersedes the historical plan below)
+
+Status: prepared in source control; not uploaded, submitted, or live.
+
+Apple's China lookup API for `com.zhangyangbin.NextTime` currently returns
+**NextTime 1.3.5**, App ID **6757946762**, Health & Fitness, and the old
+24-course/four-route description. The latest internal build is 1.3.8.
+Do not publish personal-training copy onto the older live binary.
+
+| Field | New copy | Characters |
+| --- | --- | --- |
+| Name | 下一次 NextTime：凯格尔与盆底肌训练 | 22/30 |
+| Subtitle | 每日个人练习，呼吸放松与6周渐进计划 | 18/30 |
+| Keywords | Kegel,提肛,收紧,协调,身体觉察,语音引导,震动提示,打卡,习惯,隐私 | 38/100 |
+
+Keywords also fit within 100 UTF-8 bytes (86 bytes). Preserve both brand names,
+target relevant practice intent, and avoid repeating title/subtitle phrases.
+These are functional relevance hypotheses, not measured search-volume or
+ranking findings. Chinese tokenization and actual discoverability need
+post-release observation. Removed unsupported postpartum-recovery positioning;
+do not promise treatment, sexual performance improvements, or clinical results.
+
+The description now explains today's practice, the optional course list,
+18 personal practices, 3 free introductions and 15 Pro practices. It explicitly
+states that a daily recommendation may require Pro. Promotional copy explains
+the value and one-time purchase, rather than stuffing search terms.
+
+`name.txt` is now wired into the formal `release` lane, alongside existing
+subtitle and keywords. Name availability remains subject to App Store Connect
+validation. README now links to https://apps.apple.com/cn/app/id6757946762.
+
+### Release gate
+
+- Submit all new metadata with the next formal personal-training app version.
+- Do not run the legacy `store_metadata` / `edit_live` lane for this new copy.
+  Its historical claim below that the entire description can simply be changed
+  on the live version is not a reliable publication procedure.
+- Existing screenshots are 1.3.6 assets, not newly captured in this revision.
+  Check them against 1.3.8 before submission, particularly optional course
+  browsing, Pro benefits, short cues, and region-specific price claims.
+- After approval, verify the public name, version, description, screenshots
+  and category. TestFlight upload does not publish store metadata.
+
+### Measurement
+
+Export the preceding 14 days from App Store Connect before release. Fix the
+territory to mainland China and source to App Store Search. Record impressions,
+product-page views, first-time downloads and Apple's conversion metric.
+Record any Apple Ads activity, since search-source reporting may include ads.
+No account analytics were accessed in this revision; baseline is still pending.
+The user's reported 24 downloads / 2 purchases are not search attribution and
+are too small a sample to forecast acquisition economics.
+
+Observe the same metrics for 14 days after release (28 if volumes remain low),
+comparing matching weekdays. Avoid changing keywords daily. If impressions
+increase without downloads, inspect positioning and the first three screenshots;
+if impressions stay flat, revisit keyword relevance and actual search visibility.
+A whole-page update cannot isolate the effect of an individual word.
+Track purchases separately without inventing source attribution. Do not add
+tracking SDKs, buy reviews, or reward positive reviews.
+
+Sources:
+- https://developer.apple.com/app-store/search/
+- https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information/
+- https://developer.apple.com/app-store/review/guidelines/
+
+## Historical 2026-10-14 plan (superseded)
 
 ## Public-page audit
 

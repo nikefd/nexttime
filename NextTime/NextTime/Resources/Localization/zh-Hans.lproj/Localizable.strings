@@ -40,6 +40,12 @@
 "pro.comparison.shared" = "今日推荐、基础记录、语音引导和隐私保护，免费版也能使用。";
 "pro.comparison.details" = "查看免费与 Pro 权益";
 "pro.alreadyUnlocked" = "你已解锁全部 Pro 权益";
+"pro.priceUnavailable" = "价格暂不可用";
+"pro.retryPrice" = "重新加载价格";
+"pro.error.unavailable" = "暂时无法获取购买信息，请检查网络后重试。";
+"pro.error.pending" = "购买正在等待批准，批准后会自动解锁。";
+"pro.error.purchase" = "购买未完成，请稍后重试。";
+"pro.error.restore" = "恢复购买失败，请检查网络及 App Store 账号后重试。";
 "program.sets" = "组";
 "program.courses" = "个课程";
 

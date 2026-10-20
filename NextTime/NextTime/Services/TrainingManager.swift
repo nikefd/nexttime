@@ -14,6 +14,7 @@ final class TrainingManager: ObservableObject {
 
     private let hapticService = HapticService.shared
     private let speechService = SpeechService.shared
+    private let dataService: DataService
     private var timer: Timer?
     private var hapticTimer: Timer?
     private var startTime: Date?
@@ -21,7 +22,9 @@ final class TrainingManager: ObservableObject {
 
     var onTrainingComplete: ((TrainingRecord) -> Void)?
 
-    private init() {}
+    init(dataService: DataService = .shared) {
+        self.dataService = dataService
+    }
 
     var currentStep: GuidedPracticeStep? {
         activeSteps[safe: progress.currentStepIndex]
@@ -55,9 +58,9 @@ final class TrainingManager: ObservableObject {
     }
 
     func pauseTraining() {
+        speechService.stop()
         guard isRunning, !isPaused, !progress.isAwaitingContinue else { return }
         isPaused = true
-        speechService.stop()
         timer?.invalidate()
         timer = nil
         stopHapticTimer()
@@ -175,18 +178,18 @@ final class TrainingManager: ObservableObject {
     }
 
     private func saveRecord(isCompleted: Bool) {
-        guard let program = currentProgram, let startTime else { return }
+        guard let program = currentProgram, startTime != nil else { return }
         let record = TrainingRecord(
             programId: program.id,
             programName: program.name,
-            duration: max(0, Int(Date().timeIntervalSince(startTime))),
+            duration: progress.elapsedTime,
             completedSets: isCompleted ? program.sets.count : progress.currentSetIndex,
             totalSets: program.sets.count,
             isCompleted: isCompleted,
             route: program.route
         )
         onTrainingComplete?(record)
-        DataService.shared.saveRecord(record)
+        dataService.saveRecord(record)
         self.startTime = nil
     }
 

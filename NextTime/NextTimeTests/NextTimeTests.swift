@@ -12,6 +12,42 @@ import Foundation
 @MainActor
 struct NextTimeTests {
 
+    @Test func trainingRecordsActiveSecondsAndDoesNotSaveTwice() throws {
+        let suite = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let service = DataService(userDefaults: defaults, protectedStore: try ProtectedDataStore(inMemory: true))
+        let manager = TrainingManager(dataService: service)
+        defer { manager.resetState() }
+        manager.startTraining(program: TrainingData.foundationAwareness)
+        manager.advanceStep()
+        manager.progress.elapsedTime = 7
+        manager.pauseTraining()
+        #expect(manager.isPaused)
+        #expect(manager.progress.elapsedTime == 7)
+        manager.stopTraining()
+        manager.stopTraining()
+        #expect(service.loadRecords().count == 1)
+        #expect(service.loadRecords().first?.duration == 7)
+        #expect(service.loadRecords().first?.isCompleted == false)
+    }
+
+    @Test func failedLegacyDecodePreservesSourceAndAllowsRetry() throws {
+        let suite = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = try ProtectedDataStore(inMemory: true)
+        let invalid = Data("incomplete record".utf8)
+        defaults.set(invalid, forKey: "trainingRecords")
+        _ = DataService(userDefaults: defaults, protectedStore: store)
+        #expect(defaults.data(forKey: "trainingRecords") == invalid)
+        #expect(store.load(Bool.self, forKey: "migration.user-defaults.v1") != true)
+        defaults.set(try JSONEncoder().encode([TrainingRecord]()), forKey: "trainingRecords")
+        _ = DataService(userDefaults: defaults, protectedStore: store)
+        #expect(defaults.data(forKey: "trainingRecords") == nil)
+        #expect(store.load(Bool.self, forKey: "migration.user-defaults.v1") == true)
+    }
+
     @Test func migratesLegacyTrainingDataIntoProtectedStore() throws {
         let suiteName = "NextTimeTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suiteName))

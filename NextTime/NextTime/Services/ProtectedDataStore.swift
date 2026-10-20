@@ -17,14 +17,16 @@ final class ProtectedDataStore {
     }
 
     private let container: NSPersistentContainer
+    private(set) var isFallbackStore = false
 
     static func makeDefault() -> ProtectedDataStore {
         do {
             return try ProtectedDataStore()
         } catch {
             // 磁盘存储不可用时退回仅内存模式，避免把敏感数据降级写入 UserDefaults。
-            assertionFailure("Protected local store could not be opened: \(error.localizedDescription)")
-            return try! ProtectedDataStore(inMemory: true)
+            let fallback = try! ProtectedDataStore(inMemory: true)
+            fallback.isFallbackStore = true
+            return fallback
         }
     }
 

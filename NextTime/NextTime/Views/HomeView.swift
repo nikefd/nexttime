@@ -292,6 +292,13 @@ struct HomeView: View {
         checkInSavedToday = checkIns.contains {
             $0.moment == .beforePractice && Calendar.current.isDateInToday($0.createdAt)
         }
+        if let latest = checkIns.first(where: {
+            $0.moment == .beforePractice && Calendar.current.isDateInToday($0.createdAt)
+        }) {
+            comfort = latest.comfort
+            tension = latest.tension
+            energy = latest.energy ?? 3
+        }
     }
 }
 

@@ -56,6 +56,12 @@ struct TrainingView: View {
             revealTask?.cancel()
             if trainingManager.currentProgram != nil { trainingManager.stopTraining() }
         }
+        .onChange(of: showSafetyChoices) { showing in
+            if showing { trainingManager.pauseTraining() }
+        }
+        .onChange(of: showExitAlert) { showing in
+            if showing { trainingManager.pauseTraining() }
+        }
         .alert(String(localized: "alert.exitTraining.title"), isPresented: $showExitAlert) {
             Button(String(localized: "alert.cancel"), role: .cancel) {}
             Button(String(localized: "alert.exit"), role: .destructive) {

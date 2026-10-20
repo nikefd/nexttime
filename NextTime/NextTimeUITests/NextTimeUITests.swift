@@ -80,6 +80,25 @@ final class NextTimeUITests: XCTestCase {
     }
 
     @MainActor
+    func testDetailedStatisticsEntryRespectsPro() throws {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication()
+        app.launchArguments = ["--store-screenshot-seed", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launch()
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
+        app.tabBars.buttons.element(boundBy: 1).tap()
+        app.buttons.containing(.staticText, identifier: "详细统计").firstMatch.tap()
+        XCTAssertTrue(app.navigationBars["升级 Pro"].waitForExistence(timeout: 5))
+        app.terminate()
+        app.launchArguments.append("--store-screenshot-pro")
+        app.launch()
+        XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
+        app.tabBars.buttons.element(boundBy: 1).tap()
+        app.buttons.containing(.staticText, identifier: "详细统计").firstMatch.tap()
+        XCTAssertTrue(app.navigationBars["统计"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
     func testOptionalLibraryShowsFreeAndProPractices() throws {
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()

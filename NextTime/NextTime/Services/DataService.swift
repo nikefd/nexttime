@@ -259,25 +259,29 @@ class DataService {
 
     // MARK: - 旧数据迁移
     private func migrateLegacyDataIfNeeded() {
+        // Never remove durable legacy records when only a temporary store is available.
+        guard !protectedStore.isFallbackStore else { return }
         let migrationComplete = protectedStore.load(
             Bool.self,
             forKey: ProtectedKey.legacyMigrationComplete
         ) ?? false
         guard !migrationComplete else { return }
 
-        if let data = userDefaults.data(forKey: recordsKey),
-           let records = try? JSONDecoder().decode([TrainingRecord].self, from: data) {
-            try? protectedStore.save(records, forKey: ProtectedKey.records)
-            userDefaults.removeObject(forKey: recordsKey)
+        do {
+            if let data = userDefaults.data(forKey: recordsKey) {
+                let records = try JSONDecoder().decode([TrainingRecord].self, from: data)
+                try protectedStore.save(records, forKey: ProtectedKey.records)
+                userDefaults.removeObject(forKey: recordsKey)
+            }
+            if let data = userDefaults.data(forKey: completedProgramsKey) {
+                let identifiers = try JSONDecoder().decode([UUID].self, from: data)
+                try protectedStore.save(identifiers, forKey: ProtectedKey.completedProgramIDs)
+                userDefaults.removeObject(forKey: completedProgramsKey)
+            }
+            try protectedStore.save(true, forKey: ProtectedKey.legacyMigrationComplete)
+        } catch {
+            // Keep unconverted source data and retry migration on the next launch.
         }
-
-        if let data = userDefaults.data(forKey: completedProgramsKey),
-           let identifiers = try? JSONDecoder().decode([UUID].self, from: data) {
-            try? protectedStore.save(identifiers, forKey: ProtectedKey.completedProgramIDs)
-            userDefaults.removeObject(forKey: completedProgramsKey)
-        }
-
-        try? protectedStore.save(true, forKey: ProtectedKey.legacyMigrationComplete)
     }
 }
 

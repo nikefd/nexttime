@@ -21,6 +21,7 @@ class ProManager: ObservableObject {
     @Published var products: [Product] = []
     @Published var purchaseInProgress: Bool = false
     @Published var errorMessage: String?
+    @Published private(set) var isLoadingProducts = false
 
     private var updateListenerTask: Task<Void, Error>?
 
@@ -44,18 +45,23 @@ class ProManager: ObservableObject {
 
     // MARK: - 加载产品
     func loadProducts() async {
+        guard !isLoadingProducts else { return }
+        isLoadingProducts = true
+        defer { isLoadingProducts = false }
         do {
             products = try await Product.products(for: [ProManager.proProductID])
+            errorMessage = products.isEmpty ? String(localized: "pro.error.unavailable") : nil
         } catch {
             print("Failed to load products: \(error)")
-            errorMessage = "Failed to load products"
+            errorMessage = String(localized: "pro.error.unavailable")
         }
     }
 
     // MARK: - 购买产品
     func purchase() async -> Bool {
+        guard !purchaseInProgress else { return false }
         guard let product = products.first else {
-            errorMessage = "Product not available"
+            errorMessage = String(localized: "pro.error.unavailable")
             return false
         }
 
@@ -79,6 +85,7 @@ class ProManager: ObservableObject {
                 return false
 
             case .pending:
+                errorMessage = String(localized: "pro.error.pending")
                 purchaseInProgress = false
                 return false
 
@@ -88,7 +95,7 @@ class ProManager: ObservableObject {
             }
         } catch {
             print("Purchase failed: \(error)")
-            errorMessage = "Purchase failed"
+            errorMessage = String(localized: "pro.error.purchase")
             purchaseInProgress = false
             return false
         }
@@ -96,6 +103,7 @@ class ProManager: ObservableObject {
 
     // MARK: - 恢复购买
     func restorePurchases() async {
+        guard !purchaseInProgress else { return }
         purchaseInProgress = true
         errorMessage = nil
 
@@ -105,24 +113,29 @@ class ProManager: ObservableObject {
             purchaseInProgress = false
         } catch {
             print("Restore failed: \(error)")
-            errorMessage = "Restore failed"
+            errorMessage = String(localized: "pro.error.restore")
             purchaseInProgress = false
         }
     }
 
     // MARK: - 更新购买状态
     func updatePurchasedProducts() async {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--store-screenshot-seed") { return }
+        #endif
+        var hasProEntitlement = false
         for await result in Transaction.currentEntitlements {
             do {
                 let transaction = try Self.checkVerified(result)
-                if transaction.productID == ProManager.proProductID {
-                    isPro = true
-                    savePurchaseState()
+                if transaction.productID == ProManager.proProductID && transaction.revocationDate == nil {
+                    hasProEntitlement = true
                 }
             } catch {
                 print("Transaction verification failed: \(error)")
             }
         }
+        isPro = hasProEntitlement
+        savePurchaseState()
     }
 
     // MARK: - 监听交易
@@ -141,10 +154,7 @@ class ProManager: ObservableObject {
                 }
 
                 if transaction.productID == ProManager.proProductID {
-                    await MainActor.run {
-                        self.isPro = true
-                        self.savePurchaseState()
-                    }
+                    await self.updatePurchasedProducts()
                 }
                 await transaction.finish()
             }
@@ -182,7 +192,7 @@ class ProManager: ObservableObject {
         }
         #endif
         guard let product = products.first else {
-            return "¥25"
+            return String(localized: "pro.priceUnavailable")
         }
         return product.displayPrice
     }

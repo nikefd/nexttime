@@ -49,6 +49,7 @@ struct ProUpgradeView: View {
                 .padding()
             }
             .navigationTitle(String(localized: "pro.title"))
+            .task { await proManager.loadProducts() }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -67,9 +68,9 @@ struct ProUpgradeView: View {
                     }
                 }
             } message: {
-                Text(proManager.isPro ?
+                Text(proManager.errorMessage ?? (proManager.isPro ?
                      String(localized: "pro.restoreSuccess") :
-                     String(localized: "pro.restoreNoPurchase"))
+                     String(localized: "pro.restoreNoPurchase")))
             }
         }
     }
@@ -172,7 +173,14 @@ struct ProUpgradeView: View {
                 .foregroundStyle(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             }
-            .disabled(proManager.purchaseInProgress)
+            .disabled(proManager.purchaseInProgress || proManager.products.isEmpty)
+
+            if proManager.products.isEmpty {
+                Button(String(localized: "pro.retryPrice")) {
+                    Task { await proManager.loadProducts() }
+                }
+                .disabled(proManager.isLoadingProducts)
+            }
 
             // 错误信息
             if let error = proManager.errorMessage {

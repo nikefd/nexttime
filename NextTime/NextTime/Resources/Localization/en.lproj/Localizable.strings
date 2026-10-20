@@ -40,6 +40,12 @@
 "pro.comparison.shared" = "Today's recommendations, basic records, voice guidance and privacy protection are also free.";
 "pro.comparison.details" = "Compare Free and Pro";
 "pro.alreadyUnlocked" = "All Pro benefits are unlocked";
+"pro.priceUnavailable" = "Price unavailable";
+"pro.retryPrice" = "Reload Price";
+"pro.error.unavailable" = "Purchase information is unavailable. Check your connection and try again.";
+"pro.error.pending" = "Your purchase is awaiting approval. Pro will unlock once approved.";
+"pro.error.purchase" = "Your purchase could not be completed. Please try again later.";
+"pro.error.restore" = "Unable to restore purchases. Check your connection and App Store account, then try again.";
 "program.sets" = "sets";
 "program.courses" = "courses";
 

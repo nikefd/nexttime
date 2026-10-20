@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HistoryView: View {
+    @ObservedObject private var proManager = ProManager.shared
+    @State private var showProUpgrade = false
     @State private var records: [TrainingRecord] = []
     @State private var statistics = TrainingStatistics()
     @State private var checkIns: [WellnessCheckIn] = []
@@ -17,6 +19,7 @@ struct HistoryView: View {
         NavigationStack {
             recordsList
             .navigationTitle(String(localized: "history.title"))
+            .sheet(isPresented: $showProUpgrade) { ProUpgradeView() }
             .onAppear {
                 loadData()
             }
@@ -44,6 +47,23 @@ struct HistoryView: View {
     // MARK: - 记录列表
     private var recordsList: some View {
         List {
+            Section {
+                if proManager.canViewDetailedStats {
+                    NavigationLink {
+                        StatsDetailView()
+                    } label: {
+                        Label(String(localized: "pro.feature.stats"), systemImage: "chart.bar.fill")
+                    }
+                } else {
+                    Button { showProUpgrade = true } label: {
+                        HStack {
+                            Label(String(localized: "pro.feature.stats"), systemImage: "chart.bar.fill")
+                            Spacer()
+                            Text("Pro").font(.caption.bold())
+                        }
+                    }
+                }
+            }
             // 统计摘要
             Section {
                 HStack {

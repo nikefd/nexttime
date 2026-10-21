@@ -2,6 +2,22 @@
 
 Last updated: 2026-10-20
 
+### 2026-10-21 release preparation
+
+Re-captured six unmodified 1320×2868 iPhone 17 Pro Max screenshots from the
+1.3.8 app source: Today, practice, Progress, privacy settings, Pro comparison,
+and optional course catalog. Replaced the five older composed screenshots;
+their previous versions remain recoverable in Git. The screenshot UI test
+passes, including waiting for the course sheet to finish appearing. Sample
+history is DEBUG-only seeded data, not a real user's health history. The Chinese
+public store's one-time IAP price was rechecked as CNY 12 on this date.
+The original marketing composition script/assets are historical and must not
+be run over these captures without refreshing their source images first.
+
+Added version-specific review notes to the release lane and updated What's New.
+Application source is unchanged from beta-v1.3.8; only tests, store assets and
+release metadata changed. Submission result will be recorded after the workflow.
+
 ## Current ASO revision (supersedes the historical plan below)
 
 Status: prepared in source control; not uploaded, submitted, or live.

@@ -179,6 +179,14 @@ final class NextTimeUITests: XCTestCase {
         upgradeButton.tap()
         XCTAssertTrue(app.navigationBars["升级 Pro"].waitForExistence(timeout: 5))
         snapshot("05-one-time-pro")
+
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.buttons["home.browse-programs"].waitForExistence(timeout: 8))
+        app.buttons["home.browse-programs"].tap()
+        XCTAssertTrue(app.navigationBars["训练课程"].waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 1)
+        snapshot("06-optional-courses")
     }
 
     @MainActor

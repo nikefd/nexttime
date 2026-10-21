@@ -1,0 +1,7 @@
+NextTime 1.3.8 is a wellness education and guided personal-practice app for adults. It does not diagnose or treat medical conditions or promise sexual-performance results. No account or demo credentials are needed.
+
+Changes since the live 1.3.5: Today now offers one recommended practice from 18 individual sessions across three routes. Partner practice is no longer part of the training catalog. Today also has an optional Browse All Courses entry with free/Pro labels. Pro now clearly explains 3 free introductions and 15 additional advanced sessions, custom training, reminders and detailed statistics. Chinese action cues are shortened to match movement timing. Purchase-state handling and effective practice-time recording are improved.
+
+Review path: complete the first-launch adult/safety/privacy disclosures, select a goal, then open Today. Start the recommendation or use Browse All Courses to select a free introduction. Advanced recommendations require the one-time non-consumable Pro purchase; free introductions remain available. Progress provides basic records and a Pro detailed-statistics entry. Settings provides Restore Purchases, optional app lock and Delete All Local Data.
+
+Practice records and optional check-ins remain on-device. No developer backend, ads, third-party analytics, or account registration. Pro uses Apple In-App Purchase, not a subscription. Safety guidance and privacy protections are available without purchase.

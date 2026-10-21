@@ -12,7 +12,7 @@ on:
       release_notes_zh:
         description: Simplified Chinese What's New text
         required: true
-        default: 全新个人训练首页，打开即可看到今日练习并一键开始；训练主线精简为 18 节个人练习与 3 条路线，同时优化进展、本地隐私和自然语音体验。
+        default: 全新个人训练首页，一键开始今日练习，也可自由浏览课程；明确免费与 Pro 权益，提供 18 节个人练习与 6 周计划；精简收紧、放松和休息语音，改善购买状态、训练计时与本地记录可靠性。
         type: string
 
 concurrency:
@@ -47,7 +47,7 @@ jobs:
             echo "APP_STORE_RELEASE_NOTES_ZH=$MANUAL_RELEASE_NOTES_ZH" >> "$GITHUB_ENV"
           else
             echo "APP_VERSION=${GITHUB_REF_NAME#release-v}" >> "$GITHUB_ENV"
-            echo "APP_STORE_RELEASE_NOTES_ZH=全新个人训练首页，打开即可看到今日练习并一键开始；训练主线精简为 18 节个人练习与 3 条路线，同时优化进展、本地隐私和自然语音体验。" >> "$GITHUB_ENV"
+            echo "APP_STORE_RELEASE_NOTES_ZH=全新个人训练首页，一键开始今日练习，也可自由浏览课程；明确免费与 Pro 权益，提供 18 节个人练习与 6 周计划；精简收紧、放松和休息语音，改善购买状态、训练计时与本地记录可靠性。" >> "$GITHUB_ENV"
           fi
       - name: Select Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app

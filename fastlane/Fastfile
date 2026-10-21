@@ -192,6 +192,9 @@ platform :ios do
         locale => ENV.fetch("APP_STORE_RELEASE_NOTES_ZH")
       },
       name: { locale => store_metadata_value("name.txt") },
+      app_review_information: {
+        notes: File.read(File.expand_path("store_metadata/review_notes.txt", __dir__), encoding: "UTF-8").strip
+      },
       description: { locale => store_metadata_value("description.txt") },
       subtitle: { locale => store_metadata_value("subtitle.txt") },
       keywords: { locale => store_metadata_value("keywords.txt") },

@@ -3,6 +3,11 @@ name: Verify TestFlight Build
 on:
   workflow_dispatch:
     inputs:
+      app_identifier:
+        description: App bundle identifier to verify
+        required: true
+        default: com.zhangyangbin.NextTime
+        type: string
       version:
         description: TestFlight version to verify
         required: true
@@ -18,7 +23,7 @@ jobs:
     timeout-minutes: 10
     environment: testflight
     env:
-      APP_IDENTIFIER: com.zhangyangbin.NextTime
+      APP_IDENTIFIER: ${{ inputs.app_identifier }}
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}

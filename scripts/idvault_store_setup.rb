@@ -108,7 +108,7 @@ if product
     v_id = version.fetch('id')
     localizations = all("/v1/inAppPurchaseVersions/#{v_id}/localizations?limit=200")
     { 'zh-Hans' => ['拾页专业版', '一次买断，解锁多位家庭成员和不限数量资料。'],
-      'en-US' => ['Shiye Pro', 'One-time purchase for multiple family members and unlimited documents.'] }.each do |locale, (name, description)|
+      'en-US' => ['Shiye Pro', 'Unlock multiple members and unlimited documents.'] }.each do |locale, (name, description)|
       existing = localizations.find { |l| l.dig('attributes', 'locale') == locale }
       attributes = { name: name, description: description }
       if APPLY

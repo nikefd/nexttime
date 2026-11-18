@@ -153,4 +153,10 @@ versions.each do |v|
     puts "Store listing #{a['locale']}: #{presence}; screenshot_sets=#{screenshots.size}"
   end
 end
+all("/v1/apps/#{app_id}/appInfos?limit=200").each do |info|
+  all("/v1/appInfos/#{info['id']}/appInfoLocalizations?limit=200").each do |locale|
+    a = locale.fetch('attributes')
+    puts "App info #{a['locale']}: subtitle_present=#{!a['subtitle'].to_s.empty?}; privacy_url_present=#{!a['privacyPolicyUrl'].to_s.empty?}"
+  end
+end
 puts 'No review submission or automatic release was triggered.'

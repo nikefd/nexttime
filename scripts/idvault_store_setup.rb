@@ -50,6 +50,24 @@ app = all('/v1/apps?' + URI.encode_www_form('filter[bundleId]' => 'com.zhangyang
 raise 'IDVault App Store record not found' unless app
 app_id = app.fetch('id')
 puts "IDVault app record: #{app_id}"
+if ENV['STORE_MODE'] == 'diagnose'
+  bundles = all('/v1/bundleIds?' + URI.encode_www_form('filter[identifier]' => 'com.zhangyangbin.idvault', 'limit' => '200'))
+  bundles.each do |bundle|
+    a = bundle.fetch('attributes')
+    puts "Bundle identifier=#{a['identifier']}; seed_prefix_matches_expected=#{a['seedId'] == 'V59XFX9635'}"
+    capabilities = all("/v1/bundleIds/#{bundle['id']}/bundleIdCapabilities?limit=200")
+    puts "Enabled bundle capabilities: #{capabilities.map { |c| c.dig('attributes','capabilityType') }.sort.join(', ')}"
+  end
+  begin
+    users = all('/v1/users?' + URI.encode_www_form('fields[users]' => 'roles', 'limit' => '200'))
+    roles = users.flat_map { |u| u.dig('attributes','roles') || [] }.tally
+    puts "Role counts (no names, emails or user IDs): #{roles}"
+  rescue => e
+    puts "Role inspection unavailable: #{e.message}"
+  end
+  puts 'Read-only diagnosis complete; no account or product settings changed.'
+  exit
+end
 if ENV['STORE_MODE'] == 'listing'
   copy = JSON.parse(File.read(File.join(__dir__, 'idvault_listing_zh.json')))
   versions = all("/v1/apps/#{app_id}/appStoreVersions?" + URI.encode_www_form('filter[platform]' => 'IOS', 'limit' => '200'))
@@ -76,8 +94,7 @@ products = all("/v1/apps/#{app_id}/inAppPurchasesV2?limit=200")
 product = products.find { |p| p.dig('attributes', 'productId') == PRODUCT_ID }
 if !product && APPLY
   product = api('post', '/v2/inAppPurchases', { data: { type: 'inAppPurchases', attributes: {
-    name: 'IDVault Pro Lifetime', productId: PRODUCT_ID, inAppPurchaseType: 'NON_CONSUMABLE',
-    familySharable: false, reviewNote: 'One-time purchase unlocks multiple members and unlimited documents. Free tier: 1 member and 10 documents. Existing records remain readable and exportable if entitlement changes. Documents and OCR remain on device.'
+    name: 'IDVault Pro Lifetime', productId: PRODUCT_ID, inAppPurchaseType: 'NON_CONSUMABLE'
   }, relationships: { app: link('apps', app_id) } } }).fetch('data')
 end
 if product

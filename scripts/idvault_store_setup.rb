@@ -55,7 +55,7 @@ if ENV['STORE_MODE'] == 'diagnose'
   bundles.each do |bundle|
     a = bundle.fetch('attributes')
     puts "Bundle identifier=#{a['identifier']}; seed_prefix_matches_expected=#{a['seedId'] == 'V59XFX9635'}"
-    capabilities = all("/v1/bundleIds/#{bundle['id']}/bundleIdCapabilities?limit=200")
+    capabilities = all("/v1/bundleIds/#{bundle['id']}/bundleIdCapabilities")
     puts "Enabled bundle capabilities: #{capabilities.map { |c| c.dig('attributes','capabilityType') }.sort.join(', ')}"
   end
   begin

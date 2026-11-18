@@ -50,6 +50,28 @@ app = all('/v1/apps?' + URI.encode_www_form('filter[bundleId]' => 'com.zhangyang
 raise 'IDVault App Store record not found' unless app
 app_id = app.fetch('id')
 puts "IDVault app record: #{app_id}"
+if ENV['STORE_MODE'] == 'listing'
+  copy = JSON.parse(File.read(File.join(__dir__, 'idvault_listing_zh.json')))
+  versions = all("/v1/apps/#{app_id}/appStoreVersions?" + URI.encode_www_form('filter[platform]' => 'IOS', 'limit' => '200'))
+  version = versions.find { |v| v.dig('attributes', 'versionString') == '1.0' && v.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
+  raise 'Editable app version 1.0 is required' unless version
+  locales = all("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations?limit=200")
+  locale = locales.find { |l| l.dig('attributes','locale') == 'zh-Hans' }
+  raise 'Existing zh-Hans version locale is required' unless locale
+  api('patch', "/v1/appStoreVersionLocalizations/#{locale['id']}", { data: { type: 'appStoreVersionLocalizations', id: locale['id'], attributes: { description: copy.fetch('description'), keywords: copy.fetch('keywords') } } })
+  infos = all("/v1/apps/#{app_id}/appInfos?limit=200")
+  infos.each do |info|
+    next unless %w[PREPARE_FOR_SUBMISSION READY_FOR_SALE].include?(info.dig('attributes','appStoreState'))
+    localizations = all("/v1/appInfos/#{info['id']}/appInfoLocalizations?limit=200")
+    chinese = localizations.find { |l| l.dig('attributes','locale') == 'zh-Hans' }
+    next unless chinese
+    api('patch', "/v1/appInfoLocalizations/#{chinese['id']}", { data: { type: 'appInfoLocalizations', id: chinese['id'], attributes: { subtitle: copy.fetch('subtitle') } } })
+    break
+  end
+  puts 'Chinese description, keywords and subtitle prepared in the editable app record.'
+  puts 'No support/privacy URL was invented; no review submission or automatic release was triggered.'
+  exit
+end
 products = all("/v1/apps/#{app_id}/inAppPurchasesV2?limit=200")
 product = products.find { |p| p.dig('attributes', 'productId') == PRODUCT_ID }
 if !product && APPLY

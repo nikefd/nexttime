@@ -1,0 +1,29 @@
+name: Prepare IDVault Store Purchase
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Inspect only, or prepare the approved CNY 18 lifetime purchase
+        required: true
+        default: inspect
+        type: choice
+        options: [inspect, prepare]
+permissions:
+  contents: read
+jobs:
+  store:
+    runs-on: macos-26
+    timeout-minutes: 10
+    environment: testflight
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+      STORE_MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a
+        with:
+          bundler-cache: true
+      - name: Prepare IDVault purchase metadata without review submission
+        run: bundle exec ruby scripts/idvault_store_setup.rb

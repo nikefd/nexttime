@@ -68,6 +68,34 @@ if ENV['STORE_MODE'] == 'diagnose'
   puts 'Read-only diagnosis complete; no account or product settings changed.'
   exit
 end
+if ENV['STORE_MODE'] == 'submit'
+  version = all("/v1/apps/#{app_id}/appStoreVersions").find { |v| v.dig('attributes','versionString') == '1.0' }
+  raise 'App version 1.0 missing' unless version
+  puts "App state before submission: #{version.dig('attributes','appStoreState')}"
+  if %w[WAITING_FOR_REVIEW IN_REVIEW PENDING_DEVELOPER_RELEASE READY_FOR_SALE].include?(version.dig('attributes','appStoreState'))
+    puts 'Version already submitted or approved; no duplicate submission.'
+    exit
+  end
+  raise 'Editable 1.0 required' unless version.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION'
+  product = all("/v1/apps/#{app_id}/inAppPurchasesV2").find { |r| r.dig('attributes','productId') == PRODUCT_ID }
+  raise 'Approved lifetime product missing' unless product
+  purchase_versions = all("/v2/inAppPurchases/#{product['id']}/inAppPurchaseVersions")
+  purchase_version = purchase_versions.find { |v| %w[PREPARE_FOR_SUBMISSION READY_TO_SUBMIT].include?(v.dig('attributes','state')) }
+  raise 'Editable lifetime purchase version missing' unless purchase_version
+  submissions = all('/v1/reviewSubmissions?' + URI.encode_www_form('filter[app]' => app_id, 'filter[platform]' => 'IOS'))
+  submission = submissions.find { |r| r.dig('attributes','state') == 'READY_FOR_REVIEW' } || api('post', '/v1/reviewSubmissions', {data: {type: 'reviewSubmissions', attributes: {platform: 'IOS'}, relationships: {app: link('apps', app_id)}}}).fetch('data')
+  items = all("/v1/reviewSubmissions/#{submission['id']}/items?include=appStoreVersion,inAppPurchaseVersion")
+  {'appStoreVersion' => ['appStoreVersions', version['id']], 'inAppPurchaseVersion' => ['inAppPurchaseVersions', purchase_version['id']]}.each do |relationship, (type, id)|
+    next if items.any? { |r| r.dig('relationships', relationship, 'data', 'id') == id }
+    api('post', '/v1/reviewSubmissionItems', {data: {type: 'reviewSubmissionItems', relationships: {reviewSubmission: link('reviewSubmissions', submission['id']), relationship => link(type, id)}}})
+    puts "Added #{relationship} to review submission."
+  end
+  result = api('patch', "/v1/reviewSubmissions/#{submission['id']}", {data: {type: 'reviewSubmissions', id: submission['id'], attributes: {submitted: true}}})
+  puts "Review submission state: #{result.dig('data','attributes','state')}"
+  current = api('get', "/v1/appStoreVersions/#{version['id']}")
+  puts "App state after submission: #{current.dig('data','attributes','appStoreState')}"
+  exit
+end
 if ENV['STORE_MODE'] == 'screenshots'
   require 'digest'
   def upload_asset(resource, file)

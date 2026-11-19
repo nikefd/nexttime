@@ -150,13 +150,13 @@ if ENV['STORE_MODE'] == 'listing'
   info = infos.find { |i| i.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
   raise 'Editable app info required' unless info
   english = all("/v1/appInfos/#{info['id']}/appInfoLocalizations").find { |l| l.dig('attributes','locale') == 'en-US' }
-  attrs = {name: 'PageKeep', subtitle: 'Private document organizer', privacyPolicyUrl: 'https://nikefd.github.io/nexttime-site/shiye/privacy.html'}
+  attrs = {name: 'PageKeep: Document Vault', subtitle: 'Private document organizer', privacyPolicyUrl: 'https://nikefd.github.io/nexttime-site/shiye/privacy.html'}
   if english
     api('patch', "/v1/appInfoLocalizations/#{english['id']}", {data: {type: 'appInfoLocalizations', id: english['id'], attributes: attrs}})
   else
     api('post', '/v1/appInfoLocalizations', {data: {type: 'appInfoLocalizations', attributes: attrs.merge(locale: 'en-US'), relationships: {appInfo: link('appInfos', info['id'])}}})
   end
-  puts 'Approved Chinese name and English name PageKeep saved.'
+  puts 'Approved Chinese name and English name PageKeep: Document Vault saved.'
   puts 'Chinese description, keywords and subtitle prepared in the editable app record.'
   puts 'Shiye Chinese name and published support/privacy URLs configured; no review submission triggered.'
   exit

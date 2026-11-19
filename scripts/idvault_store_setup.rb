@@ -79,6 +79,69 @@ if ENV['STORE_MODE'] == 'diagnose'
   puts 'Read-only diagnosis complete; no account or product settings changed.'
   exit
 end
+if ENV['STORE_MODE'] == 'complete'
+  version = all("/v1/apps/#{app_id}/appStoreVersions").find { |v| v.dig('attributes','versionString') == '1.0' && v.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
+  raise 'Editable 1.0 required' unless version
+  info = all("/v1/apps/#{app_id}/appInfos").find { |r| r.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
+  raise 'Editable app information required' unless info
+  categories = all('/v1/appCategories')
+  utilities = categories.find { |r| r['id'] == 'UTILITIES' }
+  raise 'Utilities category not found' unless utilities
+  unless info.dig('relationships','primaryCategory','data')
+    api('patch', "/v1/appInfos/#{info['id']}", {data: {type: 'appInfos', id: info['id'], relationships: {primaryCategory: link('appCategories', utilities['id'])}}})
+    puts 'Primary category set to Utilities.'
+  end
+  if app.dig('attributes','contentRightsDeclaration').nil?
+    api('patch', "/v1/apps/#{app_id}", {data: {type: 'apps', id: app_id, attributes: {contentRightsDeclaration: 'DOES_NOT_USE_THIRD_PARTY_CONTENT'}}})
+    puts 'Content rights set for app with no publisher-supplied third-party content.'
+  end
+  rating = api('get', "/v1/appInfos/#{info['id']}/ageRatingDeclaration").fetch('data')
+  booleans = %w[advertising gambling healthOrWellnessTopics lootBox messagingAndChat parentalControls ageAssurance socialMedia socialMediaAgeRestricted unrestrictedWebAccess userGeneratedContent]
+  frequencies = %w[alcoholTobaccoOrDrugUseOrReferences contests gamblingSimulated gunsOrOtherWeapons medicalOrTreatmentInformation profanityOrCrudeHumor sexualContentGraphicAndNudity sexualContentOrNudity horrorOrFearThemes matureOrSuggestiveThemes violenceCartoonOrFantasy violenceRealisticProlongedGraphicOrSadistic violenceRealistic]
+  attrs = booleans.to_h { |f| [f, false] }.merge(frequencies.to_h { |f| [f, 'NONE'] }).select { |k, _| rating.dig('attributes',k).nil? }
+  api('patch', "/v1/ageRatingDeclarations/#{rating['id']}", {data: {type: 'ageRatingDeclarations', id: rating['id'], attributes: attrs}}) unless attrs.empty?
+  puts 'Missing age-rating answers saved for offline private file organizer: no ads, social features, public UGC or app-provided medical advice.'
+  en = all("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations").find { |r| r.dig('attributes','locale') == 'en-US' }
+  attrs = {description: "PageKeep (Shiye) keeps important family documents organized on your device. The current app interface is in Chinese.\n\nImport photos, recognize text on device, verify editable fields, and store originals and confirmed fields encrypted locally. Tap recognized text to create or fill fields. Organize documents by family member, search confirmed fields, set local expiry reminders, export PDF packets and create password-encrypted backups. No PageKeep account is required. Documents and OCR content are not sent to remote recognition services or the developer.\n\nFree: one member and up to 10 documents in the entire vault; a document may contain multiple pages. The optional Pro non-consumable purchase unlocks multiple members and unlimited documents, subject to device storage and per-backup limits. Pay once, no recurring subscription. Restore Purchases is available. Existing documents remain accessible when purchase status changes.\n\nOCR can make mistakes; verify against originals. This app does not authenticate documents or provide medical advice. Before uninstalling or changing devices, export a backup and keep its password safe. There is no developer-hosted copy of your files.", keywords: 'documents,vault,private,offline,family,passport,certificate,OCR,encrypted,backup,expiry,PDF', supportUrl: 'https://nikefd.github.io/nexttime-site/shiye/support.html'}
+  if en
+    missing = attrs.select { |k,_| en.dig('attributes',k.to_s).to_s.empty? }
+    api('patch', "/v1/appStoreVersionLocalizations/#{en['id']}", {data: {type: 'appStoreVersionLocalizations', id: en['id'], attributes: missing}}) unless missing.empty?
+  else
+    api('post', '/v1/appStoreVersionLocalizations', {data: {type: 'appStoreVersionLocalizations', attributes: attrs.merge(locale: 'en-US'), relationships: {appStoreVersion: link('appStoreVersions', version['id'])}}})
+  end
+  puts 'English store description, keywords and support URL completed, with Chinese-interface disclosure.'
+  review = api('get', "/v1/appStoreVersions/#{version['id']}/appStoreReviewDetail").fetch('data')
+  fields = %w[contactFirstName contactLastName contactPhone contactEmail]
+  if fields.any? { |f| review.dig('attributes',f).to_s.empty? }
+    previous_app = all('/v1/apps?' + URI.encode_www_form('filter[bundleId]' => 'com.zhangyangbin.NextTime')).first
+    source = nil
+    if previous_app
+      all("/v1/apps/#{previous_app['id']}/appStoreVersions?limit=200").each do |v|
+        contact = api('get', "/v1/appStoreVersions/#{v['id']}/appStoreReviewDetail", allow_missing: true)&.dig('data','attributes')
+        if contact && fields.all? { |f| !contact[f].to_s.empty? }
+          source = contact
+          break
+        end
+      end
+    end
+    if source
+      missing = fields.select { |f| review.dig('attributes',f).to_s.empty? }.to_h { |f| [f, source[f]] }
+      api('patch', "/v1/appStoreReviewDetails/#{review['id']}", {data: {type: 'appStoreReviewDetails', id: review['id'], attributes: missing}})
+      puts 'Reused same developer existing NextTime review contact; no personal contact values logged.'
+    else
+      puts 'No complete existing developer review contact found; user must complete contact details.'
+    end
+  end
+  schedule = api('get', "/v1/apps/#{app_id}/appPriceSchedule", allow_missing: true)
+  unless schedule&.dig('data')
+    point = all("/v1/apps/#{app_id}/appPricePoints?" + URI.encode_www_form('filter[territory]' => 'CHN', 'limit' => '200')).find { |r| BigDecimal(r.dig('attributes','customerPrice')) == BigDecimal('0') }
+    raise 'Free App price point missing' unless point
+    api('post', '/v1/appPriceSchedules', {data: {type: 'appPriceSchedules', relationships: {app: link('apps', app_id), baseTerritory: link('territories', 'CHN'), manualPrices: {data: [{type: 'appPrices', id: '${free-price}'}]}}}, included: [{type: 'appPrices', id: '${free-price}', attributes: {startDate: nil, endDate: nil}, relationships: {appPricePoint: link('appPricePoints', point['id'])}}]})
+    puts 'App download price set to free; lifetime Pro price not changed.'
+  end
+  puts 'Completed editable required metadata. No review submitted in this mode.'
+  exit
+end
 if ENV['STORE_MODE'] == 'submit'
   version = all("/v1/apps/#{app_id}/appStoreVersions").find { |v| v.dig('attributes','versionString') == '1.0' }
   raise 'App version 1.0 missing' unless version

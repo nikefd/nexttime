@@ -7,7 +7,7 @@ on:
         required: true
         default: inspect
         type: choice
-        options: [inspect, prepare, listing, diagnose, releaseprep, screenshots, submit]
+        options: [inspect, prepare, listing, diagnose, releaseprep, screenshots, submit, complete]
 permissions:
   contents: read
 jobs:

@@ -234,6 +234,10 @@ versions.each do |v|
     presence = %w[description keywords supportUrl].to_h { |f| [f, !a[f].to_s.empty?] }
     screenshots = all("/v1/appStoreVersionLocalizations/#{l['id']}/appScreenshotSets?limit=200")
     puts "Store listing #{a['locale']}: #{presence}; screenshot_sets=#{screenshots.size}"
+    screenshots.each do |set|
+      assets = all("/v1/appScreenshotSets/#{set['id']}/appScreenshots")
+      puts "Screenshot assets #{set.dig('attributes','screenshotDisplayType')}: #{assets.map { |r| [r.dig('attributes','fileName'), r.dig('attributes','assetDeliveryState','state')] }.to_h}"
+    end
   end
 end
 all("/v1/apps/#{app_id}/appInfos?limit=200").each do |info|

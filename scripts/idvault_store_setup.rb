@@ -76,18 +76,18 @@ if ENV['STORE_MODE'] == 'listing'
   locales = all("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations?limit=200")
   locale = locales.find { |l| l.dig('attributes','locale') == 'zh-Hans' }
   raise 'Existing zh-Hans version locale is required' unless locale
-  api('patch', "/v1/appStoreVersionLocalizations/#{locale['id']}", { data: { type: 'appStoreVersionLocalizations', id: locale['id'], attributes: { description: copy.fetch('description'), keywords: copy.fetch('keywords') } } })
+  api('patch', "/v1/appStoreVersionLocalizations/#{locale['id']}", { data: { type: 'appStoreVersionLocalizations', id: locale['id'], attributes: { description: copy.fetch('description'), keywords: copy.fetch('keywords'), supportUrl: 'https://nikefd.github.io/nexttime-site/shiye/support.html' } } })
   infos = all("/v1/apps/#{app_id}/appInfos?limit=200")
   infos.each do |info|
     next unless %w[PREPARE_FOR_SUBMISSION READY_FOR_SALE].include?(info.dig('attributes','appStoreState'))
     localizations = all("/v1/appInfos/#{info['id']}/appInfoLocalizations?limit=200")
     chinese = localizations.find { |l| l.dig('attributes','locale') == 'zh-Hans' }
     next unless chinese
-    api('patch', "/v1/appInfoLocalizations/#{chinese['id']}", { data: { type: 'appInfoLocalizations', id: chinese['id'], attributes: { subtitle: copy.fetch('subtitle') } } })
+    api('patch', "/v1/appInfoLocalizations/#{chinese['id']}", { data: { type: 'appInfoLocalizations', id: chinese['id'], attributes: { name: '拾页', subtitle: copy.fetch('subtitle'), privacyPolicyUrl: 'https://nikefd.github.io/nexttime-site/shiye/privacy.html' } } })
     break
   end
   puts 'Chinese description, keywords and subtitle prepared in the editable app record.'
-  puts 'No support/privacy URL was invented; no review submission or automatic release was triggered.'
+  puts 'Shiye Chinese name and published support/privacy URLs configured; no review submission triggered.'
   exit
 end
 products = all("/v1/apps/#{app_id}/inAppPurchasesV2?limit=200")
@@ -162,6 +162,11 @@ end
 versions = all("/v1/apps/#{app_id}/appStoreVersions?" + URI.encode_www_form('filter[platform]' => 'IOS', 'limit' => '200'))
 versions.each do |v|
   puts "App version #{v.dig('attributes','versionString')}: #{v.dig('attributes','appStoreState')}"
+  review = api('get', "/v1/appStoreVersions/#{v['id']}/appStoreReviewDetail", allow_missing: true)
+  a = review&.dig('data','attributes') || {}
+  puts "Review detail presence: #{%w[contactFirstName contactLastName contactPhone contactEmail notes].to_h { |f| [f, !a[f].to_s.empty?] }}"
+  build = api('get', "/v1/appStoreVersions/#{v['id']}/build", allow_missing: true)
+  puts "Selected build: #{build&.dig('data','attributes','version') || 'none'}"
   locales = all("/v1/appStoreVersions/#{v['id']}/appStoreVersionLocalizations?limit=200")
   locales.each do |l|
     a = l.fetch('attributes')

@@ -79,7 +79,7 @@ if ENV['STORE_MODE'] == 'submit'
   raise 'Editable 1.0 required' unless version.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION'
   product = all("/v1/apps/#{app_id}/inAppPurchasesV2").find { |r| r.dig('attributes','productId') == PRODUCT_ID }
   raise 'Approved lifetime product missing' unless product
-  purchase_versions = all("/v2/inAppPurchases/#{product['id']}/inAppPurchaseVersions")
+  purchase_versions = all("/v2/inAppPurchases/#{product['id']}/versions")
   purchase_version = purchase_versions.find { |v| %w[PREPARE_FOR_SUBMISSION READY_TO_SUBMIT].include?(v.dig('attributes','state')) }
   raise 'Editable lifetime purchase version missing' unless purchase_version
   submissions = all('/v1/reviewSubmissions?' + URI.encode_www_form('filter[app]' => app_id, 'filter[platform]' => 'IOS'))

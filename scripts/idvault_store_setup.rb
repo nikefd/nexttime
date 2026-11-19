@@ -159,7 +159,7 @@ if ENV['STORE_MODE'] == 'submit'
   submissions = all('/v1/reviewSubmissions?' + URI.encode_www_form('filter[app]' => app_id, 'filter[platform]' => 'IOS'))
   submission = submissions.find { |r| r.dig('attributes','state') == 'READY_FOR_REVIEW' } || api('post', '/v1/reviewSubmissions', {data: {type: 'reviewSubmissions', attributes: {platform: 'IOS'}, relationships: {app: link('apps', app_id)}}}).fetch('data')
   items = all("/v1/reviewSubmissions/#{submission['id']}/items?include=appStoreVersion,inAppPurchaseVersion")
-  {'appStoreVersion' => ['appStoreVersions', version['id']], 'inAppPurchaseVersion' => ['inAppPurchaseVersions', purchase_version['id']]}.each do |relationship, (type, id)|
+  {'inAppPurchaseVersion' => ['inAppPurchaseVersions', purchase_version['id']], 'appStoreVersion' => ['appStoreVersions', version['id']]}.each do |relationship, (type, id)|
     next if items.any? { |r| r.dig('relationships', relationship, 'data', 'id') == id }
     api('post', '/v1/reviewSubmissionItems', {data: {type: 'reviewSubmissionItems', relationships: {reviewSubmission: link('reviewSubmissions', submission['id']), relationship => link(type, id)}}})
     puts "Added #{relationship} to review submission."

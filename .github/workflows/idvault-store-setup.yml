@@ -7,7 +7,7 @@ on:
         required: true
         default: inspect
         type: choice
-        options: [inspect, prepare, listing, diagnose, releaseprep]
+        options: [inspect, prepare, listing, diagnose, releaseprep, screenshots]
 permissions:
   contents: read
 jobs:
@@ -22,6 +22,13 @@ jobs:
       STORE_MODE: ${{ inputs.mode }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Check out IDVault store assets
+        if: inputs.mode == 'screenshots'
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          repository: nikefd/id-vault
+          ssh-key: ${{ secrets.IDVAULT_DEPLOY_KEY }}
+          path: idvault-source
       - uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a
         with:
           bundler-cache: true

@@ -68,6 +68,44 @@ if ENV['STORE_MODE'] == 'diagnose'
   puts 'Read-only diagnosis complete; no account or product settings changed.'
   exit
 end
+if ENV['STORE_MODE'] == 'screenshots'
+  require 'digest'
+  def upload_asset(resource, file)
+    bytes = File.binread(file)
+    resource.dig('attributes','uploadOperations').each do |op|
+      uri = URI(op.fetch('url'))
+      raise 'Insecure upload URL' unless uri.scheme == 'https'
+      req = Net::HTTPGenericRequest.new(op.fetch('method'), true, true, uri)
+      op.fetch('requestHeaders', []).each { |h| req[h.fetch('name')] = h.fetch('value') }
+      req.body = bytes.byteslice(op.fetch('offset'), op.fetch('length'))
+      res = Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 60) { |h| h.request(req) }
+      raise "Asset upload HTTP #{res.code}" unless res.is_a?(Net::HTTPSuccess)
+    end
+    api('patch', "/v1/#{resource['type']}/#{resource['id']}", {data: {type: resource['type'], id: resource['id'], attributes: {uploaded: true, sourceFileChecksum: Digest::MD5.hexdigest(bytes)}}})
+  end
+  version = all("/v1/apps/#{app_id}/appStoreVersions").find { |v| v.dig('attributes','versionString') == '1.0' && v.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
+  raise 'Editable version required' unless version
+  locale = all("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations").find { |l| l.dig('attributes','locale') == 'zh-Hans' }
+  sets = all("/v1/appStoreVersionLocalizations/#{locale['id']}/appScreenshotSets")
+  {'iphone' => 'APP_IPHONE_67', 'ipad' => 'APP_IPAD_PRO_3GEN_129'}.each do |dir, display|
+    files = Dir.glob("idvault-source/docs/store/screenshots/#{dir}/*.png").sort
+    raise "Missing #{dir} screenshots" if files.empty?
+    set = sets.find { |r| r.dig('attributes','screenshotDisplayType') == display } || api('post', '/v1/appScreenshotSets', {data: {type: 'appScreenshotSets', attributes: {screenshotDisplayType: display}, relationships: {appStoreVersionLocalization: link('appStoreVersionLocalizations', locale['id'])}}}).fetch('data')
+    existing = all("/v1/appScreenshotSets/#{set['id']}/appScreenshots")
+    files.each do |file|
+      old = existing.find { |r| r.dig('attributes','fileName') == File.basename(file) }
+      if old
+        puts "Existing #{dir}/#{File.basename(file)}: #{old.dig('attributes','assetDeliveryState','state')}"
+        next
+      end
+      resource = api('post', '/v1/appScreenshots', {data: {type: 'appScreenshots', attributes: {fileName: File.basename(file), fileSize: File.size(file)}, relationships: {appScreenshotSet: link('appScreenshotSets', set['id'])}}}).fetch('data')
+      upload_asset(resource, file)
+      puts "Uploaded #{dir}/#{File.basename(file)}"
+    end
+  end
+  puts 'Screenshots uploaded to editable version only; no review submitted.'
+  exit
+end
 if ENV['STORE_MODE'] == 'releaseprep'
   version = all("/v1/apps/#{app_id}/appStoreVersions?" + URI.encode_www_form('filter[platform]' => 'IOS')).find { |v| v.dig('attributes','versionString') == '1.0' && v.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
   raise 'Editable 1.0 required' unless version

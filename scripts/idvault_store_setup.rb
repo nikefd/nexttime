@@ -25,7 +25,18 @@ def api(method, path, payload = nil, allow_missing: false)
   return nil if allow_missing && response.code == '404'
   result = response.body.empty? ? {} : JSON.parse(response.body)
   unless response.is_a?(Net::HTTPSuccess)
-    errors = result.fetch('errors', []).map { |e| [e['code'], e['detail'] || e['title']].join(': ') }
+    collect_errors = lambda do |node|
+      case node
+      when Hash
+        own = node.key?('code') ? [[node['code'], node['detail'] || node['title']].join(': ')] : []
+        own + node.values.flat_map { |value| collect_errors.call(value) }
+      when Array
+        node.flat_map { |value| collect_errors.call(value) }
+      else
+        []
+      end
+    end
+    errors = collect_errors.call(result.fetch('errors', [])).uniq
     raise "ASC #{method.upcase} #{uri.path} HTTP #{response.code}: #{errors.join('; ')}"
   end
   result

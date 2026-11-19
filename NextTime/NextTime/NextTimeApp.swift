@@ -63,6 +63,16 @@ struct NextTimeApp: App {
             now: profileDate
         )
 
+        if ProcessInfo.processInfo.arguments.contains("--uitesting-path-review-ready"),
+           let path = try? dataService.startPracticePathIfNeeded(now: now.addingTimeInterval(-60)) {
+            dataService.saveRecord(TrainingRecord(
+                programId: path.currentStage.program.id, programName: path.currentStage.program.name,
+                completedAt: now.addingTimeInterval(-30), duration: 195,
+                completedSets: 1, totalSets: 1, isCompleted: true, route: .foundation,
+                pathID: path.id, pathStage: path.currentStage
+            ))
+        }
+
         for dayOffset in 1...16 {
             let program = TrainingData.personalPrograms[(dayOffset - 1) % TrainingData.personalPrograms.count]
             let completedAt = calendar.date(byAdding: .day, value: -dayOffset, to: now) ?? now
@@ -116,11 +126,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         } catch {
             print("Failed to configure audio session: \(error)")
         }
-    }
-
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        // 当应用进入后台时，确保音频会话保持活跃
-        SpeechService.shared.activateAudioSession()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {

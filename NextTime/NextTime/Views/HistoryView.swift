@@ -64,6 +64,12 @@ struct HistoryView: View {
                     }
                 }
             }
+            Section {
+                NavigationLink { PracticePathView() } label: {
+                    Label(String(localized: "path.title"), systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+                }
+                Text(String(localized: "path.progressMeaning")).font(.footnote).foregroundStyle(.secondary)
+            }
             // 统计摘要
             Section {
                 HStack {
@@ -239,6 +245,10 @@ struct RecordRow: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
 
+                    if let completed = record.completedRepetitions, let total = record.totalRepetitions {
+                        Text(String(localized: "stageOne.repetitions \(completed) \(total)"))
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
                     Text("·")
                         .foregroundStyle(.secondary)
 
@@ -270,6 +280,7 @@ struct RecordRow: View {
     }
 
     private var localizedProgramName: String {
+        if record.lessonVersion != nil { return String(localized: "voice.pilot.title") }
         guard let program = TrainingData.personalPrograms.first(where: { $0.id == record.programId }) else {
             return record.programName
         }

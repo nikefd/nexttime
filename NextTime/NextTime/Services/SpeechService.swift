@@ -1,5 +1,18 @@
 import AVFoundation
 
+enum NarrationVoice: String, CaseIterable, Identifiable {
+    case female = "default"
+    case male = "nexttime.yunxi"
+
+    var id: String { rawValue }
+    var assetPrefix: String { self == .female ? "nexttime-xiaoyi" : "nexttime-yunxi" }
+    var title: String { String(localized: self == .female ? "voice.pack.female" : "voice.pack.male") }
+    static func resolve(_ identifier: String?) -> NarrationVoice? {
+        guard let identifier, identifier != "default" else { return .female }
+        return NarrationVoice(rawValue: identifier)
+    }
+}
+
 enum SpeechStyle {
     case guidance
     case cue
@@ -27,6 +40,7 @@ final class SpeechService {
 
     private let synthesizer = AVSpeechSynthesizer()
     private var audioSession: AVAudioSession { AVAudioSession.sharedInstance() }
+    private var recordedPlayer: AVAudioPlayer?
     private var voiceIdentifier: String?
 
     var isEnabled = true
@@ -61,8 +75,36 @@ final class SpeechService {
         sortedVoices(prefix: preferredLanguage)
     }
 
+    var usesChinese: Bool { preferredLanguage.hasPrefix("zh") }
+
+    func recordedLesson(for program: TrainingProgram) -> StageOneLesson? {
+        guard usesChinese, program.id == TrainingData.foundationAwareness.id,
+              let voice = NarrationVoice.resolve(voiceIdentifier) else { return nil }
+        return try? StageOneLesson.load(voice: voice)
+    }
+
+    func formattedDuration(for program: TrainingProgram) -> String {
+        guard let lesson = recordedLesson(for: program) else { return program.formattedDuration }
+        let seconds = Int(ceil(lesson.timeline.duration))
+        return String(localized: "stageOne.duration \(seconds / 60) \(seconds % 60)")
+    }
+
     func setVoice(identifier: String?) {
-        voiceIdentifier = identifier == "default" ? nil : identifier
+        stop()
+        voiceIdentifier = identifier
+    }
+
+    private func playRecording(_ suffix: String) -> Bool {
+        guard usesChinese, let voice = NarrationVoice.resolve(voiceIdentifier),
+              let url = Bundle.main.url(forResource: "\(voice.assetPrefix)-\(suffix)", withExtension: suffix == "preview" ? "mp3" : "m4a") else { return false }
+        stop()
+        do {
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.volume = volume
+            recordedPlayer = player
+            player.prepareToPlay()
+            return player.play()
+        } catch { return false }
     }
 
     func speakContract() {
@@ -103,11 +145,16 @@ final class SpeechService {
     }
 
     func previewNaturalVoice() {
-        speak(text: String(localized: "voice.preview"), style: .guidance)
+        guard isEnabled else { return }
+        if !playRecording("preview") { speak(text: String(localized: "voice.preview"), style: .guidance) }
     }
 
     private func speak(text: String, style: SpeechStyle, addsPauses: Bool = true) {
         guard isEnabled else { return }
+        let recordedCues = [("voice.contract", "contract"), ("voice.relax", "relax"), ("voice.rest", "rest")]
+        if let cue = recordedCues.first(where: { String(localized: String.LocalizationValue($0.0)) == text }), playRecording(cue.1) { return }
+        recordedPlayer?.stop()
+        recordedPlayer = nil
         if synthesizer.isSpeaking {
             // A new action cue must not queue behind the previous step.
             synthesizer.stopSpeaking(at: style == .cue ? .immediate : .word)
@@ -156,6 +203,8 @@ final class SpeechService {
     }
 
     func stop(immediately: Bool = true) {
+        recordedPlayer?.stop()
+        recordedPlayer = nil
         guard synthesizer.isSpeaking else { return }
         synthesizer.stopSpeaking(at: immediately ? .immediate : .word)
     }

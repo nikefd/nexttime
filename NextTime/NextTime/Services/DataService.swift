@@ -11,6 +11,8 @@ class DataService {
     static let shared = DataService()
 
     private enum ProtectedKey {
+        static let sessionFeedback = "training.session-feedback.v1"
+        static let practicePath = "training.practice-path.v1"
         static let records = "training.records.v1"
         static let completedProgramIDs = "training.completed-program-ids.v1"
         static let wellnessProfile = "wellness.profile.v1"
@@ -52,20 +54,76 @@ class DataService {
     }
 
     // MARK: - 训练记录
-    func saveRecord(_ record: TrainingRecord) {
+    @discardableResult
+    func saveRecord(_ record: TrainingRecord) -> Bool {
         var records = loadRecords()
         records.append(record)
-        try? protectedStore.save(records, forKey: ProtectedKey.records)
+        do { try protectedStore.save(records, forKey: ProtectedKey.records) }
+        catch { return false }
 
         // 如果完整完成，标记该课程为已完成
         if record.isCompleted {
             markProgramAsCompleted(record.programId)
         }
+        return true
     }
 
     func loadRecords() -> [TrainingRecord] {
         let records = protectedStore.load([TrainingRecord].self, forKey: ProtectedKey.records) ?? []
         return records.sorted { $0.completedAt > $1.completedAt }
+    }
+
+    func loadSessionFeedback() -> [SessionFeedback] {
+        protectedStore.load([SessionFeedback].self, forKey: ProtectedKey.sessionFeedback) ?? []
+    }
+
+    func saveSessionFeedback(recordID: UUID, outcome: SessionFeedbackOutcome, now: Date = Date()) throws {
+        guard loadRecords().contains(where: { $0.id == recordID && $0.isCompleted && $0.completedAt <= now }) else {
+            throw PracticePathError.reviewRequired
+        }
+        var values = loadSessionFeedback()
+        if let existing = values.first(where: { $0.recordID == recordID }) {
+            guard existing.outcome == outcome else { throw PracticePathError.reviewRequired }
+            return
+        }
+        values.append(SessionFeedback(recordID: recordID, outcome: outcome, createdAt: now))
+        try protectedStore.save(values, forKey: ProtectedKey.sessionFeedback)
+    }
+
+    func loadPracticePath() -> PracticePathState? {
+        protectedStore.load(PracticePathState.self, forKey: ProtectedKey.practicePath)
+    }
+
+    func startPracticePathIfNeeded(now: Date = Date()) throws -> PracticePathState {
+        if let state = loadPracticePath() { return state }
+        let state = PracticePathState(now: now)
+        try protectedStore.save(state, forKey: ProtectedKey.practicePath)
+        return state
+    }
+
+    func advancePracticePath(_ review: PracticeStageReview, now: Date = Date()) throws -> PracticePathState {
+        guard var state = loadPracticePath(), review.stage == state.currentStage,
+              review.isConfirmed, let next = state.currentStage.next,
+              let latest = state.completedRecords(in: loadRecords(), now: now).first,
+              latest.id == review.recordID, review.confirmedAt >= latest.completedAt,
+              review.confirmedAt <= now else { throw PracticePathError.reviewRequired }
+        if latest.lessonVersion != nil {
+            guard loadSessionFeedback().first(where: { $0.recordID == latest.id })?.outcome == .comfortable else {
+                throw PracticePathError.reviewRequired
+            }
+        }
+        let advice = PracticeRecommendationEngine.recommend(
+            plannedProgramID: state.currentStage.program.id,
+            relaxationProgramID: TrainingData.relaxationBreathing.id,
+            bodyScanProgramID: TrainingData.confidenceBodyScan.id,
+            checkIns: loadCheckIns(), safetyEvents: loadSafetyEvents(), now: now
+        )
+        guard advice.kind == .onPlan else { throw PracticePathError.reviewRequired }
+        state.reviews.append(review)
+        state.currentStage = next
+        state.stageEnteredAt = now
+        try protectedStore.save(state, forKey: ProtectedKey.practicePath)
+        return state
     }
 
     // MARK: - 已完成的课程
@@ -242,7 +300,14 @@ class DataService {
             [PracticeSafetyEvent].self,
             forKey: ProtectedKey.practiceSafetyEvents
         ) ?? []
-        return values.sorted { $0.createdAt > $1.createdAt }
+        let records = loadRecords()
+        let feedbackEvents = loadSessionFeedback().compactMap { feedback -> PracticeSafetyEvent? in
+            guard feedback.outcome == .discomfort,
+                  let record = records.first(where: { $0.id == feedback.recordID }) else { return nil }
+            return PracticeSafetyEvent(id: feedback.recordID, createdAt: feedback.createdAt,
+                                       programID: record.programId, response: .stopAndRecover)
+        }
+        return (values + feedbackEvents).sorted { $0.createdAt > $1.createdAt }
     }
 
     // MARK: - 删除所有数据
@@ -288,3 +353,5 @@ class DataService {
 extension Notification.Name {
     static let nextTimeAllDataDidClear = Notification.Name("nexttime.allDataDidClear")
 }
+
+enum PracticePathError: Error { case reviewRequired }

@@ -252,10 +252,16 @@ struct TrainingRecord: Identifiable, Codable {
     let totalSets: Int            // 总组数
     let isCompleted: Bool         // 是否完整完成
     let route: PracticeRoute?
+    let pathID: UUID?
+    let pathStage: PracticeStage?
+    let lessonVersion: String?
+    let completedRepetitions: Int?
+    let totalRepetitions: Int?
 
     init(id: UUID = UUID(), programId: UUID, programName: String, completedAt: Date = Date(),
          duration: Int, completedSets: Int, totalSets: Int, isCompleted: Bool,
-         route: PracticeRoute? = nil) {
+         route: PracticeRoute? = nil, pathID: UUID? = nil, pathStage: PracticeStage? = nil,
+         lessonVersion: String? = nil, completedRepetitions: Int? = nil, totalRepetitions: Int? = nil) {
         self.id = id
         self.programId = programId
         self.programName = programName
@@ -265,6 +271,11 @@ struct TrainingRecord: Identifiable, Codable {
         self.totalSets = totalSets
         self.isCompleted = isCompleted
         self.route = route
+        self.pathID = pathID
+        self.pathStage = pathStage
+        self.lessonVersion = lessonVersion
+        self.completedRepetitions = completedRepetitions
+        self.totalRepetitions = totalRepetitions
     }
 }
 

@@ -24,6 +24,8 @@ struct SettingsView: View {
 
     @ObservedObject private var proManager = ProManager.shared
 
+    @State private var showPilotNarration = false
+
     var body: some View {
         NavigationStack {
             Form {
@@ -193,12 +195,18 @@ struct SettingsView: View {
 
                     if settings.voiceEnabled {
                         Picker(String(localized: "settings.voiceChoice"), selection: $settings.selectedVoice) {
+                            if SpeechService.shared.usesChinese {
+                                ForEach(NarrationVoice.allCases) { voice in
+                                    Text(voice.title).tag(voice.rawValue)
+                                }
+                            }
                             Text(String(localized: "settings.voiceAutomatic"))
-                                .tag("default")
+                                .tag(SpeechService.shared.usesChinese ? "system" : "default")
                             ForEach(availableVoices, id: \.identifier) { voice in
                                 Text(voice.name).tag(voice.identifier)
                             }
                         }
+                        .accessibilityIdentifier("settings.narration-voice")
                         .onChange(of: settings.selectedVoice) { newValue in
                             SpeechService.shared.setVoice(identifier: newValue)
                             saveSettings()
@@ -217,6 +225,16 @@ struct SettingsView: View {
                             SpeechService.shared.previewNaturalVoice()
                         } label: {
                             Label(String(localized: "settings.voicePreview"), systemImage: "speaker.wave.2.fill")
+                        }
+                        if SpeechService.shared.usesChinese {
+                            Button(String(localized: "voice.pilot.open")) { showPilotNarration = true }
+                                .accessibilityIdentifier("settings.pilot-narration")
+                                .sheet(isPresented: $showPilotNarration) {
+                                    PilotNarrationView(voice: NarrationVoice.resolve(settings.selectedVoice) ?? .female)
+                                }
+                            Text(String(localized: "voice.pack.scope"))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
                         }
                     }
                 } header: {

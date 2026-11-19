@@ -1,7 +1,9 @@
+import AVFoundation
 import SwiftUI
 
 struct TrainingView: View {
     let program: TrainingProgram
+    var pathContext: PracticePathContext? = nil
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var trainingManager = TrainingManager.shared
     @AppStorage("defaultPrivacyMode") private var defaultDiscreetMode = false
@@ -50,11 +52,19 @@ struct TrainingView: View {
         .statusBarHidden(discreetMode && !temporarilyRevealed)
         .onAppear {
             discreetMode = defaultDiscreetMode
-            trainingManager.startTraining(program: program)
+            trainingManager.startTraining(program: program, pathContext: pathContext)
         }
         .onDisappear {
             revealTask?.cancel()
             if trainingManager.currentProgram != nil { trainingManager.stopTraining() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)) { notification in
+            if let type = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+               type == AVAudioSession.InterruptionType.began.rawValue { trainingManager.pauseTraining() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AVAudioSession.routeChangeNotification)) { notification in
+            if let reason = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+               reason == AVAudioSession.RouteChangeReason.oldDeviceUnavailable.rawValue { trainingManager.pauseTraining() }
         }
         .onChange(of: showSafetyChoices) { showing in
             if showing { trainingManager.pauseTraining() }
@@ -98,6 +108,7 @@ struct TrainingView: View {
             VStack(spacing: 2) {
                 Text(NSLocalizedString(program.localizedNameKey, comment: "")).font(.headline)
                 Text(trainingManager.progressDescription).font(.caption).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("training.recorded-section")
             }
             Spacer()
             Button {
@@ -115,9 +126,12 @@ struct TrainingView: View {
     private var activeContent: some View {
         ScrollView {
             VStack(spacing: 24) {
+                if trainingManager.recordedPlaybackFailed {
+                    Text(String(localized: "stageOne.audioError")).foregroundStyle(.red)
+                }
                 stepVisual
                 if let step = trainingManager.currentStep {
-                    Text(NSLocalizedString(step.titleKey, comment: ""))
+                    Text(trainingManager.progress.isAwaitingContinue ? String(localized: "stageOne.ready") : NSLocalizedString(step.titleKey, comment: ""))
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
                     Text(NSLocalizedString(step.guidanceKey, comment: ""))
@@ -134,6 +148,12 @@ struct TrainingView: View {
                     }
                 }
 
+                if let lesson = trainingManager.recordedLesson,
+                   lesson.timeline.sections.indices.contains(trainingManager.progress.currentStepIndex + 1) {
+                    Text(String(localized: "stageOne.next \(lesson.timeline.sections[trainingManager.progress.currentStepIndex + 1].title)"))
+                        .font(.footnote).foregroundStyle(.secondary)
+                        .accessibilityIdentifier("training.next-action")
+                }
                 ProgressView(value: stepProgress)
                     .tint(accentColor)
                     .padding(.horizontal, 24)
@@ -168,14 +188,22 @@ struct TrainingView: View {
             Text(String(localized: "guided.secondsRemaining \(trainingManager.progress.remainingSeconds)"))
                 .font(.subheadline.monospacedDigit())
                 .foregroundStyle(.secondary)
+                .accessibilityIdentifier("training.remaining")
         }
     }
 
     private var controls: some View {
         VStack(spacing: 12) {
+            if trainingManager.isPaused {
+                Text(String(localized: "training.paused.hint"))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
             if trainingManager.isRunning || trainingManager.isPaused {
                 if trainingManager.progress.isAwaitingContinue {
-                    Button(String(localized: "guided.continue")) { trainingManager.advanceStep() }
+                    Button(trainingManager.recordedLesson != nil ? String(localized: "stageOne.ready") : String(localized: "guided.continue")) { trainingManager.advanceStep() }
+                        .accessibilityIdentifier("training.continue")
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
                         .frame(maxWidth: .infinity)
@@ -191,8 +219,10 @@ struct TrainingView: View {
                             .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.borderedProminent)
+                        .accessibilityIdentifier("training.pause-resume")
+                        .disabled(trainingManager.recordedPlaybackFailed)
 
-                        if trainingManager.currentStep?.kind == .rest {
+                        if trainingManager.recordedLesson == nil && trainingManager.currentStep?.kind == .rest {
                             Button(String(localized: "button.skipRest")) { trainingManager.skipRest() }
                                 .buttonStyle(.bordered)
                         }
@@ -210,6 +240,7 @@ struct TrainingView: View {
                 .tint(.orange)
             } else if trainingManager.progress.isCompleted {
                 Button(String(localized: "button.done")) { dismiss() }
+                    .accessibilityIdentifier("training.done")
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     .frame(maxWidth: .infinity)
@@ -222,9 +253,14 @@ struct TrainingView: View {
         ScrollView {
             VStack(spacing: 18) {
                 Image(systemName: "checkmark.circle.fill").font(.system(size: 72)).foregroundStyle(.green)
-                Text(String(localized: "training.completed")).font(.title.bold())
-                Text(String(localized: "training.greatJob")).foregroundStyle(.secondary)
-                if !savedPostCheckIn {
+                Text(String(localized: "training.completed")).font(.title.bold()).accessibilityIdentifier("training.completed-label")
+                Text(String(localized: trainingManager.recordedLesson != nil ? "stageOne.completed.detail" : "training.greatJob")).foregroundStyle(.secondary)
+                if trainingManager.recordSaveFailed {
+                    Text(String(localized: "stageOne.saveError")).foregroundStyle(.red)
+                    Button(String(localized: "path.retry")) { trainingManager.retrySaveRecord() }
+                } else if let record = trainingManager.completedRecord, record.lessonVersion != nil {
+                    SessionFeedbackView(record: record)
+                } else if !savedPostCheckIn {
                     VStack(alignment: .leading, spacing: 14) {
                         Text(String(localized: "checkin.after.title")).font(.headline)
                         WellnessRatingRow(title: String(localized: "checkin.comfort"), value: $postComfort)
@@ -279,6 +315,9 @@ struct TrainingView: View {
     }
 
     private var stepProgress: Double {
+        if let lesson = trainingManager.recordedLesson {
+            return min(1, trainingManager.recordedElapsed / lesson.timeline.duration)
+        }
         guard trainingManager.progress.totalSteps > 0 else { return 0 }
         return Double(trainingManager.progress.currentStepIndex) / Double(trainingManager.progress.totalSteps)
     }

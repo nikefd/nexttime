@@ -11,12 +11,15 @@ struct HomeView: View {
     @ObservedObject private var proManager = ProManager.shared
     @State private var recommendedProgram: TrainingProgram?
     @State private var recommendationKind: PracticeRecommendationKind = .onPlan
-    @State private var selectedProgram: TrainingProgram?
-    @State private var planWeek = 1
-    @State private var planDayInWeek = 1
-    @State private var planMode: LongTermPlanMode = .progressive
-    @State private var isRecoveryDay = false
-    @State private var completedPlanDays = 0
+    private struct TrainingSelection: Identifiable {
+        let id = UUID()
+        let program: TrainingProgram
+        let pathContext: PracticePathContext?
+    }
+    @State private var trainingSelection: TrainingSelection?
+    @State private var practicePath: PracticePathState?
+    @State private var pathRecords: [TrainingRecord] = []
+    @State private var showPath = false
     @State private var comfort = 3
     @State private var tension = 3
     @State private var energy = 3
@@ -45,14 +48,17 @@ struct HomeView: View {
             }
             .navigationTitle(String(localized: "home.today.title"))
             .onAppear(perform: loadData)
-            .fullScreenCover(item: $selectedProgram, onDismiss: loadData) { program in
-                TrainingView(program: program)
+            .fullScreenCover(item: $trainingSelection, onDismiss: loadData) { selection in
+                TrainingView(program: selection.program, pathContext: selection.pathContext)
             }
             .sheet(isPresented: $showCheckIn) {
                 checkInSheet
             }
             .sheet(isPresented: $showProUpgrade) {
                 ProUpgradeView()
+            }
+            .sheet(isPresented: $showPath, onDismiss: loadData) {
+                NavigationStack { PracticePathView() }
             }
             .sheet(isPresented: $showPrograms, onDismiss: loadData) {
                 ProgramListView()
@@ -76,18 +82,20 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(NSLocalizedString(program.localizedNameKey, comment: ""))
                         .font(.largeTitle.bold())
-                    Text(recommendationKind.detail)
+                    Text(recommendationKind == .onPlan ? (practicePath?.currentStage.detail ?? recommendationKind.detail) : recommendationKind.detail)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
                 HStack(spacing: 16) {
-                    Label(program.formattedDuration, systemImage: "clock")
-                    Label(String(localized: "program.steps \(program.resolvedGuidedSteps.count)"), systemImage: "list.number")
-                    if isRecoveryDay && planMode == .progressive {
-                        Label(String(localized: "home.today.recovery"), systemImage: "leaf.fill")
+                    Label(SpeechService.shared.formattedDuration(for: program), systemImage: "clock")
+                    if SpeechService.shared.recordedLesson(for: program) != nil {
+                        Label(String(localized: "stageOne.structure"), systemImage: "list.number")
+                    } else {
+                        Label(String(localized: "program.steps \(program.resolvedGuidedSteps.count)"), systemImage: "list.number")
                     }
+
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -97,7 +105,7 @@ struct HomeView: View {
                         if proManager.isProgramLocked(program) {
                             showProUpgrade = true
                         } else {
-                            selectedProgram = program
+                            trainingSelection = TrainingSelection(program: program, pathContext: recommendationKind == .onPlan ? practicePath?.context : nil)
                         }
                     } label: {
                         Label(
@@ -138,28 +146,34 @@ struct HomeView: View {
     }
 
     private var compactPlanSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(String(localized: "home.plan.title"))
-                        .font(.headline)
-                    Text(planPositionLabel)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        Button { showPath = true } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text(String(localized: "path.title")).font(.headline)
+                    Spacer()
+                    Image(systemName: "chevron.right")
                 }
-                Spacer()
-                Text("\(completedPlanDays)/42")
-                    .font(.subheadline.monospacedDigit().weight(.semibold))
+                if let path = practicePath {
+                    Text(String(localized: "path.position \(path.currentStage.rawValue)"))
+                        .font(.caption).foregroundStyle(.secondary)
+                    Text(path.currentStage.title).font(.title3.weight(.semibold))
+                    Text(String(localized: "path.completed \(pathRecords.count)"))
+                        .font(.subheadline)
+                    if let next = path.currentStage.next {
+                        Text(String(localized: "path.next \(next.title)"))
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                } else {
+                    Text(String(localized: "path.saveError")).font(.caption)
+                }
             }
-
-            ProgressView(value: Double(completedPlanDays), total: 42)
-                .tint(.blue)
-                .accessibilityLabel(String(localized: "home.plan.progress"))
-                .accessibilityValue("\(completedPlanDays)/42")
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("home.practice-path")
     }
 
     private var adjustmentSection: some View {
@@ -231,15 +245,6 @@ struct HomeView: View {
         .presentationDetents([.medium, .large])
     }
 
-    private var planPositionLabel: String {
-        switch planMode {
-        case .progressive:
-            return String(localized: "home.plan.weekDay \(planWeek) \(planDayInWeek)")
-        case .maintenance:
-            return String(localized: "home.plan.maintenance")
-        }
-    }
-
     private var recommendationIcon: String {
         switch recommendationKind {
         case .onPlan: return "sparkles"
@@ -262,25 +267,11 @@ struct HomeView: View {
 
     private func loadData() {
         let records = DataService.shared.loadRecords()
-        let profile = DataService.shared.loadWellnessProfile()
-        let goals = profile?.selectedGoals ?? []
-        let createdAt = profile?.createdAt ?? Date()
-        let planRecommendation = TrainingData.longTermRecommendation(
-            for: goals,
-            createdAt: createdAt,
-            records: records
-        )
-        planWeek = planRecommendation.week
-        planDayInWeek = planRecommendation.dayInWeek
-        planMode = planRecommendation.mode
-        isRecoveryDay = planRecommendation.isRecoveryDay
-        let completedDates = Set(records.filter(\.isCompleted).map {
-            Calendar.current.startOfDay(for: $0.completedAt)
-        })
-        completedPlanDays = min(completedDates.count, 42)
+        practicePath = try? DataService.shared.startPracticePathIfNeeded()
+        pathRecords = practicePath?.completedRecords(in: records) ?? []
         let checkIns = DataService.shared.loadCheckIns()
         let recommendation = PracticeRecommendationEngine.recommend(
-            plannedProgramID: planRecommendation.programID,
+            plannedProgramID: practicePath?.currentStage.program.id ?? TrainingData.foundationAwareness.id,
             relaxationProgramID: TrainingData.relaxationBreathing.id,
             bodyScanProgramID: TrainingData.confidenceBodyScan.id,
             checkIns: checkIns,

@@ -167,8 +167,12 @@ struct ProgramRow: View {
                     .lineLimit(1)
 
                 HStack(spacing: 12) {
-                    Label(String(localized: "program.steps \(program.resolvedGuidedSteps.count)"), systemImage: "list.number")
-                    Label(program.formattedDuration, systemImage: "clock")
+                    if SpeechService.shared.recordedLesson(for: program) != nil {
+                        Label(String(localized: "stageOne.structure"), systemImage: "list.number")
+                    } else {
+                        Label(String(localized: "program.steps \(program.resolvedGuidedSteps.count)"), systemImage: "list.number")
+                    }
+                    Label(SpeechService.shared.formattedDuration(for: program), systemImage: "clock")
                 }
                 .font(.caption2)
                 .foregroundStyle(.secondary)

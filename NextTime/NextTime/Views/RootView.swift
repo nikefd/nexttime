@@ -35,8 +35,10 @@ struct RootView: View {
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .inactive:
+                TrainingManager.shared.pauseTraining()
                 isPrivacyShieldVisible = true
             case .background:
+                TrainingManager.shared.pauseTraining()
                 isPrivacyShieldVisible = true
                 appLockManager.lockIfNeeded()
             case .active:

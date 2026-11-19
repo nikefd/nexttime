@@ -98,9 +98,9 @@
 "voice.complete" = "今天的练习完成了，辛苦了。";
 "voice.getReady" = "准备好以后，我们慢慢开始。";
 "voice.preview" = "你好。放松肩膀，自然呼吸，我们按照舒服的节奏慢慢来。";
-"settings.voicePreview" = "试听自然引导";
+"settings.voicePreview" = "试听所选声音";
 "settings.voiceChoice" = "声音";
-"settings.voiceAutomatic" = "自动选择最佳音色（推荐）";
+"settings.voiceAutomatic" = "系统自动选择";
 
 /* Training View */
 "training.elapsedTime %@" = "已用时：%@";
@@ -165,8 +165,8 @@
 
 /* Learn */
 "learn.title" = "了解";
-"learn.plan" = "如何使用 6 周计划";
-"learn.plan.subtitle" = "课程、恢复日与长期维持";
+"learn.plan" = "如何使用学习路径";
+"learn.plan.subtitle" = "当前阶段、练习与下一步";
 "learn.basics" = "认识盆底";
 "learn.basics.subtitle" = "从身体觉察开始";
 "learn.balance" = "收缩与放松";
@@ -182,16 +182,16 @@
 
 /* Articles */
 "article.plan.intro" = "下一次会根据你的目标、练习历史和当日状态提供建议。计划用于建立节奏，不是必须完成的医疗处方。";
-"article.plan.1.title" = "每天一项，3 条个人路线";
-"article.plan.1.content" = "系统从盆底基础、充分放松和身体觉察三条路线的 18 节练习中，每天自动安排一项。单次练习约 3–12 分钟，无需自己选课。";
-"article.plan.2.title" = "6 周渐进安排";
-"article.plan.2.content" = "计划覆盖 42 天，并随周次逐步增加变化。每周安排 2 个恢复日，让身体有时间整合练习。";
-"article.plan.3.title" = "建议会减少重复";
-"article.plan.3.content" = "系统会结合你选择的目标轮换路线，并尽量避开最近完成的 4 个课程。互动提示不设倒计时，给你按自己的节奏思考和回应。";
+"article.plan.1.title" = "从当前学习阶段开始";
+"article.plan.1.content" = "首页按当前阶段提供一项基础练习；18节个人课程仍可从列表自选。今日状态或不适反馈可能改为支持练习，支持练习单独记录，不会代替主路径进度。";
+"article.plan.2.title" = "四阶段学习路径";
+"article.plan.2.content" = "学习路径包括识别与释放、稳定控制、节奏与释放、巩固与日常应用。后续阶段可预览，完成当前路径练习后由你主动回顾，不按注册天数自动升级。";
+"article.plan.3.title" = "重复巩固，不用追赶";
+"article.plan.3.content" = "重复当前练习是巩固的一部分，不再为了避免重复而自动换课。同日多练不会自动升级。原有训练、自选课和样课试听不会被换算成新阶段已掌握。";
 "article.plan.4.title" = "状态优先于计划";
 "article.plan.4.content" = "练习前后的状态确认可以调整当天建议。如果感到疲劳、紧张或不适，可以选择恢复练习、缩短练习或休息。";
-"article.plan.5.title" = "第 6 周以后";
-"article.plan.5.content" = "完成 6 周后会进入维持模式，继续轮换不同课程。你可以保持规律，也可以根据身体反馈降低频率；不需要为了连续记录勉强练习。";
+"article.plan.5.title" = "长期巩固与复习";
+"article.plan.5.content" = "没有第43天自动维持或固定毕业日期。可以重复当前练习；漏练不需要双倍补做。不适时先停下来，必要时寻求专业指导。";
 
 "article.basics.intro" = "盆底不是一块孤立的肌肉，而是由肌肉和结缔组织共同组成、参与支撑与控制的区域。每个人的身体结构和感受都可能不同。";
 "article.basics.1.title" = "它参与什么";
@@ -255,7 +255,7 @@
 "pro.restoreNoPurchase" = "未找到之前的购买记录。";
 
 "pro.feature.courses" = "全部 18 节个人练习";
-"pro.feature.courses.desc" = "包含 3 节免费入门与 15 节 Pro 进阶练习，解锁 6 周计划中的全部课程，也可从列表自由选择。";
+"pro.feature.courses.desc" = "包含3节免费入门与15节Pro练习，可从列表自由选择。学习路径与基础进度无需Pro即可查看。";
 "pro.feature.custom" = "自定义训练";
 "pro.feature.custom.desc" = "创建你自己的训练计划";
 "pro.feature.reminder" = "每日提醒";
@@ -450,7 +450,7 @@
 "checkin.before.short" = "练习前";
 "checkin.after.short" = "练习后";
 
-"progress.routes" = "三条个人路线";
+"progress.routes" = "练习过的课程";
 "progress.wellnessTrend" = "本地状态趋势";
 "progress.noCheckIns" = "记录一次练习前或练习后状态，趋势会显示在这里。";
 
@@ -588,7 +588,7 @@
 "recommendation.section.title" = "今日本地推荐";
 "recommendation.localOnly" = "仅在本机计算";
 "recommendation.onPlan.title" = "按计划继续";
-"recommendation.onPlan.detail" = "今天的状态没有触发调整，按 6 周计划完成这一项即可。";
+"recommendation.onPlan.detail" = "按当前学习阶段练习；是否进入下一阶段，由你练后的回顾决定。";
 "recommendation.lowerIntensity.title" = "今天温和一点";
 "recommendation.lowerIntensity.detail" = "根据今天较低的舒适度或较高的紧张度，已切换为呼吸与放松练习。";
 "recommendation.lowEnergy.title" = "选择低负担练习";
@@ -613,3 +613,76 @@
 "safety.history.title" = "安全跟进";
 "safety.history.count %lld" = "近 14 天记录 %lld 次安全反馈。";
 "discreet.stop" = "需要停止";
+
+"training.paused.hint" = "训练已暂停，请先放松身体。准备好后点“继续”。切换 App 或锁屏也会暂停训练。";
+
+"voice.pack.female" = "女声 · 默认";
+"voice.pack.male" = "男声";
+"voice.pack.scope" = "收紧、放松与休息可使用所选配音。其他现有课程说明仍使用系统声音。";
+"voice.pilot.open" = "试听完整样课";
+"voice.pilot.title" = "找到收紧，也找到松开";
+"voice.pilot.description" = "包含动作讲解、两次示范、六次主练习和练后回顾。试听不会写入训练记录。";
+"voice.pilot.draft" = "课程试听稿：动作参数尚待专业审阅。出现不适请停止。";
+"voice.pilot.unavailable" = "当前样课音频暂不可用。";
+"voice.pilot.restart" = "回到开头";
+
+"path.title" = "我的学习路径";
+"path.intro" = "四个阶段都可以提前了解。练习和回顾决定你学到哪里，时间不会替你升级。";
+"path.position %lld" = "学习阶段 %lld / 4";
+"path.completed %lld" = "本阶段路径练习已完成 %lld 次";
+"path.practiceDays %lld" = "分布在 %lld 个练习日；多练不会自动升级";
+"path.next %@" = "之后学习：%@";
+"path.stage.1.title" = "识别与释放";
+"path.stage.2.title" = "稳定控制";
+"path.stage.3.title" = "节奏与释放";
+"path.stage.4.title" = "巩固与日常应用";
+"path.stage.1.detail" = "先辨认收紧与松开的区别，动作轻柔，保持正常呼吸。";
+"path.stage.2.detail" = "练习动作与自然呼吸的协调，每次之后充分松开。";
+"path.stage.3.detail" = "留意重复动作中的节奏与释放；出现代偿时减轻力度，不追求硬撑。";
+"path.stage.4.detail" = "留意姿势变化时的协调，形成可持续的安排，并定期回顾感受。";
+"path.stage.1.checkpoint" = "回顾重点：能否感觉到收紧之后回到原来的状态？不确定时可以继续复习。";
+"path.stage.2.checkpoint" = "回顾重点：动作时能否保持自然呼吸，结束后能否充分释放？";
+"path.stage.3.checkpoint" = "回顾重点：多次动作之间能否松开，是否需要延长休息？";
+"path.stage.4.checkpoint" = "回顾重点：什么姿势更容易保持协调，怎样安排更能持续？";
+"path.status.current" = "当前学习阶段";
+"path.status.reviewed" = "已回顾，可复习";
+"path.status.preview" = "后续阶段，可预览";
+"path.review.open" = "回顾并决定下一步";
+"path.review.available" = "只有你主动确认，才会进入下一学习阶段。也可以继续巩固当前练习。";
+"path.review.required" = "先完成当前路径练习并记录感受，再回顾。不适或不确定时保留当前阶段。";
+"path.review.intro" = "根据最近一次本阶段路径练习的真实感受确认。三项都不默认勾选；不确定时保留当前阶段。";
+"path.review.breathing" = "动作时能保持自然呼吸";
+"path.review.release" = "每次收紧后能充分松开";
+"path.review.comfortable" = "没有疼痛或持续紧绷等不适";
+"path.review.confirm" = "确认，进入下一学习阶段";
+"path.review.footer" = "这是你的自评，不是肌力测试。继续前请查看下一阶段课程说明；不确定可以取消并复习。";
+"path.progressMeaning" = "这里显示学习与练习进度，不代表肌力或性功能改善程度。";
+"path.legacy" = "原有训练仍保留在历史里。自选课程、恢复练习和样课试听不会自动推进这条路径。";
+"path.maintenance.detail" = "继续按适合的安排巩固和回顾。没有固定的通关日期，也不需要为保持记录追加训练。";
+"path.saveError" = "路径暂未更新，请稍后重试";
+"path.retry" = "重试";
+
+"stageOne.demo.title" = "先认识动作节奏";
+"stageOne.guidance.instruction" = "先听完说明，再按自己的节奏继续；不需要现在就开始收紧。";
+"stageOne.guidance.contract" = "动作轻柔，保持自然呼吸。";
+"stageOne.guidance.relax" = "回到原来的状态，不要往下使劲。";
+"stageOne.guidance.rest" = "这段时间不用收紧。如果还没松开，可以暂停并延长休息。";
+"stageOne.guidance.reflection" = "留意真实感受；不确定也是有用的反馈。";
+"stageOne.ready" = "我准备好了，继续";
+"stageOne.audioError" = "本次配音暂不可用，请结束练习后重试。";
+"stageOne.saveError" = "记录暂未保存成功，请重试。";
+"stageOne.feedback.title" = "这次练习，感觉如何？";
+"stageOne.feedback.intro" = "按真实感受选择。没有填写时，不会默认你已适合进阶。";
+"stageOne.feedback.comfortable" = "能感觉收紧与松开，也没有不适";
+"stageOne.feedback.unsure" = "还不确定，想再熟悉一下";
+"stageOne.feedback.discomfort" = "有不适，先停止练习";
+"stageOne.feedback.next.comfortable" = "已记录这次感受。可以查看学习路径，回顾是否准备进入下一阶段，也可以继续巩固。";
+"stageOne.feedback.next.unsure" = "保留当前阶段，下次先复习动作，不需要追赶。";
+"stageOne.feedback.next.discomfort" = "先休息，不追加练习。持续不适或疼痛时寻求专业支持。";
+"stageOne.repetitions %lld %lld" = "主练习完成 %lld / %lld 次";
+"stageOne.duration %lld %lld" = "%lld分%lld秒";
+"stageOne.structure" = "2次示范 · 6次主练习";
+"stageOne.next %@" = "接下来：%@";
+"stageOne.completed.detail" = "已记录本次执行情况；这不代表测得肌力或功能改善。";
+
+"stageOne.feedback.completeLater" = "补充本次练习感受";

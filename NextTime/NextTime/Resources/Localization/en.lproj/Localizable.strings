@@ -98,9 +98,9 @@
 "voice.complete" = "That's your practice for today. Well done.";
 "voice.getReady" = "When you're ready, we'll begin gently.";
 "voice.preview" = "Hello. Let your shoulders soften, breathe naturally, and we'll move at a comfortable pace.";
-"settings.voicePreview" = "Preview Natural Guidance";
+"settings.voicePreview" = "Preview selected voice";
 "settings.voiceChoice" = "Voice";
-"settings.voiceAutomatic" = "Best Available Voice (Recommended)";
+"settings.voiceAutomatic" = "System automatic";
 
 /* Training View */
 "training.elapsedTime %@" = "Elapsed: %@";
@@ -165,8 +165,8 @@
 
 /* Learn */
 "learn.title" = "Learn";
-"learn.plan" = "Using Your 6-Week Plan";
-"learn.plan.subtitle" = "Courses, recovery days, and maintenance";
+"learn.plan" = "Using your learning path";
+"learn.plan.subtitle" = "Current stage, practice and what comes next";
 "learn.basics" = "Understanding the Pelvic Floor";
 "learn.basics.subtitle" = "Begin with body awareness";
 "learn.balance" = "Contract and Release";
@@ -182,16 +182,16 @@
 
 /* Articles */
 "article.plan.intro" = "NextTime suggests practice based on your goals, history, and current check-in. The plan helps you build a rhythm; it is not a medical prescription you must complete.";
-"article.plan.1.title" = "One Daily Practice Across 3 Personal Routes";
-"article.plan.1.content" = "NextTime selects one practice each day from 18 sessions across pelvic-floor foundations, full release, and body awareness. Sessions run about 3–12 minutes, with no course picking required.";
-"article.plan.2.title" = "A Progressive 6-Week Structure";
-"article.plan.2.content" = "The plan spans 42 days and introduces variety as the weeks progress. Two recovery days each week give your body time to absorb the practice.";
-"article.plan.3.title" = "Recommendations Reduce Repetition";
-"article.plan.3.content" = "The app rotates routes based on your goals and tries to avoid your 4 most recently completed courses. Interactive prompts are untimed so you can respond at your own pace.";
+"article.plan.1.title" = "Start at your current learning stage";
+"article.plan.1.content" = "Home offers a foundation session for the current learning stage. All 18 personal sessions remain available in the optional library. Daily state or discomfort may suggest a support session; it is recorded separately and does not replace path progress.";
+"article.plan.2.title" = "Four learning stages";
+"article.plan.2.content" = "The path covers awareness and release, steady control, rhythm and release, and daily application. Preview future stages and review after practising; days since registration never automatically advance it.";
+"article.plan.3.title" = "Repeat and consolidate without catching up";
+"article.plan.3.content" = "Repeating a session supports learning; the app no longer changes it simply to avoid repetition. Extra same-day sessions never automatically advance the stage. Earlier sessions, optional courses and pilot previews are not treated as mastery of new stages.";
 "article.plan.4.title" = "Your Check-In Comes First";
 "article.plan.4.content" = "Before-and-after check-ins can adjust the day's suggestion. If you feel tired, tense, or uncomfortable, choose recovery, shorten the practice, or rest.";
-"article.plan.5.title" = "After Week 6";
-"article.plan.5.content" = "After 6 weeks, maintenance mode continues rotating courses. Keep a rhythm that suits you or reduce frequency based on your body; never force a session for a streak.";
+"article.plan.5.title" = "Long-term practice and review";
+"article.plan.5.content" = "There is no automatic day-43 maintenance mode or fixed graduation date. Repeat your current practice; missing a day does not require double sessions. Stop when uncomfortable and seek professional guidance as needed.";
 
 "article.basics.intro" = "The pelvic floor is not a single isolated muscle. It is a region of muscles and connective tissue involved in support and control, and each person's anatomy and sensations can differ.";
 "article.basics.1.title" = "What It Does";
@@ -255,7 +255,7 @@
 "pro.restoreNoPurchase" = "No previous purchase found.";
 
 "pro.feature.courses" = "All 18 Personal Practices";
-"pro.feature.courses.desc" = "Includes 3 free introductory and 15 Pro practices. Unlock every practice in the 6-week plan, or choose from the library.";
+"pro.feature.courses.desc" = "Includes 3 free introductory sessions and 15 Pro sessions, with optional course browsing. The learning path and basic progress are visible without Pro.";
 "pro.feature.custom" = "Custom Training";
 "pro.feature.custom.desc" = "Create your own training program";
 "pro.feature.reminder" = "Daily Reminders";
@@ -450,7 +450,7 @@
 "checkin.before.short" = "Before";
 "checkin.after.short" = "After";
 
-"progress.routes" = "Three Personal Routes";
+"progress.routes" = "Courses you have practised";
 "progress.wellnessTrend" = "On-Device Wellness Trend";
 "progress.noCheckIns" = "Record a before- or after-practice check-in to see trends here.";
 
@@ -588,7 +588,7 @@
 "recommendation.section.title" = "Today's On-Device Recommendation";
 "recommendation.localOnly" = "Calculated on device";
 "recommendation.onPlan.title" = "Continue Your Plan";
-"recommendation.onPlan.detail" = "Today's check-in did not trigger an adjustment. Complete this one practice in your 6-week plan.";
+"recommendation.onPlan.detail" = "Practise at your current learning stage; your review determines whether to continue to the next.";
 "recommendation.lowerIntensity.title" = "Keep It Gentle Today";
 "recommendation.lowerIntensity.detail" = "Based on lower comfort or higher tension today, your recommendation has switched to breathing and release.";
 "recommendation.lowEnergy.title" = "Choose a Low-Effort Practice";
@@ -613,3 +613,76 @@
 "safety.history.title" = "Safety Follow-Up";
 "safety.history.count %lld" = "%lld safety events recorded in the last 14 days.";
 "discreet.stop" = "Need to Stop";
+
+"training.paused.hint" = "Training is paused. Relax your body, then tap Resume when ready. Switching apps or locking the screen also pauses training.";
+
+"voice.pack.female" = "Female · Default";
+"voice.pack.male" = "Male";
+"voice.pack.scope" = "Recorded cues use your selected voice. Other existing guidance still uses the system voice.";
+"voice.pilot.open" = "Preview the full pilot";
+"voice.pilot.title" = "Find the contraction, and the release";
+"voice.pilot.description" = "Includes instruction, two demonstrations, six practice repetitions and reflection. Previewing does not create a training record.";
+"voice.pilot.draft" = "Pilot draft: exercise parameters await professional review. Stop if uncomfortable.";
+"voice.pilot.unavailable" = "Pilot audio is currently unavailable.";
+"voice.pilot.restart" = "Return to the beginning";
+
+"path.title" = "My learning path";
+"path.intro" = "Preview all four stages. Practice and your review determine your learning stage; time alone never advances it.";
+"path.position %lld" = "Learning stage %lld / 4";
+"path.completed %lld" = "Completed %lld path sessions in this stage";
+"path.practiceDays %lld" = "Across %lld practice days; extra sessions do not automatically advance your stage";
+"path.next %@" = "Up next: %@";
+"path.stage.1.title" = "Awareness and release";
+"path.stage.2.title" = "Steady control";
+"path.stage.3.title" = "Rhythm and release";
+"path.stage.4.title" = "Consolidation and daily application";
+"path.stage.1.detail" = "Learn to distinguish contraction from release, with gentle movement and normal breathing.";
+"path.stage.2.detail" = "Coordinate the movement with natural breathing and fully release after each repetition.";
+"path.stage.3.detail" = "Notice rhythm and release across repetitions. Ease off if other muscles take over; avoid straining.";
+"path.stage.4.detail" = "Notice coordination as posture changes, build a sustainable routine and regularly review how it feels.";
+"path.stage.1.checkpoint" = "Review: can you sense a return to the starting state after contraction? Repeat the lesson if unsure.";
+"path.stage.2.checkpoint" = "Review: can you breathe naturally during movement and fully release afterwards?";
+"path.stage.3.checkpoint" = "Review: can you release between repetitions, or do you need more rest?";
+"path.stage.4.checkpoint" = "Review: which posture makes coordination easier, and which routine is sustainable?";
+"path.status.current" = "Current learning stage";
+"path.status.reviewed" = "Reviewed; available to revisit";
+"path.status.preview" = "Future stage; available to preview";
+"path.review.open" = "Review and decide what is next";
+"path.review.available" = "Only your explicit confirmation advances the learning stage. You can also keep practising here.";
+"path.review.required" = "Complete the current path session and record your experience first. Stay at this stage when uncomfortable or unsure.";
+"path.review.intro" = "Use your actual experience of the latest session in this stage. Nothing is checked by default; stay here if unsure.";
+"path.review.breathing" = "I could breathe naturally during movement";
+"path.review.release" = "I could fully release after each contraction";
+"path.review.comfortable" = "I had no pain, persistent tightness or other discomfort";
+"path.review.confirm" = "Confirm and enter the next learning stage";
+"path.review.footer" = "This is your self-report, not a strength test. Read the next lesson before continuing; cancel and revisit if unsure.";
+"path.progressMeaning" = "This shows learning and practice progress, not measured strength or improvement in sexual function.";
+"path.legacy" = "Your earlier sessions remain in history. Optional courses, recovery sessions and pilot previews do not automatically advance this path.";
+"path.maintenance.detail" = "Continue a suitable routine and review it. There is no fixed graduation date or need for extra sessions to maintain a streak.";
+"path.saveError" = "The path could not be updated. Please try again.";
+"path.retry" = "Try again";
+
+"stageOne.demo.title" = "Learn the movement rhythm";
+"stageOne.guidance.instruction" = "Listen first, then continue when ready. There is no need to contract yet.";
+"stageOne.guidance.contract" = "Keep the movement gentle and breathe naturally.";
+"stageOne.guidance.relax" = "Return to the starting state without pushing down.";
+"stageOne.guidance.rest" = "No contraction is needed here. Pause for more rest if you have not fully released.";
+"stageOne.guidance.reflection" = "Notice your actual experience; uncertainty is useful feedback too.";
+"stageOne.ready" = "I am ready to continue";
+"stageOne.audioError" = "Audio is unavailable. End this session and try again later.";
+"stageOne.saveError" = "The record could not be saved. Please try again.";
+"stageOne.feedback.title" = "How did this practice feel?";
+"stageOne.feedback.intro" = "Choose your actual experience. No answer is never treated as readiness to progress.";
+"stageOne.feedback.comfortable" = "I could feel contraction and release, without discomfort";
+"stageOne.feedback.unsure" = "I am unsure and would like more practice";
+"stageOne.feedback.discomfort" = "I felt discomfort and will stop practising";
+"stageOne.feedback.next.comfortable" = "Your experience is saved. Review the learning path to decide whether to continue, or keep practising here.";
+"stageOne.feedback.next.unsure" = "Stay at this stage and revisit the movement next time. There is no need to catch up.";
+"stageOne.feedback.next.discomfort" = "Rest without adding sessions. Seek professional support for persistent discomfort or pain.";
+"stageOne.repetitions %lld %lld" = "Main practice completed: %lld / %lld repetitions";
+"stageOne.duration %lld %lld" = "%lldm %llds";
+"stageOne.structure" = "2 demonstrations · 6 practice repetitions";
+"stageOne.next %@" = "Next: %@";
+"stageOne.completed.detail" = "This records the session you followed, not measured strength or functional improvement.";
+
+"stageOne.feedback.completeLater" = "Add feedback for this session";

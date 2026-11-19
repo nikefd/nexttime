@@ -5,6 +5,7 @@
 //  Created by zhang005 on 1/17/26.
 //
 
+import AVFoundation
 import Testing
 import Foundation
 @testable import NextTime
@@ -12,12 +13,226 @@ import Foundation
 @MainActor
 struct NextTimeTests {
 
+    private func pathService() throws -> (DataService, UserDefaults, String) {
+        let suite = "PathTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        let service = DataService(userDefaults: defaults, protectedStore: try ProtectedDataStore(inMemory: true))
+        return (service, defaults, suite)
+    }
+
+    private func pathRecord(_ state: PracticePathState, at date: Date, duration: Int = 30,
+                            completed: Bool = true, tagged: Bool = true) -> TrainingRecord {
+        TrainingRecord(programId: state.currentStage.program.id, programName: "Path", completedAt: date,
+                       duration: duration, completedSets: 1, totalSets: 1, isCompleted: completed,
+                       route: .foundation, pathID: tagged ? state.id : nil,
+                       pathStage: tagged ? state.currentStage : nil)
+    }
+
+    @Test func pathIgnoresCalendarLegacyOptionalIncompleteAndFutureRecords() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let start = Date(timeIntervalSince1970: 1_700_000_000)
+        let state = try service.startPracticePathIfNeeded(now: start)
+        let later = start.addingTimeInterval(90 * 86400)
+        let records = [pathRecord(state, at: start, tagged: false),
+                       pathRecord(state, at: start, duration: 0),
+                       pathRecord(state, at: start, completed: false),
+                       pathRecord(state, at: later.addingTimeInterval(1))]
+        for record in records { service.saveRecord(record) }
+        let unchanged = try service.startPracticePathIfNeeded(now: later)
+        #expect(unchanged.currentStage == .awareness)
+        #expect(unchanged.id == state.id)
+        #expect(unchanged.completedRecords(in: service.loadRecords(), now: later).isEmpty)
+        for _ in 0..<3 { service.saveRecord(pathRecord(state, at: later)) }
+        #expect(service.loadPracticePath()?.currentStage == .awareness)
+        #expect(state.completedRecords(in: service.loadRecords(), now: later).count == 3)
+    }
+
+    @Test func legacyRecordDecodesWithoutPathFields() throws {
+        let state = PracticePathState()
+        let record = pathRecord(state, at: Date(), tagged: false)
+        let encoded = try JSONEncoder().encode(record)
+        let decoded = try JSONDecoder().decode(TrainingRecord.self, from: encoded)
+        #expect(decoded.pathID == nil)
+        #expect(decoded.pathStage == nil)
+        #expect(decoded.id == record.id)
+    }
+
+    @Test func pathAdvancesOnlyWithExplicitReviewAndRejectsRepeatedReview() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let start = Date(timeIntervalSince1970: 1_700_000_000)
+        let state = try service.startPracticePathIfNeeded(now: start)
+        let record = pathRecord(state, at: start.addingTimeInterval(10))
+        service.saveRecord(record)
+        let now = start.addingTimeInterval(20)
+        let incomplete = PracticeStageReview(stage: .awareness, recordID: record.id, confirmedAt: now,
+                                            breathingComfortable: true, fullyReleased: false, noDiscomfort: true)
+        #expect(throws: PracticePathError.self) { try service.advancePracticePath(incomplete, now: now) }
+        let review = PracticeStageReview(stage: .awareness, recordID: record.id, confirmedAt: now,
+                                        breathingComfortable: true, fullyReleased: true, noDiscomfort: true)
+        let advanced = try service.advancePracticePath(review, now: now)
+        #expect(advanced.currentStage == .steady)
+        #expect(advanced.reviews.count == 1)
+        #expect(advanced.completedRecords(in: service.loadRecords(), now: now).isEmpty)
+        #expect(throws: PracticePathError.self) { try service.advancePracticePath(review, now: now) }
+        #expect(service.loadPracticePath()?.currentStage == .steady)
+    }
+
+    @Test func safetyFeedbackBlocksPathAdvanceAndClearRemovesPath() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let now = Date()
+        let state = try service.startPracticePathIfNeeded(now: now.addingTimeInterval(-60))
+        let record = pathRecord(state, at: now.addingTimeInterval(-30))
+        service.saveRecord(record)
+        service.saveSafetyEvent(PracticeSafetyEvent(createdAt: now.addingTimeInterval(-10),
+                                programID: record.programId, response: .seekProfessionalCare))
+        let review = PracticeStageReview(stage: .awareness, recordID: record.id, confirmedAt: now,
+                                        breathingComfortable: true, fullyReleased: true, noDiscomfort: true)
+        #expect(throws: PracticePathError.self) { try service.advancePracticePath(review, now: now) }
+        #expect(service.loadPracticePath()?.reviews.isEmpty == true)
+        service.clearAllData()
+        #expect(service.loadPracticePath() == nil)
+        #expect(service.loadRecords().isEmpty)
+    }
+
+    @Test func trainingManagerWritesActualPathContextOnce() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let state = try service.startPracticePathIfNeeded(now: Date().addingTimeInterval(-1))
+        let manager = TrainingManager(dataService: service, recordedLessonsEnabled: false)
+        defer { manager.resetState() }
+        manager.startTraining(program: state.currentStage.program, pathContext: state.context)
+        manager.progress.elapsedTime = 12
+        while manager.isRunning { manager.advanceStep() }
+        manager.stopTraining()
+        let records = service.loadRecords()
+        #expect(records.count == 1)
+        #expect(records.first?.pathID == state.id)
+        #expect(records.first?.pathStage == .awareness)
+        #expect(state.completedRecords(in: records).count == 1)
+    }
+
+    @Test func stageOneClipsMatchBothVoicesAndCountOnlyFullRepetitions() throws {
+        #expect(StageOneLesson.completedRepetitions(after: 5) == 0)
+        #expect(StageOneLesson.completedRepetitions(after: 7) == 0)
+        #expect(StageOneLesson.completedRepetitions(after: 8) == 1)
+        #expect(StageOneLesson.completedRepetitions(after: 17) == 5)
+        #expect(StageOneLesson.completedRepetitions(after: 18) == 6)
+        for voice in NarrationVoice.allCases {
+            let lesson = try StageOneLesson.load(voice: voice)
+            var practiceSeconds: Double = 0
+            for index in lesson.audioURLs.indices {
+                let player = try AVAudioPlayer(contentsOf: lesson.audioURLs[index])
+                let section = lesson.timeline.sections[index]
+                #expect(abs(player.duration - (section.end - section.start)) < 0.05)
+                if StageOneLesson.countsAsPractice(index) { practiceSeconds += player.duration }
+            }
+            #expect(abs(practiceSeconds - 117) < 0.1)
+            #expect(lesson.steps.filter { $0.kind == .contract }.count == 8)
+            #expect(StageOneLesson.needsReadyAfter(0))
+            #expect(StageOneLesson.needsReadyAfter(1))
+            #expect(!StageOneLesson.needsReadyAfter(5))
+        }
+    }
+
+    @Test func recordedInstructionPausesWithoutCountingOrSavingPractice() async throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let state = try service.startPracticePathIfNeeded()
+        let manager = TrainingManager(dataService: service, recordedVoice: .male)
+        defer { manager.resetState() }
+        manager.startTraining(program: TrainingData.foundationAwareness, pathContext: state.context)
+        #expect(manager.recordedLesson?.voice == .male)
+        try await Task.sleep(for: .milliseconds(1200))
+        manager.pauseTraining()
+        let seconds = manager.recordedElapsed
+        #expect(seconds > 0)
+        #expect(manager.progress.elapsedTime == 0)
+        try await Task.sleep(for: .milliseconds(1200))
+        #expect(manager.recordedElapsed == seconds)
+        #expect(manager.progress.currentStepIndex == 0)
+        manager.resumeTraining()
+        #expect(!manager.isPaused)
+        manager.stopTraining()
+        #expect(service.loadRecords().isEmpty)
+    }
+
+    @Test func sessionFeedbackIsBoundToRecordAndUnsureDoesNotAllowProgress() throws {
+        for outcome in SessionFeedbackOutcome.allCases {
+            let (service, defaults, suite) = try pathService()
+            defer { defaults.removePersistentDomain(forName: suite) }
+            let now = Date()
+            let path = try service.startPracticePathIfNeeded(now: now.addingTimeInterval(-60))
+            let record = TrainingRecord(programId: path.currentStage.program.id, programName: "First", completedAt: now.addingTimeInterval(-10), duration: 117, completedSets: 1, totalSets: 1, isCompleted: true, route: .foundation, pathID: path.id, pathStage: .awareness, lessonVersion: StageOneLesson.version, completedRepetitions: 6, totalRepetitions: 6)
+            service.saveRecord(record)
+            let review = PracticeStageReview(stage: .awareness, recordID: record.id, confirmedAt: now, breathingComfortable: true, fullyReleased: true, noDiscomfort: true)
+            #expect(throws: PracticePathError.self) { try service.advancePracticePath(review, now: now) }
+            #expect(throws: PracticePathError.self) { try service.saveSessionFeedback(recordID: UUID(), outcome: outcome, now: now) }
+            try service.saveSessionFeedback(recordID: record.id, outcome: outcome, now: now)
+            try service.saveSessionFeedback(recordID: record.id, outcome: outcome, now: now)
+            #expect(service.loadSessionFeedback().count == 1)
+            if outcome == .comfortable {
+                #expect(try service.advancePracticePath(review, now: now).currentStage == .steady)
+            } else {
+                #expect(throws: PracticePathError.self) { try service.advancePracticePath(review, now: now) }
+                #expect(service.loadPracticePath()?.currentStage == .awareness)
+            }
+            if outcome == .discomfort {
+                #expect(service.loadSafetyEvents().contains { $0.id == record.id })
+                #expect(throws: PracticePathError.self) { try service.saveSessionFeedback(recordID: record.id, outcome: .comfortable, now: now) }
+            }
+            service.clearAllData()
+            #expect(service.loadSessionFeedback().isEmpty)
+        }
+    }
+
+    @Test func bundledNarrationHasBothVoicesAndAccuratePilotTimelines() throws {
+        #expect(NarrationVoice.resolve(nil) == .female)
+        #expect(NarrationVoice.resolve(UserSettings().selectedVoice) == .female)
+        #expect(NarrationVoice.resolve("nexttime.yunxi") == .male)
+        #expect(NarrationVoice.resolve("system") == nil)
+        for voice in NarrationVoice.allCases {
+            for suffix in ["contract", "relax", "rest", "pilot"] {
+                let url = try #require(Bundle.main.url(forResource: "\(voice.assetPrefix)-\(suffix)", withExtension: "m4a"))
+                let audio = try AVAudioPlayer(contentsOf: url)
+                #expect(audio.duration > 0)
+                if suffix != "pilot" { #expect(audio.duration < 1.5) }
+            }
+            #expect(Bundle.main.url(forResource: "\(voice.assetPrefix)-preview", withExtension: "mp3") != nil)
+            let url = try #require(Bundle.main.url(forResource: "\(voice.assetPrefix)-pilot", withExtension: "json"))
+            let timeline = try JSONDecoder().decode(PilotNarrationTimeline.self, from: Data(contentsOf: url))
+            #expect(timeline.sections.count == 21)
+            #expect(timeline.sections.first?.start == 0)
+            #expect(timeline.sections.last?.end == timeline.duration)
+            for (left, right) in zip(timeline.sections, timeline.sections.dropFirst()) {
+                #expect(abs(left.end - right.start) < 0.001)
+            }
+        }
+    }
+
+    @Test func narrationSelectionPersistsWithoutReplacingSystemPreference() throws {
+        let suite = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let service = DataService(userDefaults: defaults, protectedStore: try ProtectedDataStore(inMemory: true))
+        var settings = service.loadSettings()
+        #expect(settings.selectedVoice == "default")
+        settings.selectedVoice = NarrationVoice.male.rawValue
+        service.saveSettings(settings)
+        #expect(service.loadSettings().selectedVoice == "nexttime.yunxi")
+        settings.selectedVoice = "existing.system.voice"
+        service.saveSettings(settings)
+        #expect(service.loadSettings().selectedVoice == "existing.system.voice")
+    }
+
     @Test func trainingRecordsActiveSecondsAndDoesNotSaveTwice() throws {
         let suite = "NextTimeTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
         let service = DataService(userDefaults: defaults, protectedStore: try ProtectedDataStore(inMemory: true))
-        let manager = TrainingManager(dataService: service)
+        let manager = TrainingManager(dataService: service, recordedLessonsEnabled: false)
         defer { manager.resetState() }
         manager.startTraining(program: TrainingData.foundationAwareness)
         manager.advanceStep()
@@ -30,6 +245,35 @@ struct NextTimeTests {
         #expect(service.loadRecords().count == 1)
         #expect(service.loadRecords().first?.duration == 7)
         #expect(service.loadRecords().first?.isCompleted == false)
+    }
+
+    @Test func pausedTrainingKeepsStepAndSecondsUntilManualResume() async throws {
+        let suite = "NextTimeTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let service = DataService(userDefaults: defaults, protectedStore: try ProtectedDataStore(inMemory: true))
+        let manager = TrainingManager(dataService: service, recordedLessonsEnabled: false)
+        defer { manager.resetState() }
+        manager.startTraining(program: TrainingData.foundationAwareness)
+        manager.advanceStep()
+        #expect(manager.currentStep?.duration != nil)
+        let index = manager.progress.currentStepIndex
+        let remaining = manager.progress.remainingSeconds
+        let elapsed = manager.progress.elapsedTime
+        manager.pauseTraining()
+        manager.pauseTraining()
+        try await Task.sleep(for: .milliseconds(1200))
+        #expect(manager.isRunning)
+        #expect(manager.isPaused)
+        #expect(manager.progress.currentStepIndex == index)
+        #expect(manager.progress.remainingSeconds == remaining)
+        #expect(manager.progress.elapsedTime == elapsed)
+        manager.resumeTraining()
+        #expect(!manager.isPaused)
+        #expect(manager.progress.currentStepIndex == index)
+        manager.resetState()
+        #expect(!manager.isRunning)
+        #expect(!manager.isPaused)
     }
 
     @Test func failedLegacyDecodePreservesSourceAndAllowsRetry() throws {

@@ -120,19 +120,198 @@ final class NextTimeUITests: XCTestCase {
     }
 
     @MainActor
-    func testTodayAdvancedPracticeRequiresPro() throws {
+    func testLegacyHistoryDoesNotAdvancePathAndFutureStagesAreVisible() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--store-screenshot-seed", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launch()
+        XCTAssertTrue(app.buttons["home.start-today"].waitForExistence(timeout: 8))
+        app.buttons["home.practice-path"].tap()
+        XCTAssertTrue(app.staticTexts["path.position"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["path.position"].label, "学习阶段 1 / 4")
+        XCTAssertEqual(app.staticTexts["path.completed"].label, "本阶段路径练习已完成 0 次")
+        XCTAssertFalse(app.buttons["path.review"].isEnabled)
+        app.buttons["path.stage.4"].tap()
+        XCTAssertTrue(app.staticTexts["巩固与日常应用"].firstMatch.exists)
+        XCTAssertFalse(app.buttons["path.review"].exists)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "path-future-preview"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
+    @MainActor
+    func testPathRequiresReviewAndPersistsNextStageWithProGuard() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--store-screenshot-seed", "--uitesting-path-review-ready", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launch()
+        XCTAssertTrue(app.buttons["home.practice-path"].waitForExistence(timeout: 8))
+        app.buttons["home.practice-path"].tap()
+        XCTAssertTrue(app.staticTexts["path.completed"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["path.completed"].label, "本阶段路径练习已完成 1 次")
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "path-current-stage"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        app.buttons["path.review"].tap()
+        let confirm = app.buttons["path.review.confirm"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        XCTAssertFalse(confirm.isEnabled)
+        for label in ["动作时能保持自然呼吸", "每次收紧后能充分松开", "没有疼痛或持续紧绷等不适"] {
+            let control = app.switches[label]
+            control.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 0.5)).tap()
+            XCTAssertEqual(control.value as? String, "1")
+        }
+        XCTAssertTrue(confirm.isEnabled)
+        confirm.tap()
+        XCTAssertTrue(app.staticTexts["path.position"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["path.position"].label, "学习阶段 2 / 4")
+        app.buttons["完成"].tap()
+        XCTAssertTrue(app.buttons["home.unlock-today"].waitForExistence(timeout: 5))
+        app.buttons["home.unlock-today"].tap()
+        XCTAssertTrue(app.navigationBars["升级 Pro"].waitForExistence(timeout: 5))
+        app.terminate()
+        app.launchArguments.removeAll { $0 == "--store-screenshot-seed" || $0 == "--uitesting-path-review-ready" }
+        app.launch()
+        XCTAssertTrue(app.buttons["home.practice-path"].waitForExistence(timeout: 8))
+        app.buttons["home.practice-path"].tap()
+        XCTAssertTrue(app.staticTexts["path.position"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["path.position"].label, "学习阶段 2 / 4")
+        XCTAssertEqual(app.staticTexts["path.completed"].label, "本阶段路径练习已完成 0 次")
+    }
+
+    @MainActor
+    func testBackgroundPausesTrainingUntilManualResume() throws {
         let app = XCUIApplication()
         app.launchArguments = [
-            "--store-screenshot-seed",
-            "-AppleLanguages", "(zh-Hans)",
-            "-AppleLocale", "zh_CN"
+            "--store-screenshot-seed", "--store-screenshot-pro",
+            "-AppleLanguages", "(en)", "-AppleLocale", "en_US"
         ]
         app.launch()
+        XCTAssertTrue(app.buttons["home.start-today"].waitForExistence(timeout: 8))
+        app.buttons["home.start-today"].tap()
+        XCTAssertTrue(app.buttons["training.exit"].waitForExistence(timeout: 5))
+        let control = app.buttons["training.pause-resume"]
+        for _ in 0..<6 {
+            if control.exists { break }
+            let ready = app.buttons["I'm Ready—Continue"]
+            XCTAssertTrue(ready.waitForExistence(timeout: 3))
+            ready.tap()
+        }
+        XCTAssertTrue(control.waitForExistence(timeout: 3))
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(control.waitForExistence(timeout: 5))
+        XCTAssertTrue(control.label.contains("Resume"))
+        let remaining = app.staticTexts["training.remaining"]
+        let pausedSeconds = remaining.label
+        sleep(2)
+        XCTAssertEqual(remaining.label, pausedSeconds)
+        XCTAssertTrue(control.label.contains("Resume"))
+        control.tap()
+        XCTAssertTrue(control.label.contains("Pause"))
+    }
 
-        let unlockButton = app.buttons["home.unlock-today"]
-        XCTAssertTrue(unlockButton.waitForExistence(timeout: 8))
-        unlockButton.tap()
-        XCTAssertTrue(app.navigationBars["升级 Pro"].waitForExistence(timeout: 5))
+    @MainActor
+    func testPilotNarrationDefaultsFemaleAndPersistsMaleChoice() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--store-screenshot-seed", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launch()
+        func openSettings() {
+            XCTAssertTrue(app.tabBars.firstMatch.waitForExistence(timeout: 8))
+            app.tabBars.buttons.element(boundBy: 3).tap()
+            for _ in 0..<6 {
+                if app.buttons["settings.pilot-narration"].isHittable { break }
+                app.swipeUp()
+            }
+        }
+        openSettings()
+        app.buttons["settings.pilot-narration"].tap()
+        XCTAssertTrue(app.staticTexts["pilot.voice"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["pilot.voice"].label, "女声 · 默认")
+        let playback = app.buttons["pilot.play-pause"]
+        XCTAssertTrue(playback.exists)
+        playback.tap()
+        let elapsed = app.staticTexts["pilot.elapsed"]
+        let advanced = NSPredicate(format: "label != %@", "0:00")
+        expectation(for: advanced, evaluatedWith: elapsed)
+        waitForExpectations(timeout: 5)
+        playback.tap()
+        let pausedTime = elapsed.label
+        sleep(2)
+        XCTAssertEqual(elapsed.label, pausedTime)
+        app.buttons["完成"].tap()
+        app.buttons["settings.narration-voice"].tap()
+        app.buttons["男声"].tap()
+        app.buttons["settings.pilot-narration"].tap()
+        XCTAssertTrue(app.staticTexts["pilot.voice"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["pilot.voice"].label, "男声")
+        app.terminate()
+        app.launchArguments.removeAll { $0 == "--store-screenshot-seed" }
+        app.launch()
+        openSettings()
+        app.buttons["settings.pilot-narration"].tap()
+        XCTAssertTrue(app.staticTexts["pilot.voice"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["pilot.voice"].label, "男声")
+    }
+
+    @MainActor
+    func testRecordedStageOneFullSessionSavesOnceAndUnsureKeepsStage() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["--store-screenshot-seed", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launch()
+        XCTAssertTrue(app.buttons["home.start-today"].waitForExistence(timeout: 8))
+        app.buttons["home.start-today"].tap()
+        let section = app.staticTexts["training.recorded-section"]
+        XCTAssertTrue(section.waitForExistence(timeout: 5))
+        XCTAssertTrue(section.label.contains("认识动作"))
+        let pause = app.buttons["training.pause-resume"]
+        XCTAssertTrue(pause.exists)
+        pause.tap()
+        let remaining = app.staticTexts["training.remaining"].label
+        sleep(2)
+        XCTAssertEqual(app.staticTexts["training.remaining"].label, remaining)
+        pause.tap()
+        let ready = app.buttons["training.continue"]
+        XCTAssertTrue(ready.waitForExistence(timeout: 75))
+        ready.tap()
+        let hiddenReady = NSPredicate(format: "exists == false")
+        expectation(for: hiddenReady, evaluatedWith: ready)
+        waitForExpectations(timeout: 5)
+        XCTAssertTrue(ready.waitForExistence(timeout: 45))
+        ready.tap()
+        let demo = NSPredicate(format: "label CONTAINS %@", "示范 · 第1/2次")
+        expectation(for: demo, evaluatedWith: section)
+        waitForExpectations(timeout: 5)
+        let main = NSPredicate(format: "label CONTAINS %@", "主练习 · 第1/6次")
+        expectation(for: main, evaluatedWith: section)
+        waitForExpectations(timeout: 50)
+        XCTAssertTrue(app.staticTexts["training.next-action"].exists)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "stage-one-real-practice"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        XCTAssertTrue(app.staticTexts["training.completed-label"].waitForExistence(timeout: 145))
+        XCTAssertEqual(app.staticTexts["training.repetitions-saved"].label, "主练习完成 6 / 6 次")
+        app.buttons["training.feedback.unsure"].tap()
+        XCTAssertTrue(app.staticTexts["training.feedback-saved"].waitForExistence(timeout: 5))
+        app.buttons["training.open-path"].tap()
+        XCTAssertTrue(app.staticTexts["path.position"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["path.position"].label, "学习阶段 1 / 4")
+        XCTAssertEqual(app.staticTexts["path.completed"].label, "本阶段路径练习已完成 1 次")
+        XCTAssertFalse(app.buttons["path.review"].isEnabled)
+        app.navigationBars.buttons["完成"].tap()
+        app.buttons["training.done"].tap()
+        XCTAssertTrue(app.buttons["home.practice-path"].waitForExistence(timeout: 5))
+        app.buttons["home.practice-path"].tap()
+        XCTAssertEqual(app.staticTexts["path.completed"].label, "本阶段路径练习已完成 1 次")
+        app.terminate()
+        app.launchArguments.removeAll { $0 == "--store-screenshot-seed" }
+        app.launch()
+        XCTAssertTrue(app.buttons["home.practice-path"].waitForExistence(timeout: 8))
+        app.buttons["home.practice-path"].tap()
+        XCTAssertTrue(app.staticTexts["path.completed"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["path.completed"].label, "本阶段路径练习已完成 1 次")
+        XCTAssertFalse(app.buttons["path.review"].isEnabled)
     }
 
     @MainActor

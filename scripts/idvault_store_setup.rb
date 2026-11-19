@@ -133,7 +133,7 @@ if ENV['STORE_MODE'] == 'complete'
     end
   end
   schedule = api('get', "/v1/apps/#{app_id}/appPriceSchedule", allow_missing: true)
-  unless schedule&.dig('data')
+  if true # Explicitly save approved free-download schedule, even if ASC has an empty schedule.
     point = all("/v1/apps/#{app_id}/appPricePoints?" + URI.encode_www_form('filter[territory]' => 'CHN', 'limit' => '200')).find { |r| BigDecimal(r.dig('attributes','customerPrice')) == BigDecimal('0') }
     raise 'Free App price point missing' unless point
     api('post', '/v1/appPriceSchedules', {data: {type: 'appPriceSchedules', relationships: {app: link('apps', app_id), baseTerritory: link('territories', 'CHN'), manualPrices: {data: [{type: 'appPrices', id: '${free-price}'}]}}}, included: [{type: 'appPrices', id: '${free-price}', attributes: {startDate: nil, endDate: nil}, relationships: {appPricePoint: link('appPricePoints', point['id'])}}]})

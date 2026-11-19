@@ -144,9 +144,19 @@ if ENV['STORE_MODE'] == 'listing'
     localizations = all("/v1/appInfos/#{info['id']}/appInfoLocalizations?limit=200")
     chinese = localizations.find { |l| l.dig('attributes','locale') == 'zh-Hans' }
     next unless chinese
-    api('patch', "/v1/appInfoLocalizations/#{chinese['id']}", { data: { type: 'appInfoLocalizations', id: chinese['id'], attributes: { name: '拾页', subtitle: copy.fetch('subtitle'), privacyPolicyUrl: 'https://nikefd.github.io/nexttime-site/shiye/privacy.html' } } })
+    api('patch', "/v1/appInfoLocalizations/#{chinese['id']}", { data: { type: 'appInfoLocalizations', id: chinese['id'], attributes: { name: '拾页 · 本地证件夹', subtitle: copy.fetch('subtitle'), privacyPolicyUrl: 'https://nikefd.github.io/nexttime-site/shiye/privacy.html' } } })
     break
   end
+  info = infos.find { |i| i.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
+  raise 'Editable app info required' unless info
+  english = all("/v1/appInfos/#{info['id']}/appInfoLocalizations").find { |l| l.dig('attributes','locale') == 'en-US' }
+  attrs = {name: 'PageKeep', subtitle: 'Private document organizer', privacyPolicyUrl: 'https://nikefd.github.io/nexttime-site/shiye/privacy.html'}
+  if english
+    api('patch', "/v1/appInfoLocalizations/#{english['id']}", {data: {type: 'appInfoLocalizations', id: english['id'], attributes: attrs}})
+  else
+    api('post', '/v1/appInfoLocalizations', {data: {type: 'appInfoLocalizations', attributes: attrs.merge(locale: 'en-US'), relationships: {appInfo: link('appInfos', info['id'])}}})
+  end
+  puts 'Approved Chinese name and English name PageKeep saved.'
   puts 'Chinese description, keywords and subtitle prepared in the editable app record.'
   puts 'Shiye Chinese name and published support/privacy URLs configured; no review submission triggered.'
   exit
@@ -243,7 +253,7 @@ end
 all("/v1/apps/#{app_id}/appInfos?limit=200").each do |info|
   all("/v1/appInfos/#{info['id']}/appInfoLocalizations?limit=200").each do |locale|
     a = locale.fetch('attributes')
-    puts "App info #{a['locale']}: subtitle_present=#{!a['subtitle'].to_s.empty?}; privacy_url_present=#{!a['privacyPolicyUrl'].to_s.empty?}"
+    puts "App info #{a['locale']}: name=#{a['name']}; subtitle_present=#{!a['subtitle'].to_s.empty?}; privacy_url_present=#{!a['privacyPolicyUrl'].to_s.empty?}"
   end
 end
 puts 'No review submission or automatic release was triggered.'

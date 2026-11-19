@@ -132,13 +132,10 @@ if ENV['STORE_MODE'] == 'complete'
       puts 'No complete existing developer review contact found; user must complete contact details.'
     end
   end
-  schedule = api('get', "/v1/apps/#{app_id}/appPriceSchedule", allow_missing: true)
-  if true # Explicitly save approved free-download schedule, even if ASC has an empty schedule.
-    point = all("/v1/apps/#{app_id}/appPricePoints?" + URI.encode_www_form('filter[territory]' => 'CHN', 'limit' => '200')).find { |r| BigDecimal(r.dig('attributes','customerPrice')) == BigDecimal('0') }
-    raise 'Free App price point missing' unless point
-    api('post', '/v1/appPriceSchedules', {data: {type: 'appPriceSchedules', relationships: {app: link('apps', app_id), baseTerritory: link('territories', 'CHN'), manualPrices: {data: [{type: 'appPrices', id: '${free-price}'}]}}}, included: [{type: 'appPrices', id: '${free-price}', attributes: {startDate: nil, endDate: nil}, relationships: {appPricePoint: link('appPricePoints', point['id'])}}]})
-    puts 'App download price set to free; lifetime Pro price not changed.'
-  end
+  point = all("/v1/apps/#{app_id}/appPricePoints?" + URI.encode_www_form('filter[territory]' => 'CHN', 'limit' => '200')).find { |r| BigDecimal(r.dig('attributes','customerPrice')) == BigDecimal('0') }
+  raise 'Free App price point missing' unless point
+  api('post', '/v1/appPriceSchedules', {data: {type: 'appPriceSchedules', relationships: {app: link('apps', app_id), baseTerritory: link('territories', 'CHN'), manualPrices: {data: [{type: 'appPrices', id: '${free-price}'}]}}}, included: [{type: 'appPrices', id: '${free-price}', attributes: {startDate: nil, endDate: nil}, relationships: {appPricePoint: link('appPricePoints', point['id'])}}]})
+  puts 'App download price set to free; lifetime Pro price not changed.'
   puts 'Completed editable required metadata. No review submitted in this mode.'
   exit
 end
@@ -205,6 +202,18 @@ if ENV['STORE_MODE'] == 'screenshots'
       puts "Uploaded #{dir}/#{File.basename(file)}"
     end
   end
+  product = all("/v1/apps/#{app_id}/inAppPurchasesV2").find { |r| r.dig('attributes','productId') == PRODUCT_ID }
+  raise 'Lifetime product missing' unless product
+  review_shot = api('get', "/v2/inAppPurchases/#{product['id']}/appStoreReviewScreenshot", allow_missing: true)&.dig('data')
+  if review_shot.nil?
+    file = 'idvault-source/docs/store/screenshots/iphone/02-family.png'
+    resource = api('post', '/v1/inAppPurchaseAppStoreReviewScreenshots', {data: {type: 'inAppPurchaseAppStoreReviewScreenshots', attributes: {fileName: 'pro-multiple-members.png', fileSize: File.size(file)}, relationships: {inAppPurchaseV2: link('inAppPurchases', product['id'])}}}).fetch('data')
+    upload_asset(resource, file)
+    puts 'Uploaded IAP review screenshot showing Pro multiple-member management with fictional data.'
+  else
+    puts "IAP review screenshot state: #{review_shot.dig('attributes','assetDeliveryState','state')}"
+  end
+  api('patch', "/v2/inAppPurchases/#{product['id']}", {data: {type: 'inAppPurchases', id: product['id'], attributes: {reviewNote: 'One-time non-consumable Pro purchase unlocks multiple family members and unlimited documents. Free tier: 1 member and 10 documents total. Screenshot shows the multiple-member management feature in Pro using fictional sample data. Open the Pro screen on Home for purchase and Restore Purchases. No app account or server login is required; personal document data stays on device.'}}})
   puts 'Screenshots uploaded to editable version only; no review submitted.'
   exit
 end

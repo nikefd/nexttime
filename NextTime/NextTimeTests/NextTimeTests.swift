@@ -25,7 +25,8 @@ struct NextTimeTests {
         TrainingRecord(programId: state.currentStage.program.id, programName: "Path", completedAt: date,
                        duration: duration, completedSets: 1, totalSets: 1, isCompleted: completed,
                        route: .foundation, pathID: tagged ? state.id : nil,
-                       pathStage: tagged ? state.currentStage : nil)
+                       pathStage: tagged ? state.currentStage : nil,
+                       lessonVersion: tagged ? PracticeCurriculum.version(for: state.currentStage) : nil)
     }
 
     @Test func pathIgnoresCalendarLegacyOptionalIncompleteAndFutureRecords() throws {
@@ -66,6 +67,7 @@ struct NextTimeTests {
         let record = pathRecord(state, at: start.addingTimeInterval(10))
         service.saveRecord(record)
         let now = start.addingTimeInterval(20)
+        try service.saveSessionFeedback(recordID: record.id, outcome: .comfortable, now: now)
         let incomplete = PracticeStageReview(stage: .awareness, recordID: record.id, confirmedAt: now,
                                             breathingComfortable: true, fullyReleased: false, noDiscomfort: true)
         #expect(throws: PracticePathError.self) { try service.advancePracticePath(incomplete, now: now) }
@@ -86,6 +88,7 @@ struct NextTimeTests {
         let state = try service.startPracticePathIfNeeded(now: now.addingTimeInterval(-60))
         let record = pathRecord(state, at: now.addingTimeInterval(-30))
         service.saveRecord(record)
+        try service.saveSessionFeedback(recordID: record.id, outcome: .comfortable, now: now.addingTimeInterval(-20))
         service.saveSafetyEvent(PracticeSafetyEvent(createdAt: now.addingTimeInterval(-10),
                                 programID: record.programId, response: .seekProfessionalCare))
         let review = PracticeStageReview(stage: .awareness, recordID: record.id, confirmedAt: now,
@@ -188,6 +191,138 @@ struct NextTimeTests {
         }
     }
 
+    @Test func productionCurriculumNarrationCoversBothVoicesAndEveryLaterStage() throws {
+        for voice in NarrationVoice.allCases {
+            var introductions: Set<URL> = []
+            var checks: Set<URL> = []
+            for stage in PracticeStage.allCases where stage != .awareness {
+                let narration = try CurriculumNarration.load(stage: stage, voice: voice)
+                #expect(narration.voice == voice)
+                #expect(narration.stage == stage)
+                #expect(narration.urls.count == 3)
+                #expect(narration.durations.values.allSatisfy { $0 > 5 && $0 < 60 })
+                #expect(narration.duration > 30)
+                introductions.insert(try #require(narration.urls[.prepare]))
+                checks.insert(try #require(narration.urls[.check]))
+                let matched = stage.program.resolvedGuidedSteps.compactMap { narration.part(for: $0) }
+                #expect(matched == [.prepare, .check, .reflect])
+                for url in narration.urls.values {
+                    #expect(url.lastPathComponent.hasPrefix(voice.assetPrefix))
+                    #expect(try AVAudioPlayer(contentsOf: url).duration > 0)
+                }
+            }
+            #expect(introductions.count == 3)
+            #expect(checks.count == 1)
+        }
+        let female = try CurriculumNarration.load(stage: .steady, voice: .female)
+        let male = try CurriculumNarration.load(stage: .steady, voice: .male)
+        #expect(try Data(contentsOf: #require(female.urls[.check])) != Data(contentsOf: #require(male.urls[.check])))
+    }
+
+    private func instructionFixture(long: Bool) throws -> (Bundle, URL) {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("NarrationFixture-\(UUID()).bundle")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let info = ["CFBundleIdentifier": "test.nexttime.narration", "CFBundleName": "NarrationFixture", "CFBundlePackageType": "BNDL"]
+        try PropertyListSerialization.data(fromPropertyList: info, format: .xml, options: 0).write(to: folder.appendingPathComponent("Info.plist"))
+        let source = try #require(Bundle.main.url(forResource: long ? "nexttime-xiaoyi-section-00" : "nexttime-xiaoyi-contract", withExtension: "m4a"))
+        for suffix in ["prepare-2", "check", "reflect"] {
+            try FileManager.default.copyItem(at: source, to: folder.appendingPathComponent("nexttime-xiaoyi-curriculum-\(suffix).m4a"))
+        }
+        return (try #require(Bundle(url: folder)), folder)
+    }
+
+    @Test func narratedInstructionPausesReplaysAndCanSwitchToReading() async throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let (bundle, folder) = try instructionFixture(long: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let manager = TrainingManager(dataService: service, recordedVoice: .female, narrationBundle: bundle)
+        defer { manager.resetState() }
+        manager.startTraining(program: PracticeStage.steady.program)
+        #expect(manager.instructionAudioDuration > 10)
+        #expect(!manager.progress.isAwaitingContinue)
+        try await Task.sleep(for: .milliseconds(300))
+        manager.pauseTraining()
+        let elapsed = manager.instructionAudioElapsed
+        #expect(elapsed > 0)
+        try await Task.sleep(for: .milliseconds(300))
+        #expect(manager.instructionAudioElapsed == elapsed)
+        #expect(manager.progress.elapsedTime == 0)
+        manager.advanceStep()
+        #expect(manager.progress.currentStepIndex == 0)
+        manager.resumeTraining()
+        #expect(!manager.isPaused)
+        manager.readInstructionInstead()
+        #expect(manager.progress.isAwaitingContinue)
+        manager.replayInstructionAudio()
+        #expect(!manager.progress.isAwaitingContinue)
+        #expect(manager.instructionAudioElapsed == 0)
+        manager.readInstructionInstead()
+        manager.advanceStep()
+        #expect(manager.currentStep?.kind == .contract)
+        #expect(manager.instructionAudioDuration == 0)
+        #expect(manager.progress.currentRepetition == 0)
+        manager.stopTraining()
+        #expect(service.loadRecords().isEmpty)
+    }
+
+    @Test func narratedInstructionWaitsForReadinessAfterActualAudioEnds() async throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let (bundle, folder) = try instructionFixture(long: false)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let manager = TrainingManager(dataService: service, recordedVoice: .female, narrationBundle: bundle)
+        defer { manager.resetState() }
+        manager.startTraining(program: PracticeStage.steady.program)
+        #expect(manager.instructionAudioDuration > 0)
+        #expect(!manager.progress.isAwaitingContinue)
+        for _ in 0..<30 {
+            if manager.progress.isAwaitingContinue { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        #expect(manager.progress.isAwaitingContinue)
+        #expect(manager.instructionAudioElapsed == manager.instructionAudioDuration)
+        #expect(manager.progress.currentStepIndex == 0)
+        #expect(manager.progress.elapsedTime == 0)
+        manager.stopTraining()
+        #expect(service.loadRecords().isEmpty)
+    }
+
+    @Test func voiceOffUsesReadablePreparationInsteadOfSilentAudioWaiting() throws {
+        let original = SpeechService.shared.isEnabled
+        SpeechService.shared.isEnabled = false
+        defer { SpeechService.shared.isEnabled = original }
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        for stage in PracticeStage.allCases {
+            let manager = TrainingManager(dataService: service, recordedVoice: .female)
+            manager.startTraining(program: stage.program)
+            #expect(manager.recordedLesson == nil)
+            #expect(manager.instructionAudioDuration == 0)
+            #expect(manager.progress.isAwaitingContinue)
+            #expect(!manager.recordedPlaybackFailed)
+            manager.stopTraining()
+        }
+        #expect(service.loadRecords().isEmpty)
+    }
+
+    @Test func missingCurriculumNarrationFailsWithoutSubstitutingVoices() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let (bundle, folder) = try instructionFixture(long: false)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let manager = TrainingManager(dataService: service, recordedVoice: .female, narrationBundle: bundle)
+        defer { manager.resetState() }
+        manager.startTraining(program: PracticeStage.rhythm.program) // fixture deliberately lacks stage three
+        #expect(manager.recordedPlaybackFailed)
+        #expect(manager.isPaused)
+        #expect(manager.progress.elapsedTime == 0)
+        manager.resumeTraining()
+        #expect(manager.isPaused)
+        manager.stopTraining()
+        #expect(service.loadRecords().isEmpty)
+    }
+
     @Test func bundledNarrationHasBothVoicesAndAccuratePilotTimelines() throws {
         #expect(NarrationVoice.resolve(nil) == .female)
         #expect(NarrationVoice.resolve(UserSettings().selectedVoice) == .female)
@@ -212,7 +347,7 @@ struct NextTimeTests {
         }
     }
 
-    @Test func narrationSelectionPersistsWithoutReplacingSystemPreference() throws {
+    @Test func narrationSelectionMigratesRemovedSystemVoicesToFemale() throws {
         let suite = "NextTimeTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -224,7 +359,8 @@ struct NextTimeTests {
         #expect(service.loadSettings().selectedVoice == "nexttime.yunxi")
         settings.selectedVoice = "existing.system.voice"
         service.saveSettings(settings)
-        #expect(service.loadSettings().selectedVoice == "existing.system.voice")
+        #expect(service.loadSettings().selectedVoice == "default")
+        #expect(service.loadSettings().selectedVoice == "default")
     }
 
     @Test func trainingRecordsActiveSecondsAndDoesNotSaveTwice() throws {
@@ -627,14 +763,64 @@ struct NextTimeTests {
         #expect(service.loadSafetyEvents() == [event])
     }
 
-    @Test func speechTuningKeepsGuidanceNaturalAndCuesConcise() {
-        let chineseGuidance = SpeechStyle.guidance.rate(for: "zh-CN")
-        let englishGuidance = SpeechStyle.guidance.rate(for: "en-US")
+    @Test func curriculumHasOnlyFourPurposefulCoursesWithoutLoadEscalation() {
+        #expect(PracticeCurriculum.programs.count == 4)
+        #expect(Set(PracticeCurriculum.programs.map(\.id)).count == 4)
+        for stage in PracticeStage.allCases {
+            let program = stage.program
+            #expect(program.localizedNameKey == "curriculum.\(stage.rawValue).title")
+            #expect(PracticeCurriculum.stage(for: program) == stage)
+            #expect(program.totalRepetitions == 6)
+            #expect(program.totalDuration == 99)
+            #expect(!program.guidedSteps.contains { $0.kind == .breathe || $0.kind == .bodyScan })
+            #expect(program.guidedSteps.filter { $0.kind == .contract }.allSatisfy { $0.duration == 3 })
+            #expect(program.guidedSteps.filter { $0.kind == .relax }.allSatisfy { $0.duration == 6 })
+            #expect(program.guidedSteps.filter { $0.kind == .instruction }.count == 2)
+        }
+        #expect(PracticeCurriculum.stage(for: TrainingData.relaxationBreathing) == nil)
+    }
 
-        #expect(chineseGuidance >= 0.4 && chineseGuidance <= 0.55)
-        #expect(englishGuidance >= 0.4 && englishGuidance <= 0.55)
-        #expect(SpeechStyle.guidance.pitch < SpeechStyle.cue.pitch)
-        #expect(SpeechStyle.cue.rate(for: "zh-CN") >= chineseGuidance)
+    @Test func newCurriculumCountsAfterReleaseAndRequiresItsOwnFeedback() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let manager = TrainingManager(dataService: service, recordedLessonsEnabled: false)
+        defer { manager.resetState() }
+        manager.startTraining(program: PracticeStage.steady.program)
+        #expect(manager.progress.isAwaitingContinue)
+        manager.advanceStep() // first contraction
+        manager.advanceStep() // first release has not completed
+        #expect(manager.progress.currentRepetition == 0)
+        manager.advanceStep()
+        #expect(manager.progress.currentRepetition == 1)
+        manager.progress.elapsedTime = 99
+        while manager.isRunning { manager.advanceStep() }
+        manager.stopTraining()
+        let record = try #require(service.loadRecords().first)
+        #expect(record.completedRepetitions == 6)
+        #expect(record.totalRepetitions == 6)
+        #expect(record.lessonVersion == PracticeCurriculum.version(for: .steady))
+        #expect(record.completedSets == 2)
+        #expect(service.loadRecords().count == 1)
+        try service.saveSessionFeedback(recordID: record.id, outcome: .unsure)
+        #expect(service.loadSessionFeedback().first?.recordID == record.id)
+    }
+
+    @Test func archivedCoursesDoNotCountAsRebuiltStagePractice() {
+        var path = PracticePathState(now: Date().addingTimeInterval(-60))
+        path.currentStage = .steady
+        let legacy = TrainingRecord(programId: path.currentStage.program.id, programName: "Legacy",
+            duration: 100, completedSets: 1, totalSets: 1, isCompleted: true,
+            pathID: path.id, pathStage: .steady)
+        #expect(path.completedRecords(in: [legacy]).isEmpty)
+    }
+
+    @Test func leavingCurriculumPreparationDoesNotCreateTraining() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let manager = TrainingManager(dataService: service, recordedLessonsEnabled: false)
+        manager.startTraining(program: PracticeStage.rhythm.program)
+        manager.stopTraining()
+        #expect(service.loadRecords().isEmpty)
     }
 
     @Test func learnLibraryCoversCurrentPlanAndSafetyBoundaries() {

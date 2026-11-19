@@ -32,11 +32,11 @@
 
 /* Programs */
 "programs.title" = "Training Programs";
-"program.browse" = "Browse All Practices · Optional";
+"program.browse" = "View the four-stage practice plan";
 "program.optional" = "Come here when you want to choose. Otherwise, simply follow today's practice on Home.";
 "program.free" = "Free";
 "pro.comparison.title" = "Already Included for Free";
-"pro.comparison.free" = "Repeat 3 introductory practices: pelvic awareness, relaxed breathing and body scanning. Pro unlocks 15 more practices.";
+"pro.comparison.free" = "Repeat stage one for free. Pro unlocks the next three learning stages. Preview the goals and structure of every stage.";
 "pro.comparison.shared" = "Today's recommendations, basic records, voice guidance and privacy protection are also free.";
 "pro.comparison.details" = "Compare Free and Pro";
 "pro.alreadyUnlocked" = "All Pro benefits are unlocked";
@@ -135,7 +135,7 @@
 "settings.haptic.heavy" = "Heavy";
 "settings.voice" = "Voice Guidance";
 "settings.voiceSection" = "Voice Prompts";
-"settings.voiceFooter" = "Automatic mode prefers the highest-quality voice installed on this device. You can preview or choose one manually.";
+"settings.voiceFooter" = "Only the two Mandarin recordings are available. System speech has been removed. Turn voice off to follow the screen and haptics.";
 "settings.volume" = "Volume";
 "settings.dataSection" = "Data";
 "settings.clearData" = "Clear All Data";
@@ -183,11 +183,11 @@
 /* Articles */
 "article.plan.intro" = "NextTime suggests practice based on your goals, history, and current check-in. The plan helps you build a rhythm; it is not a medical prescription you must complete.";
 "article.plan.1.title" = "Start at your current learning stage";
-"article.plan.1.content" = "Home offers a foundation session for the current learning stage. All 18 personal sessions remain available in the optional library. Daily state or discomfort may suggest a support session; it is recorded separately and does not replace path progress.";
+"article.plan.1.content" = "Home offers only the current stage practice. When check-ins or discomfort indicate rest, contraction practice pauses without substituting a breathing timer. Archived courses remain in history and do not count as rebuilt stage practice.";
 "article.plan.2.title" = "Four learning stages";
-"article.plan.2.content" = "The path covers awareness and release, steady control, rhythm and release, and daily application. Preview future stages and review after practising; days since registration never automatically advance it.";
+"article.plan.2.content" = "Only the four-stage main path remains. Stage one has full narration. Later stages use on-screen teaching and recorded cues: two sets of three repetitions, with a check before continuing. The old 18-course catalog and custom loading entry have been removed.";
 "article.plan.3.title" = "Repeat and consolidate without catching up";
-"article.plan.3.content" = "Repeating a session supports learning; the app no longer changes it simply to avoid repetition. Extra same-day sessions never automatically advance the stage. Earlier sessions, optional courses and pilot previews are not treated as mastery of new stages.";
+"article.plan.3.content" = "Repeating your current stage consolidates learning. Stages change your learning focus, not measured strength or sexual function, and do not automatically extend contraction time.";
 "article.plan.4.title" = "Your Check-In Comes First";
 "article.plan.4.content" = "Before-and-after check-ins can adjust the day's suggestion. If you feel tired, tense, or uncomfortable, choose recovery, shorten the practice, or rest.";
 "article.plan.5.title" = "Long-term practice and review";
@@ -246,7 +246,7 @@
 /* Pro */
 "pro.title" = "Upgrade to Pro";
 "pro.upgradeTitle" = "Unlock Your Full Practice";
-"pro.upgradeSubtitle" = "Follow today's plan or choose a practice. One purchase, no subscription.";
+"pro.upgradeSubtitle" = "Learn through four focused stages and track actual practice. One purchase, no subscription.";
 "pro.oneTimePurchase" = "One-time purchase, no subscription";
 "pro.buyButton %@" = "Upgrade for %@";
 "pro.restore" = "Restore Purchase";
@@ -254,8 +254,8 @@
 "pro.restoreSuccess" = "Your Pro purchase has been restored!";
 "pro.restoreNoPurchase" = "No previous purchase found.";
 
-"pro.feature.courses" = "All 18 Personal Practices";
-"pro.feature.courses.desc" = "Includes 3 free introductory sessions and 15 Pro sessions, with optional course browsing. The learning path and basic progress are visible without Pro.";
+"pro.feature.courses" = "Four-stage learning path";
+"pro.feature.courses.desc" = "Learn awareness, breathing coordination, release between sets and independent reflection. Stages never advance by date.";
 "pro.feature.custom" = "Custom Training";
 "pro.feature.custom.desc" = "Create your own training program";
 "pro.feature.reminder" = "Daily Reminders";
@@ -590,13 +590,13 @@
 "recommendation.onPlan.title" = "Continue Your Plan";
 "recommendation.onPlan.detail" = "Practise at your current learning stage; your review determines whether to continue to the next.";
 "recommendation.lowerIntensity.title" = "Keep It Gentle Today";
-"recommendation.lowerIntensity.detail" = "Based on lower comfort or higher tension today, your recommendation has switched to breathing and release.";
+"recommendation.lowerIntensity.detail" = "You reported discomfort or higher tension today. Pause contraction practice.";
 "recommendation.lowEnergy.title" = "Choose a Low-Effort Practice";
-"recommendation.lowEnergy.detail" = "Based on today's energy check-in, your recommendation has switched to a body scan with no intensity target.";
+"recommendation.lowEnergy.detail" = "You reported low energy today. Rest and return when ready.";
 "recommendation.recovery.title" = "Prioritize Recovery";
-"recommendation.recovery.detail" = "You recently recorded discomfort, so only gentle breathing is recommended today. Stop if discomfort remains.";
+"recommendation.recovery.detail" = "Discomfort was recorded recently. Pause contraction practice and monitor how you feel.";
 "recommendation.professionalSupport.title" = "Repeated Discomfort Needs Attention";
-"recommendation.professionalSupport.detail" = "Discomfort was recorded more than once in 14 days. Gentle breathing is optional, but consider speaking with a doctor or pelvic health professional first.";
+"recommendation.professionalSupport.detail" = "Discomfort has recurred. Seek professional assessment before deciding how to practice.";
 "recommendation.seekCare.title" = "Pause Practice and Seek Professional Care";
 "recommendation.seekCare.detail" = "Pain, bleeding, numbness, or sudden/significant symptoms were recently recorded. Today's practice is paused; seek timely care if symptoms are severe or persist.";
 
@@ -618,7 +618,7 @@
 
 "voice.pack.female" = "Female · Default";
 "voice.pack.male" = "Male";
-"voice.pack.scope" = "Recorded cues use your selected voice. Other existing guidance still uses the system voice.";
+"voice.pack.scope" = "The Chinese interface includes teaching recordings for all four stages, with pause, replay or reading instead. English teaching remains on screen; action cues use the selected Mandarin voice.";
 "voice.pilot.open" = "Preview the full pilot";
 "voice.pilot.title" = "Find the contraction, and the release";
 "voice.pilot.description" = "Includes instruction, two demonstrations, six practice repetitions and reflection. Previewing does not create a training record.";
@@ -634,16 +634,16 @@
 "path.next %@" = "Up next: %@";
 "path.stage.1.title" = "Awareness and release";
 "path.stage.2.title" = "Steady control";
-"path.stage.3.title" = "Rhythm and release";
-"path.stage.4.title" = "Consolidation and daily application";
+"path.stage.3.title" = "Sets and Release";
+"path.stage.4.title" = "Independent Practice and Review";
 "path.stage.1.detail" = "Learn to distinguish contraction from release, with gentle movement and normal breathing.";
-"path.stage.2.detail" = "Coordinate the movement with natural breathing and fully release after each repetition.";
-"path.stage.3.detail" = "Notice rhythm and release across repetitions. Ease off if other muscles take over; avoid straining.";
-"path.stage.4.detail" = "Notice coordination as posture changes, build a sustainable routine and regularly review how it feels.";
+"path.stage.2.detail" = "Practice two gentle sets while breathing normally and noticing extra effort in the abdomen, buttocks or legs.";
+"path.stage.3.detail" = "Split practice into two sets. Check for full release between them before deciding to continue.";
+"path.stage.4.detail" = "Use the seated or lying position you find easiest, and review what to focus on next time.";
 "path.stage.1.checkpoint" = "Review: can you sense a return to the starting state after contraction? Repeat the lesson if unsure.";
 "path.stage.2.checkpoint" = "Review: can you breathe naturally during movement and fully release afterwards?";
-"path.stage.3.checkpoint" = "Review: can you release between repetitions, or do you need more rest?";
-"path.stage.4.checkpoint" = "Review: which posture makes coordination easier, and which routine is sustainable?";
+"path.stage.3.checkpoint" = "Review: Can you notice tension between sets and stop if you have not fully released?";
+"path.stage.4.checkpoint" = "Review: Do you know your comfortable position, stop signals and next practice focus?";
 "path.status.current" = "Current learning stage";
 "path.status.reviewed" = "Reviewed; available to revisit";
 "path.status.preview" = "Future stage; available to preview";
@@ -686,3 +686,52 @@
 "stageOne.completed.detail" = "This records the session you followed, not measured strength or functional improvement.";
 
 "stageOne.feedback.completeLater" = "Add feedback for this session";
+
+"curriculum.structure" = "2 sets × 3 repetitions · check between sets";
+"curriculum.rest" = "Rest only. Return to your usual resting state and breathe normally. No extra contraction is needed.";
+"curriculum.finish" = "The repetitions are finished. Fully release, notice any discomfort, then review how practice felt.";
+"curriculum.check.title" = "Check before continuing";
+"curriculum.repetition %lld %lld" = "Practice · repetition %lld/%lld";
+"curriculum.completed %lld %lld" = "Practice completed: %lld/%lld repetitions";
+"curriculum.recovery.title" = "Pause contraction practice today";
+"curriculum.recovery.body" = "A breathing or scanning timer will not be substituted for training. Rest and notice how you feel. Seek professional assessment for persistent or recurring discomfort or warning symptoms. Resting does not erase your progress.";
+"curriculum.recovery.adjust" = "Review today’s check-in";
+"curriculum.1.title" = "Find Contraction and Release";
+"curriculum.1.goal" = "Learn a gentle contraction and full release before demonstration.";
+"curriculum.1.prepare" = "Choose a comfortable seated or lying position. Keep the movement gentle and breathe normally. Return to teaching if you cannot distinguish contraction from release.";
+"curriculum.1.contract" = "Gently contract without holding your breath.";
+"curriculum.1.relax" = "Release to your normal resting state. Do not push down.";
+"curriculum.1.check" = "Continue only if you can distinguish contraction and release without discomfort. Stop and revisit teaching if unsure.";
+"curriculum.1.reflect" = "Could you distinguish contraction from release? There is no need to rush to the next stage.";
+"curriculum.2.title" = "Breathe Naturally During Movement";
+"curriculum.2.goal" = "Coordinate breathing and movement rather than increasing effort or hold time.";
+"curriculum.2.prepare" = "Use a familiar comfortable position. Two sets of three: gently contract for 3 seconds, release for 6. Do not hold your breath or force it to match the countdown.";
+"curriculum.2.contract" = "Gently contract while breathing normally. Keep buttocks and legs relaxed.";
+"curriculum.2.relax" = "Fully release. Notice your breathing and relax the buttocks and legs.";
+"curriculum.2.check" = "Did you hold your breath or tighten the buttocks and legs? Fully release before continuing. Stop if uncomfortable.";
+"curriculum.2.reflect" = "Was breathing natural? Did other muscles do extra work?";
+"curriculum.3.title" = "Practice in Sets, Check Release";
+"curriculum.3.goal" = "Notice tension after repeated movement and decide whether to continue.";
+"curriculum.3.prepare" = "Three repetitions per set: 3 seconds gentle contraction and 6 seconds release. Do not add effort. Rest 20 seconds after set one, then check release before deciding to continue.";
+"curriculum.3.contract" = "Gently contract. Notice whether the abdomen, buttocks or legs are doing extra work.";
+"curriculum.3.relax" = "Return to rest without rushing the next repetition.";
+"curriculum.3.check" = "Do you feel more tense than before? Continue only when comfortable and fully released. Stop if you cannot release or feel discomfort.";
+"curriculum.3.reflect" = "Could you return to rest between sets? When would it help to stop?";
+"curriculum.4.title" = "Independent Practice and Reflection";
+"curriculum.4.goal" = "Build a bounded practice routine and know when to stop.";
+"curriculum.4.prepare" = "Choose the seated or lying position you find easiest. Keep two sets of three, with 3 seconds gentle contraction and 6 seconds release. Do not practice while urinating or stay clenched throughout the day.";
+"curriculum.4.contract" = "Gently contract, breathe naturally and notice movement quality.";
+"curriculum.4.relax" = "Fully release and return to normal rest.";
+"curriculum.4.check" = "Check breathing, release and comfort. Continue only if all feel comfortable and you want to. Doing less is okay.";
+"curriculum.4.reflect" = "Which position felt easiest? Focus on breathing or release next time. Completed repetitions do not measure functional improvement.";
+
+"curriculum.duration %lld %lld" = "Movement and rest: %lldm %llds · teaching adds time";
+
+"curriculum.narration.check" = "Check before continuing. Did you hold your breath or tighten your buttocks or legs? Have you fully released? Rest longer if tense. Stop if uncomfortable. Continue only when comfortable, relaxed and willing.";
+"curriculum.narration.reflect" = "The movements are finished. You do not need another contraction. Review your focus, natural breathing, full release and comfort. Record how you actually felt. Uncertainty is useful feedback. Completed repetitions do not measure functional improvement; do not push yourself to advance.";
+"curriculum.audioRemaining %lld" = "About %lld seconds of narration left";
+"curriculum.replay" = "Replay this explanation";
+"curriculum.readInstead" = "Read the instructions instead";
+"curriculum.audioDuration %lld %lld" = "Narration and practice: about %lldm %llds · waiting adds time";
+
+"voice.pilot.playError" = "Playback could not start. Please try again shortly.";

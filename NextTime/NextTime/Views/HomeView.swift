@@ -78,7 +78,7 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
             }
 
-            if let program = recommendedProgram {
+            if let program = recommendedProgram, recommendationKind == .onPlan {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(NSLocalizedString(program.localizedNameKey, comment: ""))
                         .font(.largeTitle.bold())
@@ -90,11 +90,7 @@ struct HomeView: View {
 
                 HStack(spacing: 16) {
                     Label(SpeechService.shared.formattedDuration(for: program), systemImage: "clock")
-                    if SpeechService.shared.recordedLesson(for: program) != nil {
-                        Label(String(localized: "stageOne.structure"), systemImage: "list.number")
-                    } else {
-                        Label(String(localized: "program.steps \(program.resolvedGuidedSteps.count)"), systemImage: "list.number")
-                    }
+                    Label(String(localized: SpeechService.shared.recordedLesson(for: program) != nil ? "stageOne.structure" : "curriculum.structure"), systemImage: "list.number")
 
                 }
                 .font(.caption)
@@ -129,9 +125,15 @@ struct HomeView: View {
                         .foregroundStyle(.red)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
+            } else if recommendationKind != .onPlan {
+                Text(String(localized: "curriculum.recovery.title")).font(.title2.bold())
+                Text(recommendationKind.detail).foregroundStyle(.secondary)
+                Text(String(localized: "curriculum.recovery.body"))
+                    .font(.subheadline).foregroundStyle(.secondary)
+                Button(String(localized: "curriculum.recovery.adjust")) { showCheckIn = true }
+                    .accessibilityIdentifier("home.review-state")
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, minHeight: 180)
+                ProgressView().frame(maxWidth: .infinity, minHeight: 180)
             }
         }
         .padding(20)
@@ -277,8 +279,7 @@ struct HomeView: View {
             checkIns: checkIns,
             safetyEvents: DataService.shared.loadSafetyEvents()
         )
-        recommendedProgram = TrainingData.personalPrograms.first { $0.id == recommendation.programID }
-            ?? TrainingData.relaxationBreathing
+        recommendedProgram = practicePath?.currentStage.program ?? PracticeCurriculum.program(for: .awareness)
         recommendationKind = recommendation.kind
         checkInSavedToday = checkIns.contains {
             $0.moment == .beforePractice && Calendar.current.isDateInToday($0.createdAt)

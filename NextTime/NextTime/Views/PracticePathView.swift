@@ -60,6 +60,9 @@ struct PracticePathView: View {
                         Text(selectedStage.title).font(.title2.bold())
                         Text(selectedStage.detail)
                         Label(NSLocalizedString(selectedStage.program.localizedNameKey, comment: ""), systemImage: "figure.mind.and.body")
+                        Text(NSLocalizedString(selectedStage.program.localizedDescriptionKey, comment: ""))
+                        Text(String(localized: SpeechService.shared.recordedLesson(for: selectedStage.program) != nil ? "stageOne.structure" : "curriculum.structure"))
+                            .font(.subheadline).foregroundStyle(.secondary)
                         Text(selectedStage.checkpoint).foregroundStyle(.secondary)
                         if isCurrent {
                             Text(String(localized: "path.completed \(currentRecords.count)"))

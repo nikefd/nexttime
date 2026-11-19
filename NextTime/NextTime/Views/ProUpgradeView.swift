@@ -105,13 +105,6 @@ struct ProUpgradeView: View {
             )
 
             FeatureRow(
-                icon: "slider.horizontal.3",
-                color: .green,
-                title: String(localized: "pro.feature.custom"),
-                description: String(localized: "pro.feature.custom.desc")
-            )
-
-            FeatureRow(
                 icon: "bell.fill",
                 color: .orange,
                 title: String(localized: "pro.feature.reminder"),

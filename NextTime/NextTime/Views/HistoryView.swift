@@ -96,23 +96,6 @@ struct HistoryView: View {
                 .padding(.vertical, 8)
             }
 
-            Section(String(localized: "progress.routes")) {
-                ForEach(PracticeRoute.personalCases) { route in
-                    let progress = routeProgress(route)
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Label(route.title, systemImage: route.systemImage)
-                            Spacer()
-                            Text("\(progress.completed)/\(progress.total)")
-                                .font(.caption.monospacedDigit())
-                                .foregroundStyle(.secondary)
-                        }
-                        ProgressView(value: Double(progress.completed), total: Double(max(progress.total, 1)))
-                    }
-                    .accessibilityElement(children: .combine)
-                }
-            }
-
             Section(String(localized: "progress.wellnessTrend")) {
                 if checkIns.isEmpty {
                     Text(String(localized: "progress.noCheckIns"))
@@ -213,12 +196,6 @@ struct HistoryView: View {
         safetyEvents = DataService.shared.loadSafetyEvents()
     }
 
-    private func routeProgress(_ route: PracticeRoute) -> (completed: Int, total: Int) {
-        let programs = TrainingData.programs(for: route)
-        let completed = Set(records.filter(\.isCompleted).map(\.programId))
-        return (programs.filter { completed.contains($0.id) }.count, programs.count)
-    }
-
     private var recentSafetyEventCount: Int {
         let cutoff = Calendar.current.date(byAdding: .day, value: -14, to: Date()) ?? .distantPast
         return safetyEvents.filter { $0.createdAt >= cutoff }.count
@@ -280,7 +257,10 @@ struct RecordRow: View {
     }
 
     private var localizedProgramName: String {
-        if record.lessonVersion != nil { return String(localized: "voice.pilot.title") }
+        if record.lessonVersion != nil {
+            return PracticeCurriculum.programs.first(where: { $0.id == record.programId })
+                .map { NSLocalizedString($0.localizedNameKey, comment: "") } ?? record.programName
+        }
         guard let program = TrainingData.personalPrograms.first(where: { $0.id == record.programId }) else {
             return record.programName
         }

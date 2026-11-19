@@ -16,6 +16,7 @@ struct PilotNarrationView: View {
     @State private var isPlaying = false
     @State private var elapsed: Double = 0
     @State private var unavailable = false
+    @State private var playbackFailed = false
     @State private var sections: [PilotNarrationTimeline.Section] = []
     private let ticker = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
 
@@ -40,16 +41,30 @@ struct PilotNarrationView: View {
                     }.monospacedDigit()
                     Button(isPlaying ? String(localized: "button.pause") : String(localized: "button.resume")) {
                         SpeechService.shared.stop()
-                        if isPlaying { player?.pause() } else { player?.play() }
-                        isPlaying = player?.isPlaying ?? false
+                        guard let player else { return }
+                        if isPlaying {
+                            player.pause()
+                            elapsed = player.currentTime
+                            isPlaying = false
+                        } else {
+                            SpeechService.shared.activateAudioSession()
+                            playbackFailed = !player.play()
+                            isPlaying = !playbackFailed
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("pilot.play-pause")
+                    if playbackFailed {
+                        Text(String(localized: "voice.pilot.playError"))
+                            .font(.footnote).foregroundStyle(.red)
+                            .accessibilityIdentifier("pilot.playback-error")
+                    }
                     Button(String(localized: "voice.pilot.restart")) {
                         player?.stop()
                         player?.currentTime = 0
                         elapsed = 0
                         isPlaying = false
+                        playbackFailed = false
                     }
                 }
                 Spacer()
@@ -76,11 +91,16 @@ struct PilotNarrationView: View {
             player = audio
         }
         .onReceive(ticker) { _ in
-            elapsed = player?.currentTime ?? 0
-            isPlaying = player?.isPlaying ?? false
+            guard let player, isPlaying || player.isPlaying else { return }
+            elapsed = !player.isPlaying && player.currentTime == 0 && elapsed > 0 ? player.duration : player.currentTime
+            isPlaying = player.isPlaying
         }
         .onChange(of: scenePhase) { phase in
-            if phase != .active { player?.pause(); isPlaying = false }
+            if phase != .active {
+                player?.pause()
+                elapsed = player?.currentTime ?? elapsed
+                isPlaying = false
+            }
         }
         .onDisappear { player?.stop() }
     }

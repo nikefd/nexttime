@@ -63,14 +63,37 @@ struct NextTimeApp: App {
             now: profileDate
         )
 
-        if ProcessInfo.processInfo.arguments.contains("--uitesting-path-review-ready"),
+        let targetStage = ProcessInfo.processInfo.arguments.contains("--uitesting-stage-four") ? 4
+            : (ProcessInfo.processInfo.arguments.contains("--uitesting-stage-two") ? 2 : 1)
+        if (ProcessInfo.processInfo.arguments.contains("--uitesting-path-review-ready") || targetStage > 1),
            let path = try? dataService.startPracticePathIfNeeded(now: now.addingTimeInterval(-60)) {
             dataService.saveRecord(TrainingRecord(
                 programId: path.currentStage.program.id, programName: path.currentStage.program.name,
                 completedAt: now.addingTimeInterval(-30), duration: 195,
                 completedSets: 1, totalSets: 1, isCompleted: true, route: .foundation,
-                pathID: path.id, pathStage: path.currentStage
+                pathID: path.id, pathStage: path.currentStage, lessonVersion: StageOneLesson.version,
+                completedRepetitions: 6, totalRepetitions: 6
             ))
+            if let record = dataService.loadRecords().first {
+                try? dataService.saveSessionFeedback(recordID: record.id, outcome: .comfortable, now: now)
+            }
+        }
+
+        while let path = dataService.loadPracticePath(), path.currentStage.rawValue < targetStage {
+            if path.completedRecords(in: dataService.loadRecords(), now: now).isEmpty {
+                let record = TrainingRecord(programId: path.currentStage.program.id,
+                    programName: path.currentStage.program.name, completedAt: now, duration: 99,
+                    completedSets: 2, totalSets: 2, isCompleted: true, route: .foundation,
+                    pathID: path.id, pathStage: path.currentStage,
+                    lessonVersion: PracticeCurriculum.version(for: path.currentStage),
+                    completedRepetitions: 6, totalRepetitions: 6)
+                dataService.saveRecord(record)
+                try? dataService.saveSessionFeedback(recordID: record.id, outcome: .comfortable, now: now)
+            }
+            guard let record = path.completedRecords(in: dataService.loadRecords(), now: now).first,
+                  (try? dataService.advancePracticePath(PracticeStageReview(stage: path.currentStage,
+                    recordID: record.id, confirmedAt: now, breathingComfortable: true,
+                    fullyReleased: true, noDiscomfort: true), now: now)) != nil else { break }
         }
 
         for dayOffset in 1...16 {
@@ -96,7 +119,7 @@ struct NextTimeApp: App {
                 moment: .beforePractice,
                 comfort: 4,
                 tension: 2,
-                energy: 4
+                energy: ProcessInfo.processInfo.arguments.contains("--uitesting-low-energy") ? 1 : 4
             )
         )
     }

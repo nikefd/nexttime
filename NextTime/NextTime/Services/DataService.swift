@@ -47,8 +47,13 @@ class DataService {
 
     func loadSettings() -> UserSettings {
         guard let data = userDefaults.data(forKey: settingsKey),
-              let settings = try? JSONDecoder().decode(UserSettings.self, from: data) else {
+              var settings = try? JSONDecoder().decode(UserSettings.self, from: data) else {
             return UserSettings()
+        }
+        let supported = (NarrationVoice.resolve(settings.selectedVoice) ?? .female).rawValue
+        if settings.selectedVoice != supported {
+            settings.selectedVoice = supported
+            saveSettings(settings)
         }
         return settings
     }

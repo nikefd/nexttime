@@ -9,9 +9,9 @@
 ## Features / 功能特点
 
 - ✨ **One Practice Today** - Open the app and start without choosing a course / 打开即看到今日唯一训练，无需选课
-- 📚 **18 Personal Sessions** - An optional library across three personal routes / 可自选的18节个人练习与三条路线
+- 📚 **Focused Curriculum** - One current practice, with teaching, two sets and a quality check / 只保留当前阶段练习，明确教学、组次和组间检查，旧课程已下架
 - 🧭 **Four Learning Stages** - Preview the path and review actual practice before continuing / 四阶段路径可预览，依据真实路径练习与主动回顾前进，不按日历自动升级
-- 🔊 **Natural Voice Guidance** - Practice without watching the screen / 自然语音引导，无需盯着屏幕
+- 🔊 **Two Recorded Voices** - Female by default, optional male; no system TTS / 仅保留男女两套离线配音，默认女声，移除系统朗读
 - ⏸️ **Pause on Interruption** - Switching apps or locking the screen pauses practice; resume manually when ready / 切换 App 或锁屏自动暂停，准备好后手动继续
 - 📳 **Haptic Feedback** - Vibration during contraction / 收缩时震动反馈
 - 🔒 **Local-first Privacy** - Optional Face ID, discreet notifications, and on-device records / Face ID、隐蔽通知与本地记录

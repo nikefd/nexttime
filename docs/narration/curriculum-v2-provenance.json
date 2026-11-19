@@ -1,0 +1,81 @@
+{
+  "source": "https://anyspeech.io/free-text-to-speech",
+  "date": "2026-11-19",
+  "draft": true,
+  "voices": {
+    "xiaoyi": {
+      "prepare-2": {
+        "duration": 11.712,
+        "text": "保持熟悉的舒适姿势。每次轻柔收紧3秒、放松6秒，两组各3次。不要屏气，也不需要刻意把呼吸卡进倒计时。",
+        "sourceFile": "xiaoyi-prepare-2.mp3",
+        "sha256": "d7027f1bd488f2cbb5940fb64ff38ff600e3ebe8748781674829542b45aa44b1",
+        "bundleFile": "nexttime-xiaoyi-curriculum-prepare-2.m4a"
+      },
+      "prepare-3": {
+        "duration": 12.168,
+        "text": "每组3次，仍是3秒轻柔收紧、6秒释放，不加力度。第一组后休息20秒，并检查释放情况；不要为了做完第二组而硬撑。",
+        "sourceFile": "xiaoyi-prepare-3.mp3",
+        "sha256": "e54150f007cba1f05cc077d74d4dae2ac87ebf789f79caed4df2dfc2f70d6351",
+        "bundleFile": "nexttime-xiaoyi-curriculum-prepare-3.m4a"
+      },
+      "prepare-4": {
+        "duration": 12.72,
+        "text": "选择你最容易协调的坐姿或卧姿。依然只做两组各3次，3秒轻柔收紧、6秒释放。不在排尿时练习，不需要在日常一直夹紧。",
+        "sourceFile": "xiaoyi-prepare-4.mp3",
+        "sha256": "5e96a47fa76ce089e0d073c3b5ef4ffef0a20102d08415de89d5ae9c31b8bc2c",
+        "bundleFile": "nexttime-xiaoyi-curriculum-prepare-4.m4a"
+      },
+      "check": {
+        "duration": 19.344,
+        "text": "先检查，再继续。刚才有没有憋气，或者夹紧臀腿？现在是否已经完全松开？如果还有紧绷，就再休息一会儿。如果出现不适，请停止。只有舒适、放松，而且你愿意时，再开始下一组。",
+        "sourceFile": "xiaoyi-check.mp3",
+        "sha256": "7aca3eb53e19072c608553b48fa4d45d5f430b8dbf335cd3a23d25d9ee6e4528",
+        "bundleFile": "nexttime-xiaoyi-curriculum-check.m4a"
+      },
+      "reflect": {
+        "duration": 21.096,
+        "text": "今天的动作结束了，现在不用再收紧。回顾这次练习的重点，留意呼吸是否自然，每次之后能不能完整松开，有没有不舒服。按真实感受记录就好，不确定也是有用的反馈。完成次数不代表功能改善，不需要为了升级而勉强自己。",
+        "sourceFile": "xiaoyi-reflect.mp3",
+        "sha256": "eda76f55f539f90458307a409be96385dbb19dd5138cde6efcaa3d4004f99a2e",
+        "bundleFile": "nexttime-xiaoyi-curriculum-reflect.m4a"
+      }
+    },
+    "yunxi": {
+      "prepare-2": {
+        "duration": 11.688,
+        "text": "保持熟悉的舒适姿势。每次轻柔收紧3秒、放松6秒，两组各3次。不要屏气，也不需要刻意把呼吸卡进倒计时。",
+        "sourceFile": "yunxi-prepare-2.mp3",
+        "sha256": "2f54b1152406012f77e03b319d65cd697e5a7a7bfe8c31a123c2836bfcb7e37c",
+        "bundleFile": "nexttime-yunxi-curriculum-prepare-2.m4a"
+      },
+      "prepare-3": {
+        "duration": 11.88,
+        "text": "每组3次，仍是3秒轻柔收紧、6秒释放，不加力度。第一组后休息20秒，并检查释放情况；不要为了做完第二组而硬撑。",
+        "sourceFile": "yunxi-prepare-3.mp3",
+        "sha256": "0e245dce094621ddaafa9c655858a6395c2a3f3f084242c3e36bc30b516c67cd",
+        "bundleFile": "nexttime-yunxi-curriculum-prepare-3.m4a"
+      },
+      "prepare-4": {
+        "duration": 12.12,
+        "text": "选择你最容易协调的坐姿或卧姿。依然只做两组各3次，3秒轻柔收紧、6秒释放。不在排尿时练习，不需要在日常一直夹紧。",
+        "sourceFile": "yunxi-prepare-4.mp3",
+        "sha256": "5b8a14e5898fc6b9227c507c99a203e8352280b4a94ac337d070b7492f373900",
+        "bundleFile": "nexttime-yunxi-curriculum-prepare-4.m4a"
+      },
+      "check": {
+        "duration": 18.792,
+        "text": "先检查，再继续。刚才有没有憋气，或者夹紧臀腿？现在是否已经完全松开？如果还有紧绷，就再休息一会儿。如果出现不适，请停止。只有舒适、放松，而且你愿意时，再开始下一组。",
+        "sourceFile": "yunxi-check.mp3",
+        "sha256": "fe0ce59d7dc83301234927d4a5cdb673e314115972aa08190ca4b39b0e45f278",
+        "bundleFile": "nexttime-yunxi-curriculum-check.m4a"
+      },
+      "reflect": {
+        "duration": 21.144,
+        "text": "今天的动作结束了，现在不用再收紧。回顾这次练习的重点，留意呼吸是否自然，每次之后能不能完整松开，有没有不舒服。按真实感受记录就好，不确定也是有用的反馈。完成次数不代表功能改善，不需要为了升级而勉强自己。",
+        "sourceFile": "yunxi-reflect.mp3",
+        "sha256": "0594d3956247b67bce8d25787d2454988cb30e911e70da73677d1bef1ba12205",
+        "bundleFile": "nexttime-yunxi-curriculum-reflect.m4a"
+      }
+    }
+  }
+}

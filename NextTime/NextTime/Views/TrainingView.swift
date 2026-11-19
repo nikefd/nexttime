@@ -131,7 +131,7 @@ struct TrainingView: View {
                 }
                 stepVisual
                 if let step = trainingManager.currentStep {
-                    Text(trainingManager.progress.isAwaitingContinue ? String(localized: "stageOne.ready") : NSLocalizedString(step.titleKey, comment: ""))
+                    Text(trainingManager.progress.isAwaitingContinue && trainingManager.recordedLesson != nil ? String(localized: "stageOne.ready") : NSLocalizedString(step.titleKey, comment: ""))
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
                     Text(NSLocalizedString(step.guidanceKey, comment: ""))
@@ -140,6 +140,12 @@ struct TrainingView: View {
                         .foregroundStyle(.secondary)
                         .lineSpacing(5)
                         .padding(.horizontal)
+
+                    if let stage = trainingManager.curriculumStage, stage != .awareness, step.kind == .reflection {
+                        Text(NSLocalizedString("curriculum.\(stage.rawValue).reflect", comment: ""))
+                            .font(.subheadline).foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center).padding(.horizontal)
+                    }
 
                     if step.kind == .partnerPrompt {
                         Label(String(localized: "guided.partner.optional"), systemImage: "hand.raised.fill")
@@ -151,6 +157,12 @@ struct TrainingView: View {
                 if let lesson = trainingManager.recordedLesson,
                    lesson.timeline.sections.indices.contains(trainingManager.progress.currentStepIndex + 1) {
                     Text(String(localized: "stageOne.next \(lesson.timeline.sections[trainingManager.progress.currentStepIndex + 1].title)"))
+                        .font(.footnote).foregroundStyle(.secondary)
+                        .accessibilityIdentifier("training.next-action")
+                }
+                if trainingManager.recordedLesson == nil, trainingManager.curriculumStage != nil,
+                   let next = trainingManager.activeSteps[safe: trainingManager.progress.currentStepIndex + 1] {
+                    Text(String(localized: "stageOne.next \(NSLocalizedString(next.titleKey, comment: ""))"))
                         .font(.footnote).foregroundStyle(.secondary)
                         .accessibilityIdentifier("training.next-action")
                 }
@@ -185,7 +197,9 @@ struct TrainingView: View {
                     .foregroundStyle(accentColor)
             }
             .frame(width: 180, height: 180)
-            Text(String(localized: "guided.secondsRemaining \(trainingManager.progress.remainingSeconds)"))
+            Text(trainingManager.instructionAudioDuration > 0
+                 ? String(localized: "curriculum.audioRemaining \(trainingManager.progress.remainingSeconds)")
+                 : String(localized: "guided.secondsRemaining \(trainingManager.progress.remainingSeconds)"))
                 .font(.subheadline.monospacedDigit())
                 .foregroundStyle(.secondary)
                 .accessibilityIdentifier("training.remaining")
@@ -222,12 +236,21 @@ struct TrainingView: View {
                         .accessibilityIdentifier("training.pause-resume")
                         .disabled(trainingManager.recordedPlaybackFailed)
 
-                        if trainingManager.recordedLesson == nil && trainingManager.currentStep?.kind == .rest {
+                        if trainingManager.recordedLesson == nil && trainingManager.curriculumStage == nil && trainingManager.currentStep?.kind == .rest {
                             Button(String(localized: "button.skipRest")) { trainingManager.skipRest() }
                                 .buttonStyle(.bordered)
                         }
                     }
                     .controlSize(.large)
+                }
+
+                if trainingManager.instructionAudioDuration > 0 && !trainingManager.recordedPlaybackFailed {
+                    Button(String(localized: trainingManager.progress.isAwaitingContinue ? "curriculum.replay" : "curriculum.readInstead")) {
+                        if trainingManager.progress.isAwaitingContinue { trainingManager.replayInstructionAudio() }
+                        else { trainingManager.readInstructionInstead() }
+                    }
+                    .accessibilityIdentifier("training.instruction-audio-option")
+                    .font(.subheadline)
                 }
 
                 Button {
@@ -323,6 +346,9 @@ struct TrainingView: View {
     }
 
     private var timedStepProgress: Double {
+        if trainingManager.instructionAudioDuration > 0 {
+            return trainingManager.instructionAudioElapsed / trainingManager.instructionAudioDuration
+        }
         guard let duration = trainingManager.currentStep?.duration, duration > 0 else { return 0 }
         return 1 - Double(trainingManager.progress.remainingSeconds) / Double(duration)
     }

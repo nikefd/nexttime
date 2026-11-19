@@ -9,6 +9,8 @@ import Foundation
 
 struct TrainingData {
 
+    // Archived catalog for historical names, migrations and old-algorithm regression tests.
+    // Product training entries must use PracticeCurriculum.
     // MARK: - 所有预设训练课程
     static let allPrograms: [TrainingProgram] = [
         foundationAwareness, foundationCoordination, foundationSteadyControl,

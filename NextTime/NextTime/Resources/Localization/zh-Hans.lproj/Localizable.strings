@@ -32,11 +32,11 @@
 
 /* Programs */
 "programs.title" = "训练课程";
-"program.browse" = "浏览全部课程 · 可选";
+"program.browse" = "查看四阶段训练安排";
 "program.optional" = "想自己选课时再来这里。平时跟着首页的今日训练即可。";
 "program.free" = "免费";
 "pro.comparison.title" = "免费版已包含";
-"pro.comparison.free" = "3 节入门练习可重复使用：盆底觉察、呼吸放松和身体扫描。Pro 再解锁 15 节进阶练习。";
+"pro.comparison.free" = "第一阶段可免费重复练习。Pro 解锁后续三个学习阶段；全部阶段目标和安排均可预览。";
 "pro.comparison.shared" = "今日推荐、基础记录、语音引导和隐私保护，免费版也能使用。";
 "pro.comparison.details" = "查看免费与 Pro 权益";
 "pro.alreadyUnlocked" = "你已解锁全部 Pro 权益";
@@ -135,7 +135,7 @@
 "settings.haptic.heavy" = "重";
 "settings.voice" = "语音提示";
 "settings.voiceSection" = "语音播报";
-"settings.voiceFooter" = "自动模式会优先使用设备上已安装的高质量音色。你可以试听或手动选择。";
+"settings.voiceFooter" = "仅提供两套中文录音，不再使用系统朗读。关闭语音后仍可看屏幕并跟随震动练习。";
 "settings.volume" = "音量";
 "settings.dataSection" = "数据";
 "settings.clearData" = "清除所有数据";
@@ -183,11 +183,11 @@
 /* Articles */
 "article.plan.intro" = "下一次会根据你的目标、练习历史和当日状态提供建议。计划用于建立节奏，不是必须完成的医疗处方。";
 "article.plan.1.title" = "从当前学习阶段开始";
-"article.plan.1.content" = "首页按当前阶段提供一项基础练习；18节个人课程仍可从列表自选。今日状态或不适反馈可能改为支持练习，支持练习单独记录，不会代替主路径进度。";
+"article.plan.1.content" = "首页只提供当前阶段的一项练习。状态或不适反馈提示需要休息时，暂停收缩训练，不再自动替换为一段呼吸课。旧课程仅保留历史记录，不会算作新版阶段练习。";
 "article.plan.2.title" = "四阶段学习路径";
-"article.plan.2.content" = "学习路径包括识别与释放、稳定控制、节奏与释放、巩固与日常应用。后续阶段可预览，完成当前路径练习后由你主动回顾，不按注册天数自动升级。";
+"article.plan.2.content" = "目前只保留四阶段主路径。第一阶段是完整配音教学；后续阶段采用屏幕教学与录音口令，每次两组、每组三次，组间先检查再继续。不再提供旧的18节课程或自定义加量入口。";
 "article.plan.3.title" = "重复巩固，不用追赶";
-"article.plan.3.content" = "重复当前练习是巩固的一部分，不再为了避免重复而自动换课。同日多练不会自动升级。原有训练、自选课和样课试听不会被换算成新阶段已掌握。";
+"article.plan.3.content" = "重复当前阶段是巩固的一部分，不会为了避免重复而自动换课。阶段变化代表学习重点变化，不代表肌力或性功能提升，也不自动延长收缩时长。";
 "article.plan.4.title" = "状态优先于计划";
 "article.plan.4.content" = "练习前后的状态确认可以调整当天建议。如果感到疲劳、紧张或不适，可以选择恢复练习、缩短练习或休息。";
 "article.plan.5.title" = "长期巩固与复习";
@@ -246,7 +246,7 @@
 /* Pro */
 "pro.title" = "升级 Pro";
 "pro.upgradeTitle" = "解锁完整个人训练";
-"pro.upgradeSubtitle" = "跟随今日安排，也能自由选课。一次购买，无需订阅。";
+"pro.upgradeSubtitle" = "按四阶段逐步学习，保留真实进度。一次购买，无需订阅。";
 "pro.oneTimePurchase" = "一次性购买，无需订阅";
 "pro.buyButton %@" = "升级 %@";
 "pro.restore" = "恢复购买";
@@ -254,8 +254,8 @@
 "pro.restoreSuccess" = "你的 Pro 购买已恢复！";
 "pro.restoreNoPurchase" = "未找到之前的购买记录。";
 
-"pro.feature.courses" = "全部 18 节个人练习";
-"pro.feature.courses.desc" = "包含3节免费入门与15节Pro练习，可从列表自由选择。学习路径与基础进度无需Pro即可查看。";
+"pro.feature.courses" = "完整四阶段学习路径";
+"pro.feature.courses.desc" = "从识别与释放，到呼吸协调、分组练习及独立复盘；每阶段有明确目标，不按日期自动加难。";
 "pro.feature.custom" = "自定义训练";
 "pro.feature.custom.desc" = "创建你自己的训练计划";
 "pro.feature.reminder" = "每日提醒";
@@ -590,13 +590,13 @@
 "recommendation.onPlan.title" = "按计划继续";
 "recommendation.onPlan.detail" = "按当前学习阶段练习；是否进入下一阶段，由你练后的回顾决定。";
 "recommendation.lowerIntensity.title" = "今天温和一点";
-"recommendation.lowerIntensity.detail" = "根据今天较低的舒适度或较高的紧张度，已切换为呼吸与放松练习。";
+"recommendation.lowerIntensity.detail" = "你今天报告不太舒适或偏紧张，先暂停收缩练习。";
 "recommendation.lowEnergy.title" = "选择低负担练习";
-"recommendation.lowEnergy.detail" = "根据今天的精力记录，已切换为无需追求强度的身体扫描。";
+"recommendation.lowEnergy.detail" = "你今天报告精力较低，可以休息，准备好后再回来。";
 "recommendation.recovery.title" = "优先恢复";
-"recommendation.recovery.detail" = "近期记录过不适，今天只推荐温和呼吸；若仍不舒服，请停止练习。";
+"recommendation.recovery.detail" = "近期记录过不适，先暂停收缩练习，留意恢复情况。";
 "recommendation.professionalSupport.title" = "反复不适需要关注";
-"recommendation.professionalSupport.detail" = "近 14 天多次记录不适。可以选择温和呼吸，但建议先咨询医生或盆底康复专业人员。";
+"recommendation.professionalSupport.detail" = "近期反复出现不适，建议先获得专业评估，再决定练习安排。";
 "recommendation.seekCare.title" = "先暂停练习并咨询专业人员";
 "recommendation.seekCare.detail" = "近期记录过疼痛、出血、麻木或突发/明显症状。今日推荐已暂停；如症状严重或持续，请及时就医。";
 
@@ -618,7 +618,7 @@
 
 "voice.pack.female" = "女声 · 默认";
 "voice.pack.male" = "男声";
-"voice.pack.scope" = "收紧、放松与休息可使用所选配音。其他现有课程说明仍使用系统声音。";
+"voice.pack.scope" = "四阶段均使用所选中文录音。讲解可暂停、重听或改为阅读说明；动作口令使用同一套声音。";
 "voice.pilot.open" = "试听完整样课";
 "voice.pilot.title" = "找到收紧，也找到松开";
 "voice.pilot.description" = "包含动作讲解、两次示范、六次主练习和练后回顾。试听不会写入训练记录。";
@@ -634,16 +634,16 @@
 "path.next %@" = "之后学习：%@";
 "path.stage.1.title" = "识别与释放";
 "path.stage.2.title" = "稳定控制";
-"path.stage.3.title" = "节奏与释放";
-"path.stage.4.title" = "巩固与日常应用";
+"path.stage.3.title" = "分组与释放";
+"path.stage.4.title" = "独立练习与复盘";
 "path.stage.1.detail" = "先辨认收紧与松开的区别，动作轻柔，保持正常呼吸。";
-"path.stage.2.detail" = "练习动作与自然呼吸的协调，每次之后充分松开。";
-"path.stage.3.detail" = "留意重复动作中的节奏与释放；出现代偿时减轻力度，不追求硬撑。";
-"path.stage.4.detail" = "留意姿势变化时的协调，形成可持续的安排，并定期回顾感受。";
+"path.stage.2.detail" = "保持自然呼吸完成两组轻柔动作，留意腹部、臀腿是否跟着用力。";
+"path.stage.3.detail" = "把练习分成两组；组间检查是否完全松开，再决定要不要继续。";
+"path.stage.4.detail" = "在自己最容易协调的坐姿或卧姿中练习，用复盘决定下次的安排。";
 "path.stage.1.checkpoint" = "回顾重点：能否感觉到收紧之后回到原来的状态？不确定时可以继续复习。";
 "path.stage.2.checkpoint" = "回顾重点：动作时能否保持自然呼吸，结束后能否充分释放？";
-"path.stage.3.checkpoint" = "回顾重点：多次动作之间能否松开，是否需要延长休息？";
-"path.stage.4.checkpoint" = "回顾重点：什么姿势更容易保持协调，怎样安排更能持续？";
+"path.stage.3.checkpoint" = "回顾重点：是否能在组间觉察紧张，并在未放松时停止继续？";
+"path.stage.4.checkpoint" = "回顾重点：是否知道自己的舒适姿势、停止信号和下一次练习重点？";
 "path.status.current" = "当前学习阶段";
 "path.status.reviewed" = "已回顾，可复习";
 "path.status.preview" = "后续阶段，可预览";
@@ -686,3 +686,52 @@
 "stageOne.completed.detail" = "已记录本次执行情况；这不代表测得肌力或功能改善。";
 
 "stageOne.feedback.completeLater" = "补充本次练习感受";
+
+"curriculum.structure" = "2组 × 3次 · 组间检查";
+"curriculum.rest" = "这一段只休息。让肌肉回到原来的状态，保持自然呼吸，不需要刻意收紧。";
+"curriculum.finish" = "动作已结束。完整松开，留意有无不适；之后回顾本次感受。";
+"curriculum.check.title" = "先检查，再继续";
+"curriculum.repetition %lld %lld" = "主练习 · 第%lld/%lld次";
+"curriculum.completed %lld %lld" = "主练习已完成 %lld/%lld 次";
+"curriculum.recovery.title" = "今天先暂停收缩练习";
+"curriculum.recovery.body" = "不再自动切换到一段呼吸或扫描课来凑训练。先休息，留意身体感受；不适持续、反复或出现警示症状时寻求专业评估。今天休息不会丢失已有进度。";
+"curriculum.recovery.adjust" = "重新查看今天的状态";
+"curriculum.1.title" = "找到收紧，也找到松开";
+"curriculum.1.goal" = "识别轻柔收紧与完整释放，先学动作，再做示范。";
+"curriculum.1.prepare" = "选择舒适的坐姿或卧姿。动作轻柔，保持自然呼吸。先确认能分辨收紧和松开；不确定时回到教学。";
+"curriculum.1.contract" = "轻柔收紧，不憋气。";
+"curriculum.1.relax" = "松开，回到原来的状态，不要往下使劲。";
+"curriculum.1.check" = "能分辨收紧和放松，而且没有不适，再继续；不确定可以停止并回顾教学。";
+"curriculum.1.reflect" = "能否分辨动作与释放？不确定无需急着进入下一阶段。";
+"curriculum.2.title" = "收紧时也能自然呼吸";
+"curriculum.2.goal" = "目标是动作与呼吸协调，不是更用力或撑更久。";
+"curriculum.2.prepare" = "保持熟悉的舒适姿势。每次轻柔收紧3秒、放松6秒，两组各3次。不要屏气，也不需要刻意把呼吸卡进倒计时。";
+"curriculum.2.contract" = "轻柔收紧，保持自然呼吸，臀腿不要夹紧。";
+"curriculum.2.relax" = "完全松开，留意呼吸是否自然，臀腿是否放松。";
+"curriculum.2.check" = "刚才有没有憋气或夹紧臀腿？先完全松开，准备好再继续；如果有不适，请停止。";
+"curriculum.2.reflect" = "回顾：动作时呼吸是否自然？是否伴随多余用力？";
+"curriculum.3.title" = "分组练习，先确认松开";
+"curriculum.3.goal" = "目标是识别重复动作后的紧张，并主动决定是否继续。";
+"curriculum.3.prepare" = "每组3次，仍是3秒轻柔收紧、6秒释放，不加力度。第一组后休息20秒，并检查释放情况；不要为了做完第二组而硬撑。";
+"curriculum.3.contract" = "轻柔收紧，注意是否在借用腹部或臀腿的力。";
+"curriculum.3.relax" = "回到放松状态；不要抢着开始下一次。";
+"curriculum.3.check" = "和开始前相比，现在是否还有持续紧绷？只有舒适、已松开时才继续；不能松开或有不适就停止。";
+"curriculum.3.reflect" = "回顾：组间能否回到放松状态？什么时候更需要停下来？";
+"curriculum.4.title" = "独立练习，知道如何调整";
+"curriculum.4.goal" = "目标是形成有边界的练习安排，知道何时停止。";
+"curriculum.4.prepare" = "选择你最容易协调的坐姿或卧姿。依然只做两组各3次，3秒轻柔收紧、6秒释放。不在排尿时练习，不需要在日常一直夹紧。";
+"curriculum.4.contract" = "轻柔收紧，保留自然呼吸；注意自己的动作质量。";
+"curriculum.4.relax" = "完整释放，回到日常放松状态。";
+"curriculum.4.check" = "检查呼吸、释放和舒适度。都没问题且你愿意，再继续；今天少做一点也可以。";
+"curriculum.4.reflect" = "回顾：哪种姿势更容易？下次重点练呼吸还是释放？记录感受，不把完成次数当作功能改善。";
+
+"curriculum.duration %lld %lld" = "动作与休息 %lld分%lld秒 · 教学另计";
+
+"curriculum.narration.check" = "先检查，再继续。刚才有没有憋气，或者夹紧臀腿？现在是否已经完全松开？如果还有紧绷，就再休息一会儿。如果出现不适，请停止。只有舒适、放松，而且你愿意时，再开始下一组。";
+"curriculum.narration.reflect" = "今天的动作结束了，现在不用再收紧。回顾这次练习的重点，留意呼吸是否自然，每次之后能不能完整松开，有没有不舒服。按真实感受记录就好，不确定也是有用的反馈。完成次数不代表功能改善，不需要为了升级而勉强自己。";
+"curriculum.audioRemaining %lld" = "讲解约剩 %lld 秒";
+"curriculum.replay" = "重听这段讲解";
+"curriculum.readInstead" = "改为阅读说明";
+"curriculum.audioDuration %lld %lld" = "配音与练习约%lld分%lld秒 · 等待另计";
+
+"voice.pilot.playError" = "暂时无法开始播放，请稍后重试。";

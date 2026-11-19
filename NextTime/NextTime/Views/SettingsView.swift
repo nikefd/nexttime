@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import AVFoundation
 
 struct SettingsView: View {
     @EnvironmentObject private var appLockManager: AppLockManager
@@ -195,15 +194,8 @@ struct SettingsView: View {
 
                     if settings.voiceEnabled {
                         Picker(String(localized: "settings.voiceChoice"), selection: $settings.selectedVoice) {
-                            if SpeechService.shared.usesChinese {
-                                ForEach(NarrationVoice.allCases) { voice in
-                                    Text(voice.title).tag(voice.rawValue)
-                                }
-                            }
-                            Text(String(localized: "settings.voiceAutomatic"))
-                                .tag(SpeechService.shared.usesChinese ? "system" : "default")
-                            ForEach(availableVoices, id: \.identifier) { voice in
-                                Text(voice.name).tag(voice.identifier)
+                            ForEach(NarrationVoice.allCases) { voice in
+                                Text(voice.title).tag(voice.rawValue)
                             }
                         }
                         .accessibilityIdentifier("settings.narration-voice")
@@ -336,10 +328,6 @@ struct SettingsView: View {
 
     private func saveSettings() {
         DataService.shared.saveSettings(settings)
-    }
-
-    private var availableVoices: [AVSpeechSynthesisVoice] {
-        SpeechService.shared.availableVoicesForCurrentLanguage()
     }
 
     private var appVersion: String {

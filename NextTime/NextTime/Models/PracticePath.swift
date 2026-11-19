@@ -7,14 +7,8 @@ enum PracticeStage: Int, Codable, CaseIterable, Identifiable {
     var detail: String { NSLocalizedString("path.stage.\(rawValue).detail", comment: "") }
     var checkpoint: String { NSLocalizedString("path.stage.\(rawValue).checkpoint", comment: "") }
     var next: PracticeStage? { PracticeStage(rawValue: rawValue + 1) }
-    var program: TrainingProgram {
-        switch self {
-        case .awareness: return TrainingData.foundationAwareness
-        case .steady: return TrainingData.foundationCoordination
-        case .rhythm: return TrainingData.foundationSteadyControl
-        case .integration: return TrainingData.foundationDailyTransfer
-        }
-    }
+    var program: TrainingProgram { PracticeCurriculum.program(for: self) }
+
 }
 
 struct PracticePathContext {
@@ -53,6 +47,8 @@ struct PracticePathState: Codable {
         records.filter {
             $0.pathID == id && $0.pathStage == currentStage
                 && $0.programId == currentStage.program.id
+                && ($0.lessonVersion == PracticeCurriculum.version(for: currentStage)
+                    || (currentStage == .awareness && $0.lessonVersion == StageOneLesson.version))
                 && $0.isCompleted && $0.duration > 0
                 && $0.completedAt >= stageEnteredAt && $0.completedAt <= now
         }.sorted { $0.completedAt > $1.completedAt }

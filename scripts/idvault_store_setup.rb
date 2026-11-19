@@ -151,7 +151,7 @@ if ENV['STORE_MODE'] == 'submit'
   product = all("/v1/apps/#{app_id}/inAppPurchasesV2").find { |r| r.dig('attributes','productId') == PRODUCT_ID }
   raise 'Approved lifetime product missing' unless product
   purchase_versions = all("/v2/inAppPurchases/#{product['id']}/versions")
-  purchase_version = purchase_versions.find { |v| %w[PREPARE_FOR_SUBMISSION READY_TO_SUBMIT].include?(v.dig('attributes','state')) }
+  purchase_version = purchase_versions.find { |v| %w[PREPARE_FOR_SUBMISSION READY_TO_SUBMIT READY_FOR_REVIEW].include?(v.dig('attributes','state')) }
   raise 'Editable lifetime purchase version missing' unless purchase_version
   submissions = all('/v1/reviewSubmissions?' + URI.encode_www_form('filter[app]' => app_id, 'filter[platform]' => 'IOS'))
   submission = submissions.find { |r| r.dig('attributes','state') == 'READY_FOR_REVIEW' } || api('post', '/v1/reviewSubmissions', {data: {type: 'reviewSubmissions', attributes: {platform: 'IOS'}, relationships: {app: link('apps', app_id)}}}).fetch('data')

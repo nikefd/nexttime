@@ -1,6 +1,14 @@
 name: iOS CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: Full regression or focused release follow-up
+        required: true
+        default: all
+        type: choice
+        options: [all, release-followup]
   pull_request:
   push:
     branches: [main]
@@ -16,6 +24,8 @@ jobs:
   test:
     runs-on: macos-26
     timeout-minutes: 30
+    env:
+      TEST_SCOPE: ${{ inputs.test_scope || 'all' }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Select Xcode 26.2

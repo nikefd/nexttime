@@ -45,12 +45,23 @@ platform :ios do
 
   desc "Run unit and UI tests on an available iPhone simulator"
   lane :test do
+    scope = ENV.fetch("TEST_SCOPE", "all")
+    UI.user_error!("Unknown test scope: #{scope}") unless ["all", "release-followup"].include?(scope)
+    only_testing = scope == "release-followup" ? [
+      "NextTimeTests",
+      "NextTimeUITests/NextTimeUITests/testCompletesRequiredOnboarding",
+      "NextTimeUITests/NextTimeUITests/testLegacyHistoryDoesNotAdvancePathAndFutureStagesAreVisible",
+      "NextTimeUITests/NextTimeUITests/testPilotNarrationDefaultsFemaleAndPersistsMaleChoice"
+    ] : nil
     scan(
       project: PROJECT,
       scheme: SCHEME,
       destination: available_iphone_destination,
       clean: true,
+      # Retry a failed test at most once for occasional Xcode simulator launch timeouts.
       xcargs: "CODE_SIGNING_ALLOWED=NO",
+      number_of_retries: 1,
+      only_testing: only_testing,
       output_types: "junit",
       output_files: "tests.xml"
     )

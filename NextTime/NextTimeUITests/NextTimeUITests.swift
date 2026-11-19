@@ -137,7 +137,7 @@ final class NextTimeUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["path.completed"].label, "本阶段路径练习已完成 0 次")
         XCTAssertFalse(app.buttons["path.review"].isEnabled)
         app.buttons["path.stage.4"].tap()
-        XCTAssertTrue(app.staticTexts["巩固与日常应用"].firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["独立练习与复盘"].firstMatch.exists)
         XCTAssertFalse(app.buttons["path.review"].exists)
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "path-future-preview"

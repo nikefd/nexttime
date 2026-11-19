@@ -68,6 +68,29 @@ if ENV['STORE_MODE'] == 'diagnose'
   puts 'Read-only diagnosis complete; no account or product settings changed.'
   exit
 end
+if ENV['STORE_MODE'] == 'releaseprep'
+  version = all("/v1/apps/#{app_id}/appStoreVersions?" + URI.encode_www_form('filter[platform]' => 'IOS')).find { |v| v.dig('attributes','versionString') == '1.0' && v.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
+  raise 'Editable 1.0 required' unless version
+  build = all('/v1/builds?' + URI.encode_www_form('filter[app]' => app_id, 'filter[version]' => '28')).find { |b| b.dig('attributes','processingState') == 'VALID' }
+  raise 'Valid build 28 required' unless build
+  api('patch', "/v1/appStoreVersions/#{version['id']}", {data: {type: 'appStoreVersions', id: version['id'], attributes: {releaseType: 'AFTER_APPROVAL', copyright: '2026 Yangbin Zhang'}, relationships: {build: link('builds', build['id'])}}})
+  infos = all("/v1/apps/#{app_id}/appInfos")
+  infos.each do |info|
+    next unless info.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION'
+    all("/v1/appInfos/#{info['id']}/appInfoLocalizations").each do |l|
+      api('patch', "/v1/appInfoLocalizations/#{l['id']}", {data: {type: 'appInfoLocalizations', id: l['id'], attributes: {privacyPolicyUrl: 'https://nikefd.github.io/nexttime-site/shiye/privacy.html'}}})
+    end
+  end
+  detail = api('get', "/v1/appStoreVersions/#{version['id']}/appStoreReviewDetail", allow_missing: true)&.dig('data')
+  attrs = {demoAccountRequired: false, notes: 'Shiye is an offline document organizer. No registration or demo account is required. Free: 1 member and 10 documents; multiple pages count as one document. Non-consumable Pro purchase unlocks multiple members and unlimited documents; Restore Purchases is available on the Pro screen. OCR and document contents remain on device. To test: add a photo from the system picker, verify editable fields, then save. Purchases use Apple StoreKit.'}
+  if detail
+    api('patch', "/v1/appStoreReviewDetails/#{detail['id']}", {data: {type: 'appStoreReviewDetails', id: detail['id'], attributes: attrs}})
+  else
+    api('post', '/v1/appStoreReviewDetails', {data: {type: 'appStoreReviewDetails', attributes: attrs, relationships: {appStoreVersion: link('appStoreVersions', version['id'])}}})
+  end
+  puts 'Selected build 28, after-approval release, privacy URL and offline review instructions saved. Contact details still require completion; no review submitted.'
+  exit
+end
 if ENV['STORE_MODE'] == 'listing'
   copy = JSON.parse(File.read(File.join(__dir__, 'idvault_listing_zh.json')))
   versions = all("/v1/apps/#{app_id}/appStoreVersions?" + URI.encode_www_form('filter[platform]' => 'IOS', 'limit' => '200'))

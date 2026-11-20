@@ -139,6 +139,62 @@ if ENV['STORE_MODE'] == 'complete'
   puts 'Completed editable required metadata. No review submitted in this mode.'
   exit
 end
+require 'digest'
+def upload_asset(resource, file)
+  bytes = File.binread(file)
+  resource.dig('attributes','uploadOperations').each do |op|
+    uri = URI(op.fetch('url'))
+    raise 'Insecure upload URL' unless uri.scheme == 'https'
+    req = Net::HTTPGenericRequest.new(op.fetch('method'), true, true, uri)
+    op.fetch('requestHeaders', []).each { |h| req[h.fetch('name')] = h.fetch('value') }
+    req.body = bytes.byteslice(op.fetch('offset'), op.fetch('length'))
+    res = Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 60) { |h| h.request(req) }
+    raise "Asset upload HTTP #{res.code}" unless res.is_a?(Net::HTTPSuccess)
+  end
+  api('patch', "/v1/#{resource['type']}/#{resource['id']}", {data: {type: resource['type'], id: resource['id'], attributes: {uploaded: true, sourceFileChecksum: Digest::MD5.hexdigest(bytes)}}})
+end
+
+if ENV['STORE_MODE'] == 'review_evidence'
+  version = all("/v1/apps/#{app_id}/appStoreVersions").find { |r| r.dig('attributes', 'versionString') == '1.0' }
+  raise 'Version 1.0 missing' unless version
+  version_id = version.fetch('id')
+  build = api('get', "/v1/appStoreVersions/#{version_id}/build").fetch('data')
+  raise 'Expected build 28' unless build.dig('attributes', 'version') == '28'
+  detail = api('get', "/v1/appStoreVersions/#{version_id}/appStoreReviewDetail").fetch('data')
+  detail_id = detail.fetch('id')
+  notes = File.read('idvault-source/review-evidence/notes.txt')
+  raise 'Review notes missing evidence' unless notes.include?('02-Pro-Family-Members')
+  files = Dir.glob('idvault-source/review-evidence/*.mp4').sort
+  raise 'Expected two physical-device recordings' unless files.length == 2
+  existing = all("/v1/appStoreReviewDetails/#{detail_id}/appStoreReviewAttachments")
+  files.each do |file|
+    name = File.basename(file)
+    upload = existing.find { |item| item.dig('attributes', 'fileName') == name }
+    unless upload
+      upload = api('post', '/v1/appStoreReviewAttachments', {data: {type: 'appStoreReviewAttachments', attributes: {fileName: name, fileSize: File.size(file)}, relationships: {appStoreReviewDetail: link('appStoreReviewDetails', detail_id)}}}).fetch('data')
+      upload_asset(upload, file)
+    end
+    state = nil
+    12.times do
+      state = api('get', "/v1/appStoreReviewAttachments/#{upload['id']}").dig('data', 'attributes', 'assetDeliveryState', 'state')
+      break if %w[COMPLETE FAILED].include?(state)
+      sleep 5
+    end
+    puts "Review attachment #{name}: #{state}"
+    raise 'Video attachment not ready' unless state == 'COMPLETE'
+  end
+  api('patch', "/v1/appStoreReviewDetails/#{detail_id}", {data: {type: 'appStoreReviewDetails', id: detail_id, attributes: {notes: notes}}})
+  puts 'Updated App Review Information notes.'
+  submissions = all('/v1/reviewSubmissions?' + URI.encode_www_form('filter[app]' => app_id, 'filter[platform]' => 'IOS'))
+  submissions.each do |submission|
+    items = all("/v1/reviewSubmissions/#{submission['id']}/items?include=appStoreVersion,inAppPurchaseVersion")
+    next unless items.any? { |item| item.dig('relationships','appStoreVersion','data','id') == version_id }
+    puts "Existing submission #{submission['id']}: #{submission.dig('attributes','state')}"
+    items.each { |item| puts "Review item #{item['id']}: #{item.dig('attributes','state')}; app=#{!!item.dig('relationships','appStoreVersion','data')}; purchase=#{!!item.dig('relationships','inAppPurchaseVersion','data')}" }
+  end
+  exit
+end
+
 if ENV['STORE_MODE'] == 'submit'
   version = all("/v1/apps/#{app_id}/appStoreVersions").find { |v| v.dig('attributes','versionString') == '1.0' }
   raise 'App version 1.0 missing' unless version
@@ -168,20 +224,6 @@ if ENV['STORE_MODE'] == 'submit'
   exit
 end
 if ENV['STORE_MODE'] == 'screenshots'
-  require 'digest'
-  def upload_asset(resource, file)
-    bytes = File.binread(file)
-    resource.dig('attributes','uploadOperations').each do |op|
-      uri = URI(op.fetch('url'))
-      raise 'Insecure upload URL' unless uri.scheme == 'https'
-      req = Net::HTTPGenericRequest.new(op.fetch('method'), true, true, uri)
-      op.fetch('requestHeaders', []).each { |h| req[h.fetch('name')] = h.fetch('value') }
-      req.body = bytes.byteslice(op.fetch('offset'), op.fetch('length'))
-      res = Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 60) { |h| h.request(req) }
-      raise "Asset upload HTTP #{res.code}" unless res.is_a?(Net::HTTPSuccess)
-    end
-    api('patch', "/v1/#{resource['type']}/#{resource['id']}", {data: {type: resource['type'], id: resource['id'], attributes: {uploaded: true, sourceFileChecksum: Digest::MD5.hexdigest(bytes)}}})
-  end
   version = all("/v1/apps/#{app_id}/appStoreVersions").find { |v| v.dig('attributes','versionString') == '1.0' && v.dig('attributes','appStoreState') == 'PREPARE_FOR_SUBMISSION' }
   raise 'Editable version required' unless version
   locale = all("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations").find { |l| l.dig('attributes','locale') == 'zh-Hans' }

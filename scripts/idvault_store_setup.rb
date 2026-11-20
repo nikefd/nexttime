@@ -23,7 +23,7 @@ def api(method, path, payload = nil, allow_missing: false)
   request.body = JSON.generate(payload) if payload
   response = Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 60) { |http| http.request(request) }
   return nil if allow_missing && response.code == '404'
-  result = response.body.empty? ? {} : JSON.parse(response.body)
+  result = response.body.to_s.empty? ? {} : JSON.parse(response.body)
   unless response.is_a?(Net::HTTPSuccess)
     collect_errors = lambda do |node|
       case node

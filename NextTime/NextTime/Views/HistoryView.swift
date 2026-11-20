@@ -258,7 +258,7 @@ struct RecordRow: View {
 
     private var localizedProgramName: String {
         if record.lessonVersion != nil {
-            return PracticeCurriculum.programs.first(where: { $0.id == record.programId })
+            return PracticeCurriculum.allLessons.first(where: { $0.id == record.programId })
                 .map { NSLocalizedString($0.localizedNameKey, comment: "") } ?? record.programName
         }
         guard let program = TrainingData.personalPrograms.first(where: { $0.id == record.programId }) else {

@@ -108,7 +108,7 @@ class DataService {
 
     func advancePracticePath(_ review: PracticeStageReview, now: Date = Date()) throws -> PracticePathState {
         guard var state = loadPracticePath(), review.stage == state.currentStage,
-              review.isConfirmed, let next = state.currentStage.next,
+              review.isConfirmed, state.nextProgram != nil,
               let latest = state.completedRecords(in: loadRecords(), now: now).first,
               latest.id == review.recordID, review.confirmedAt >= latest.completedAt,
               review.confirmedAt <= now else { throw PracticePathError.reviewRequired }
@@ -118,14 +118,19 @@ class DataService {
             }
         }
         let advice = PracticeRecommendationEngine.recommend(
-            plannedProgramID: state.currentStage.program.id,
+            plannedProgramID: state.program.id,
             relaxationProgramID: TrainingData.relaxationBreathing.id,
             bodyScanProgramID: TrainingData.confidenceBodyScan.id,
             checkIns: loadCheckIns(), safetyEvents: loadSafetyEvents(), now: now
         )
         guard advice.kind == .onPlan else { throw PracticePathError.reviewRequired }
         state.reviews.append(review)
-        state.currentStage = next
+        if state.isFollowUp == true, let next = state.currentStage.next {
+            state.currentStage = next
+            state.isFollowUp = false
+        } else {
+            state.isFollowUp = true
+        }
         state.stageEnteredAt = now
         try protectedStore.save(state, forKey: ProtectedKey.practicePath)
         return state

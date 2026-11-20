@@ -161,8 +161,9 @@ struct HomeView: View {
                     Text(path.currentStage.title).font(.title3.weight(.semibold))
                     Text(String(localized: "path.completed \(pathRecords.count)"))
                         .font(.subheadline)
-                    if let next = path.currentStage.next {
-                        Text(String(localized: "path.next \(next.title)"))
+                    Text(String(localized: "lesson.position \(path.lessonNumber)")).font(.caption)
+                    if let next = path.nextProgram {
+                        Text(String(localized: "path.next \(NSLocalizedString(next.localizedNameKey, comment: ""))"))
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 } else {
@@ -273,13 +274,13 @@ struct HomeView: View {
         pathRecords = practicePath?.completedRecords(in: records) ?? []
         let checkIns = DataService.shared.loadCheckIns()
         let recommendation = PracticeRecommendationEngine.recommend(
-            plannedProgramID: practicePath?.currentStage.program.id ?? TrainingData.foundationAwareness.id,
+            plannedProgramID: practicePath?.program.id ?? TrainingData.foundationAwareness.id,
             relaxationProgramID: TrainingData.relaxationBreathing.id,
             bodyScanProgramID: TrainingData.confidenceBodyScan.id,
             checkIns: checkIns,
             safetyEvents: DataService.shared.loadSafetyEvents()
         )
-        recommendedProgram = practicePath?.currentStage.program ?? PracticeCurriculum.program(for: .awareness)
+        recommendedProgram = practicePath?.program ?? PracticeCurriculum.program(for: .awareness)
         recommendationKind = recommendation.kind
         checkInSavedToday = checkIns.contains {
             $0.moment == .beforePractice && Calendar.current.isDateInToday($0.createdAt)

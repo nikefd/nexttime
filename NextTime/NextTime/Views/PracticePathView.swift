@@ -14,11 +14,11 @@ struct PracticePathView: View {
     private var currentRecords: [TrainingRecord] { state?.completedRecords(in: records) ?? [] }
     private var isCurrent: Bool { state?.currentStage == selectedStage }
     private var canReview: Bool {
-        guard let state, state.currentStage.next != nil, !currentRecords.isEmpty else { return false }
+        guard let state, state.nextProgram != nil, !currentRecords.isEmpty else { return false }
         if let record = currentRecords.first, record.lessonVersion != nil,
            DataService.shared.loadSessionFeedback().first(where: { $0.recordID == record.id })?.outcome != .comfortable { return false }
         return PracticeRecommendationEngine.recommend(
-            plannedProgramID: state.currentStage.program.id,
+            plannedProgramID: state.program.id,
             relaxationProgramID: TrainingData.relaxationBreathing.id,
             bodyScanProgramID: TrainingData.confidenceBodyScan.id,
             checkIns: DataService.shared.loadCheckIns(), safetyEvents: DataService.shared.loadSafetyEvents()
@@ -63,6 +63,9 @@ struct PracticePathView: View {
                         Text(NSLocalizedString(selectedStage.program.localizedDescriptionKey, comment: ""))
                         Text(String(localized: SpeechService.shared.recordedLesson(for: selectedStage.program) != nil ? "stageOne.structure" : "curriculum.structure"))
                             .font(.subheadline).foregroundStyle(.secondary)
+                        let followUp = PracticeCurriculum.followUp(for: selectedStage)
+                        Label(NSLocalizedString(followUp.localizedNameKey, comment: ""), systemImage: "figure.mind.and.body")
+                        if isCurrent { Text(String(localized: "lesson.position \(state.lessonNumber)")) }
                         Text(selectedStage.checkpoint).foregroundStyle(.secondary)
                         if isCurrent {
                             Text(String(localized: "path.completed \(currentRecords.count)"))
@@ -77,7 +80,7 @@ struct PracticePathView: View {
                                 } label: { Text(String(localized: "stageOne.feedback.completeLater")) }
                                 .accessibilityIdentifier("path.complete-feedback")
                             }
-                            if selectedStage.next != nil {
+                            if state.nextProgram != nil {
                                 Button(String(localized: "path.review.open")) {
                                     breathing = false; release = false; comfortable = false
                                     showReview = true

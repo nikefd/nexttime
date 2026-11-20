@@ -170,18 +170,16 @@ final class NextTimeUITests: XCTestCase {
         XCTAssertTrue(confirm.isEnabled)
         confirm.tap()
         XCTAssertTrue(app.staticTexts["path.position"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts["path.position"].label, "学习阶段 2 / 4")
+        XCTAssertEqual(app.staticTexts["path.position"].label, "学习阶段 1 / 4")
         app.buttons["完成"].tap()
-        XCTAssertTrue(app.buttons["home.unlock-today"].waitForExistence(timeout: 5))
-        app.buttons["home.unlock-today"].tap()
-        XCTAssertTrue(app.navigationBars["升级 Pro"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["home.start-today"].waitForExistence(timeout: 5))
         app.terminate()
         app.launchArguments.removeAll { $0 == "--store-screenshot-seed" || $0 == "--uitesting-path-review-ready" }
         app.launch()
         XCTAssertTrue(app.buttons["home.practice-path"].waitForExistence(timeout: 8))
         app.buttons["home.practice-path"].tap()
         XCTAssertTrue(app.staticTexts["path.position"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts["path.position"].label, "学习阶段 2 / 4")
+        XCTAssertEqual(app.staticTexts["path.position"].label, "学习阶段 1 / 4")
         XCTAssertEqual(app.staticTexts["path.completed"].label, "本阶段路径练习已完成 0 次")
     }
 

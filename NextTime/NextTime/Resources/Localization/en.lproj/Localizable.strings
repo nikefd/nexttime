@@ -185,7 +185,7 @@
 "article.plan.1.title" = "Start at your current learning stage";
 "article.plan.1.content" = "Home offers only the current stage practice. When check-ins or discomfort indicate rest, contraction practice pauses without substituting a breathing timer. Archived courses remain in history and do not count as rebuilt stage practice.";
 "article.plan.2.title" = "Four learning stages";
-"article.plan.2.content" = "Only the four-stage main path remains. Stage one has full narration. Later stages use on-screen teaching and recorded cues: two sets of three repetitions, with a check before continuing. The old 18-course catalog and custom loading entry have been removed.";
+"article.plan.2.content" = "Each of the four stages has two lessons. Each lesson has a practice focus. After finishing, confirm when you are ready for the next lesson. The four follow-ups use on-screen teaching and recorded cues.";
 "article.plan.3.title" = "Repeat and consolidate without catching up";
 "article.plan.3.content" = "Repeating your current stage consolidates learning. Stages change your learning focus, not measured strength or sexual function, and do not automatically extend contraction time.";
 "article.plan.4.title" = "Your Check-In Comes First";
@@ -735,3 +735,17 @@
 "curriculum.audioDuration %lld %lld" = "Narration and practice: about %lldm %llds · waiting adds time";
 
 "voice.pilot.playError" = "Playback could not start. Please try again shortly.";
+
+"training.nextStage %@" = "Continue to %@";
+"training.nextConfirmation" = "Confirm only if you breathed normally, fully released after each repetition, and felt no discomfort.";
+"training.nextSaved" = "Progress saved. Start your next session from Home.";
+
+"lesson.position %lld" = "Lesson %lld of 8";
+"curriculum.followUp.1.title" = "Recognize Full Release";
+"curriculum.followUp.1.goal" = "Use a familiar comfortable position. Notice when you return to rest after each repetition. Pause if you are unsure.";
+"curriculum.followUp.2.title" = "Reduce Extra Effort";
+"curriculum.followUp.2.goal" = "Keep the movement gentle. Notice whether your buttocks or legs tighten, and make the next movement smaller if needed.";
+"curriculum.followUp.3.title" = "Decide When to Continue";
+"curriculum.followUp.3.goal" = "Check for full release after set one. Take more time if needed, or end today’s practice.";
+"curriculum.followUp.4.title" = "Choose Your Next Focus";
+"curriculum.followUp.4.goal" = "Use the position you find easiest. Afterward, choose breathing, gentle contraction, or full release as your focus next time.";

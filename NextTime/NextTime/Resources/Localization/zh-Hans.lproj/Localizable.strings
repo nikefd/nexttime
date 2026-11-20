@@ -185,7 +185,7 @@
 "article.plan.1.title" = "从当前学习阶段开始";
 "article.plan.1.content" = "首页只提供当前阶段的一项练习。状态或不适反馈提示需要休息时，暂停收缩训练，不再自动替换为一段呼吸课。旧课程仅保留历史记录，不会算作新版阶段练习。";
 "article.plan.2.title" = "四阶段学习路径";
-"article.plan.2.content" = "目前只保留四阶段主路径。第一阶段是完整配音教学；后续阶段采用屏幕教学与录音口令，每次两组、每组三次，组间先检查再继续。不再提供旧的18节课程或自定义加量入口。";
+"article.plan.2.content" = "四个阶段各有两节课。每节课都有一个练习重点，完成后可以确认进入下一课。新加的四节练习使用屏幕讲解和所选男女声口令。";
 "article.plan.3.title" = "重复巩固，不用追赶";
 "article.plan.3.content" = "重复当前阶段是巩固的一部分，不会为了避免重复而自动换课。阶段变化代表学习重点变化，不代表肌力或性功能提升，也不自动延长收缩时长。";
 "article.plan.4.title" = "状态优先于计划";
@@ -588,7 +588,7 @@
 "recommendation.section.title" = "今日本地推荐";
 "recommendation.localOnly" = "仅在本机计算";
 "recommendation.onPlan.title" = "按计划继续";
-"recommendation.onPlan.detail" = "按当前学习阶段练习；是否进入下一阶段，由你练后的回顾决定。";
+"recommendation.onPlan.detail" = "按当前学习阶段练习；是否进入下一课，由你练后的回顾决定。";
 "recommendation.lowerIntensity.title" = "今天温和一点";
 "recommendation.lowerIntensity.detail" = "你今天报告不太舒适或偏紧张，先暂停收缩练习。";
 "recommendation.lowEnergy.title" = "选择低负担练习";
@@ -676,7 +676,7 @@
 "stageOne.feedback.comfortable" = "能感觉收紧与松开，也没有不适";
 "stageOne.feedback.unsure" = "还不确定，想再熟悉一下";
 "stageOne.feedback.discomfort" = "有不适，先停止练习";
-"stageOne.feedback.next.comfortable" = "已记录这次感受。可以查看学习路径，回顾是否准备进入下一阶段，也可以继续巩固。";
+"stageOne.feedback.next.comfortable" = "已记录这次感受。可以查看学习路径，回顾是否准备进入下一课，也可以继续巩固。";
 "stageOne.feedback.next.unsure" = "保留当前阶段，下次先复习动作，不需要追赶。";
 "stageOne.feedback.next.discomfort" = "先休息，不追加练习。持续不适或疼痛时寻求专业支持。";
 "stageOne.repetitions %lld %lld" = "主练习完成 %lld / %lld 次";
@@ -702,7 +702,7 @@
 "curriculum.1.contract" = "轻柔收紧，不憋气。";
 "curriculum.1.relax" = "松开，回到原来的状态，不要往下使劲。";
 "curriculum.1.check" = "能分辨收紧和放松，而且没有不适，再继续；不确定可以停止并回顾教学。";
-"curriculum.1.reflect" = "能否分辨动作与释放？不确定无需急着进入下一阶段。";
+"curriculum.1.reflect" = "能否分辨动作与释放？不确定无需急着进入下一课。";
 "curriculum.2.title" = "收紧时也能自然呼吸";
 "curriculum.2.goal" = "目标是动作与呼吸协调，不是更用力或撑更久。";
 "curriculum.2.prepare" = "保持熟悉的舒适姿势。每次轻柔收紧3秒、放松6秒，两组各3次。不要屏气，也不需要刻意把呼吸卡进倒计时。";
@@ -735,3 +735,17 @@
 "curriculum.audioDuration %lld %lld" = "配音与练习约%lld分%lld秒 · 等待另计";
 
 "voice.pilot.playError" = "暂时无法开始播放，请稍后重试。";
+
+"training.nextStage %@" = "进入下一课 · %@";
+"training.nextConfirmation" = "如果刚才能自然呼吸、每次完整松开，而且没有不适，可以确认进入下一课。";
+"training.nextSaved" = "下一课已就绪，下次可从首页开始。";
+
+"lesson.position %lld" = "第 %lld / 8 课";
+"curriculum.followUp.1.title" = "独立辨认完整松开";
+"curriculum.followUp.1.goal" = "用熟悉的舒适姿势练习。每次结束后辨认回到原来状态的感觉，感觉不清楚就先停下来。";
+"curriculum.followUp.2.title" = "减少臀腿的额外用力";
+"curriculum.followUp.2.goal" = "动作保持轻柔，留意臀腿是否跟着夹紧。有额外用力时，下一次把动作做小一点。";
+"curriculum.followUp.3.title" = "自己决定何时继续";
+"curriculum.followUp.3.goal" = "第一组结束后检查是否完全松开。可以多等一会，也可以结束今天的练习。";
+"curriculum.followUp.4.title" = "选定下次练习重点";
+"curriculum.followUp.4.goal" = "用最容易协调的姿势练习。结束后从自然呼吸、轻柔收紧和完整释放中，选出下次最想关注的一项。";

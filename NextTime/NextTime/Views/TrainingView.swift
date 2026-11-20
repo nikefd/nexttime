@@ -1,9 +1,11 @@
 import AVFoundation
+import UIKit
 import SwiftUI
 
 struct TrainingView: View {
     let program: TrainingProgram
     var pathContext: PracticePathContext? = nil
+    @EnvironmentObject private var appLockManager: AppLockManager
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var trainingManager = TrainingManager.shared
     @AppStorage("defaultPrivacyMode") private var defaultDiscreetMode = false
@@ -48,13 +50,31 @@ struct TrainingView: View {
                 }
             }
         }
+        .accessibilityHidden(appLockManager.isLocked)
+        .overlay {
+            if appLockManager.isLocked {
+                AppLockView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.systemBackground).ignoresSafeArea())
+            }
+        }
         .preferredColorScheme(discreetMode ? .dark : nil)
         .statusBarHidden(discreetMode && !temporarilyRevealed)
         .onAppear {
             discreetMode = defaultDiscreetMode
             trainingManager.startTraining(program: program, pathContext: pathContext)
+            trainingManager.discreetPracticeEnabled = discreetMode
+            updateIdleTimer()
         }
+        .onChange(of: discreetMode) { enabled in
+            trainingManager.discreetPracticeEnabled = enabled
+            updateIdleTimer()
+        }
+        .onChange(of: trainingManager.isRunning) { _ in updateIdleTimer() }
+        .onChange(of: trainingManager.isPaused) { _ in updateIdleTimer() }
         .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+            trainingManager.discreetPracticeEnabled = false
             revealTask?.cancel()
             if trainingManager.currentProgram != nil { trainingManager.stopTraining() }
         }
@@ -96,6 +116,10 @@ struct TrainingView: View {
         } message: {
             Text(String(localized: "safety.during.message"))
         }
+    }
+
+    private func updateIdleTimer() {
+        UIApplication.shared.isIdleTimerDisabled = discreetMode && trainingManager.isRunning && !trainingManager.isPaused
     }
 
     private var topBar: some View {

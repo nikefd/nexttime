@@ -3,6 +3,7 @@ import Foundation
 /// The only trainable catalog. Archived TrainingData remains for decoding old history.
 enum PracticeCurriculum {
     static let programs = PracticeStage.allCases.map(program(for:))
+    static let allLessons = programs + PracticeStage.allCases.map { followUp(for: $0) }
 
     static func program(for stage: PracticeStage) -> TrainingProgram {
         let ids = ["000000000001", "000000000002", "000000000009", "000000000011"]
@@ -38,9 +39,25 @@ enum PracticeCurriculum {
             isPremium: stage != .awareness, guidedSteps: steps)
     }
 
+    static func followUp(for stage: PracticeStage) -> TrainingProgram {
+        let base = program(for: stage)
+        let key = "curriculum.followUp.\(stage.rawValue)"
+        let steps = base.guidedSteps.map { step in
+            GuidedPracticeStep(id: "follow-up-\(step.id)", kind: step.kind,
+                titleKey: step.id.hasSuffix("-prepare") ? "\(key).title" : step.titleKey,
+                guidanceKey: step.id.hasSuffix("-prepare") ? "\(key).goal" : step.guidanceKey,
+                duration: step.duration, repeatCount: step.repeatCount)
+        }
+        return TrainingProgram(id: UUID(uuidString: "4E585442-0000-4000-8001-00000000000\(stage.rawValue)")!,
+            name: "Practice follow-up", localizedNameKey: "\(key).title", description: "",
+            localizedDescriptionKey: "\(key).goal", difficulty: base.difficulty, sets: base.sets,
+            restBetweenSets: base.restBetweenSets, order: stage.rawValue, route: .foundation,
+            isPremium: base.isPremium, guidedSteps: steps)
+    }
+
     static func stage(for program: TrainingProgram) -> PracticeStage? {
         guard program.localizedNameKey.hasPrefix("curriculum.") else { return nil }
-        return PracticeStage.allCases.first { self.program(for: $0).id == program.id }
+        return PracticeStage.allCases.first { self.program(for: $0).id == program.id || followUp(for: $0).id == program.id }
     }
 
     static func version(for stage: PracticeStage) -> String { "curriculum-\(stage.rawValue)-2026-11-v2" }

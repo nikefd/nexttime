@@ -68,7 +68,7 @@ struct NextTimeApp: App {
         if (ProcessInfo.processInfo.arguments.contains("--uitesting-path-review-ready") || targetStage > 1),
            let path = try? dataService.startPracticePathIfNeeded(now: now.addingTimeInterval(-60)) {
             dataService.saveRecord(TrainingRecord(
-                programId: path.currentStage.program.id, programName: path.currentStage.program.name,
+                programId: path.program.id, programName: path.program.name,
                 completedAt: now.addingTimeInterval(-30), duration: 195,
                 completedSets: 1, totalSets: 1, isCompleted: true, route: .foundation,
                 pathID: path.id, pathStage: path.currentStage, lessonVersion: StageOneLesson.version,
@@ -81,8 +81,8 @@ struct NextTimeApp: App {
 
         while let path = dataService.loadPracticePath(), path.currentStage.rawValue < targetStage {
             if path.completedRecords(in: dataService.loadRecords(), now: now).isEmpty {
-                let record = TrainingRecord(programId: path.currentStage.program.id,
-                    programName: path.currentStage.program.name, completedAt: now, duration: 99,
+                let record = TrainingRecord(programId: path.program.id,
+                    programName: path.program.name, completedAt: now, duration: 99,
                     completedSets: 2, totalSets: 2, isCompleted: true, route: .foundation,
                     pathID: path.id, pathStage: path.currentStage,
                     lessonVersion: PracticeCurriculum.version(for: path.currentStage),

@@ -1,6 +1,7 @@
 import AVFoundation
 import Combine
 import Foundation
+import UIKit
 
 @MainActor
 final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
@@ -19,6 +20,8 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published private(set) var recordedPlaybackFailed = false
     @Published private(set) var instructionAudioElapsed: Double = 0
     @Published private(set) var instructionAudioDuration: Double = 0
+    private var actionVoice: NarrationVoice?
+    private var actionAudioStart: Int?
     private var curriculumNarration: CurriculumNarration?
     private let recordedLessonsEnabled: Bool
     private let forcedRecordedVoice: NarrationVoice?
@@ -39,6 +42,17 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     private var pathContext: PracticePathContext?
 
     var curriculumStage: PracticeStage? { currentProgram.flatMap(PracticeCurriculum.stage(for:)) }
+
+    @Published var discreetPracticeEnabled = false
+
+    var allowsDiscreetBackgroundAudio: Bool {
+        discreetPracticeEnabled && speechService.isEnabled && speechService.volume > 0
+            && (recordedLesson != nil || actionVoice != nil)
+    }
+
+    func pauseUnlessDiscreetAudio() {
+        if !allowsDiscreetBackgroundAudio { pauseTraining() }
+    }
 
     var onTrainingComplete: ((TrainingRecord) -> Void)?
 
@@ -63,7 +77,9 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         lessonPlayer = nil
         recordedLesson = nil
         curriculumNarration = nil
+        actionVoice = nil
         instructionAudioElapsed = 0
+        actionAudioStart = nil
         instructionAudioDuration = 0
         recordedElapsed = 0
         precedingLessonSeconds = 0
@@ -96,9 +112,12 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
                 activeSteps = lesson.steps
             } catch { recordedPlaybackFailed = true }
         }
-        if recordedLessonsEnabled, speechService.isEnabled, let stage = curriculumStage, stage != .awareness, let voice {
+        if recordedLessonsEnabled, speechService.isEnabled, !program.localizedNameKey.hasPrefix("curriculum.followUp."), let stage = curriculumStage, stage != .awareness, let voice {
             do { curriculumNarration = try CurriculumNarration.load(stage: stage, voice: voice, bundle: narrationBundle) }
             catch { recordedPlaybackFailed = true }
+        }
+        if recordedLessonsEnabled, speechService.isEnabled, curriculumStage != nil {
+            actionVoice = NarrationVoice.resolve(dataService.loadSettings().selectedVoice)
         }
         progress = TrainingProgress()
         progress.totalSets = program.sets.count
@@ -114,6 +133,7 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         guard isRunning, !isPaused, !progress.isAwaitingContinue else { return }
         lessonPlayer?.pause()
         if recordedLesson != nil { sampleRecordedProgress() }
+        else if actionAudioStart != nil { sampleActionAudio() }
         else { sampleInstructionAudioProgress() }
         isPaused = true
         timer?.invalidate()
@@ -133,6 +153,14 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             }
             guard lessonPlayer?.play() == true else { failRecordedPlayback(); return }
             startRecordedTimer()
+            if currentStep?.kind == .contract { startContinuousHaptic() }
+        } else if actionAudioStart != nil, let player = lessonPlayer {
+            if recordedSectionEnded {
+                finishActionAudio(player)
+                return
+            }
+            guard player.play() else { failRecordedPlayback(); return }
+            startActionAudioTimer()
             if currentStep?.kind == .contract { startContinuousHaptic() }
         } else if instructionAudioDuration > 0 {
             if recordedSectionEnded, let player = lessonPlayer {
@@ -165,6 +193,7 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         lessonPlayer?.stop()
         lessonPlayer = nil
         instructionAudioElapsed = 0
+        actionAudioStart = nil
         instructionAudioDuration = 0
         recordedSectionEnded = false
         progress.currentStepIndex += 1
@@ -175,6 +204,7 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     func stopTraining() {
         if recordedLesson != nil { sampleRecordedProgress() }
+        else if actionAudioStart != nil { sampleActionAudio() }
         saveRecord(isCompleted: progress.isCompleted)
         resetState()
     }
@@ -195,10 +225,58 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         progress.remainingSeconds = step.duration ?? 0
         progress.isResting = step.kind == .rest
         progress.isAwaitingContinue = step.kind.isInteractive || step.duration == nil
+        if let voice = actionVoice, let duration = step.duration {
+            beginActionAudio(step, duration: duration, voice: voice)
+            return
+        }
         announce(step)
         if let narration = curriculumNarration, let part = narration.part(for: step), speechService.isEnabled {
             beginInstructionAudio(narration, part: part)
         } else if step.duration != nil { startTimer() }
+    }
+
+    private func beginActionAudio(_ step: GuidedPracticeStep, duration: Int, voice: NarrationVoice) {
+        guard let url = narrationBundle.url(forResource: "\(voice.assetPrefix)-\(step.kind.rawValue)-\(duration)s",
+                                           withExtension: "m4a") else {
+            failRecordedPlayback()
+            return
+        }
+        do {
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.delegate = self
+            player.volume = speechService.volume
+            lessonPlayer = player
+            actionAudioStart = progress.elapsedTime
+            guard player.play() else { failRecordedPlayback(); return }
+            switch step.kind {
+            case .contract: startContinuousHaptic()
+            case .relax: hapticService.relaxStart()
+            case .rest: hapticService.restStart()
+            default: break
+            }
+            startActionAudioTimer()
+        } catch { failRecordedPlayback() }
+    }
+
+    private func startActionAudioTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.sampleActionAudio() }
+        }
+        if let timer { RunLoop.current.add(timer, forMode: .common) }
+    }
+
+    private func sampleActionAudio() {
+        guard !isPaused, let player = lessonPlayer, let start = actionAudioStart,
+              let duration = currentStep?.duration else { return }
+        let elapsed = min(duration, Int(player.currentTime))
+        progress.elapsedTime = max(progress.elapsedTime, start + elapsed)
+        progress.remainingSeconds = duration - (progress.elapsedTime - start)
+    }
+
+    private func finishActionAudio(_ player: AVAudioPlayer) {
+        guard let start = actionAudioStart, let duration = currentStep?.duration else { return }
+        progress.elapsedTime = start + duration
+        advanceStep()
     }
 
     func readInstructionInstead() {
@@ -355,6 +433,11 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             completedRepetitions: (recordedLesson != nil || curriculumStage != nil) ? progress.currentRepetition : nil,
             totalRepetitions: (recordedLesson != nil || curriculumStage != nil) ? 6 : nil
         )
+        if allowsDiscreetBackgroundAudio && UIApplication.shared.applicationState == .background {
+            pendingRecord = record
+            recordSaveFailed = true
+            return
+        }
         if dataService.saveRecord(record) {
             completedRecord = record
             pendingRecord = nil
@@ -450,6 +533,7 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             guard flag else { self.failRecordedPlayback(); return }
             if self.isPaused { self.recordedSectionEnded = true; return }
             if self.recordedLesson != nil { self.finishRecordedSection(player) }
+            else if self.actionAudioStart != nil { self.finishActionAudio(player) }
             else if self.instructionAudioDuration > 0 { self.finishInstructionAudio(player) }
         }
     }

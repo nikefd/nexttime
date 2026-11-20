@@ -31,6 +31,14 @@ struct PracticePathState: Codable {
     let createdAt: Date
     var currentStage: PracticeStage
     var stageEnteredAt: Date
+    var isFollowUp: Bool?
+    var program: TrainingProgram {
+        isFollowUp == true ? PracticeCurriculum.followUp(for: currentStage) : currentStage.program
+    }
+    var nextProgram: TrainingProgram? {
+        isFollowUp == true ? currentStage.next?.program : PracticeCurriculum.followUp(for: currentStage)
+    }
+    var lessonNumber: Int { (currentStage.rawValue - 1) * 2 + (isFollowUp == true ? 2 : 1) }
     var reviews: [PracticeStageReview]
 
     init(id: UUID = UUID(), now: Date = Date()) {
@@ -46,7 +54,7 @@ struct PracticePathState: Codable {
     func completedRecords(in records: [TrainingRecord], now: Date = Date()) -> [TrainingRecord] {
         records.filter {
             $0.pathID == id && $0.pathStage == currentStage
-                && $0.programId == currentStage.program.id
+                && $0.programId == program.id
                 && ($0.lessonVersion == PracticeCurriculum.version(for: currentStage)
                     || (currentStage == .awareness && $0.lessonVersion == StageOneLesson.version))
                 && $0.isCompleted && $0.duration > 0

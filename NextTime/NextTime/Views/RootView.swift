@@ -13,6 +13,10 @@ struct RootView: View {
     @State private var hasCompletedOnboarding = DataService.shared.hasCompletedOnboarding
     @State private var isPrivacyShieldVisible = false
 
+    @ObservedObject private var training = TrainingManager.shared
+
+    private var preservesTraining: Bool { training.currentProgram != nil && training.allowsDiscreetBackgroundAudio }
+
     var body: some View {
         ZStack {
             Group {
@@ -20,11 +24,17 @@ struct RootView: View {
                     OnboardingView {
                         hasCompletedOnboarding = true
                     }
-                } else if appLockManager.isLocked {
+                } else if appLockManager.isLocked && !preservesTraining {
                     AppLockView()
                 } else {
                     MainTabView()
                 }
+            }
+            if appLockManager.isLocked && preservesTraining {
+                AppLockView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.systemBackground).ignoresSafeArea())
+                    .zIndex(20)
             }
             if isPrivacyShieldVisible {
                 PrivacyShieldView()
@@ -35,13 +45,14 @@ struct RootView: View {
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .inactive:
-                TrainingManager.shared.pauseTraining()
+                TrainingManager.shared.pauseUnlessDiscreetAudio()
                 isPrivacyShieldVisible = true
             case .background:
-                TrainingManager.shared.pauseTraining()
+                TrainingManager.shared.pauseUnlessDiscreetAudio()
                 isPrivacyShieldVisible = true
                 appLockManager.lockIfNeeded()
             case .active:
+                training.retrySaveRecord()
                 if hasCompletedOnboarding && appLockManager.isLocked {
                     Task {
                         await appLockManager.unlock()

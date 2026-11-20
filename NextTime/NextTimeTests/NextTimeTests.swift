@@ -22,7 +22,7 @@ struct NextTimeTests {
 
     private func pathRecord(_ state: PracticePathState, at date: Date, duration: Int = 30,
                             completed: Bool = true, tagged: Bool = true) -> TrainingRecord {
-        TrainingRecord(programId: state.currentStage.program.id, programName: "Path", completedAt: date,
+        TrainingRecord(programId: state.program.id, programName: "Path", completedAt: date,
                        duration: duration, completedSets: 1, totalSets: 1, isCompleted: completed,
                        route: .foundation, pathID: tagged ? state.id : nil,
                        pathStage: tagged ? state.currentStage : nil,
@@ -74,11 +74,35 @@ struct NextTimeTests {
         let review = PracticeStageReview(stage: .awareness, recordID: record.id, confirmedAt: now,
                                         breathingComfortable: true, fullyReleased: true, noDiscomfort: true)
         let advanced = try service.advancePracticePath(review, now: now)
-        #expect(advanced.currentStage == .steady)
+        #expect(advanced.currentStage == .awareness && advanced.isFollowUp == true)
         #expect(advanced.reviews.count == 1)
         #expect(advanced.completedRecords(in: service.loadRecords(), now: now).isEmpty)
         #expect(throws: PracticePathError.self) { try service.advancePracticePath(review, now: now) }
-        #expect(service.loadPracticePath()?.currentStage == .steady)
+        #expect(service.loadPracticePath()?.isFollowUp == true)
+    }
+
+    @Test func eightLessonsAdvanceInOrderWithoutReusingPriorRecords() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let now = Date()
+        var path = try service.startPracticePathIfNeeded(now: now.addingTimeInterval(-1))
+        var ids = Set<UUID>()
+        for lesson in 1...8 {
+            #expect(path.lessonNumber == lesson)
+            #expect(ids.insert(path.program.id).inserted)
+            #expect(path.completedRecords(in: service.loadRecords(), now: now).isEmpty)
+            let record = pathRecord(path, at: now)
+            service.saveRecord(record)
+            try service.saveSessionFeedback(recordID: record.id, outcome: .comfortable, now: now)
+            let review = PracticeStageReview(stage: path.currentStage, recordID: record.id,
+                confirmedAt: now, breathingComfortable: true, fullyReleased: true, noDiscomfort: true)
+            if lesson < 8 {
+                path = try service.advancePracticePath(review, now: now)
+            } else {
+                #expect(path.nextProgram == nil)
+                #expect(throws: PracticePathError.self) { try service.advancePracticePath(review, now: now) }
+            }
+        }
     }
 
     @Test func safetyFeedbackBlocksPathAdvanceAndClearRemovesPath() throws {
@@ -177,7 +201,7 @@ struct NextTimeTests {
             try service.saveSessionFeedback(recordID: record.id, outcome: outcome, now: now)
             #expect(service.loadSessionFeedback().count == 1)
             if outcome == .comfortable {
-                #expect(try service.advancePracticePath(review, now: now).currentStage == .steady)
+                #expect(try service.advancePracticePath(review, now: now).isFollowUp == true)
             } else {
                 #expect(throws: PracticePathError.self) { try service.advancePracticePath(review, now: now) }
                 #expect(service.loadPracticePath()?.currentStage == .awareness)
@@ -228,6 +252,8 @@ struct NextTimeTests {
         for suffix in ["prepare-2", "check", "reflect"] {
             try FileManager.default.copyItem(at: source, to: folder.appendingPathComponent("nexttime-xiaoyi-curriculum-\(suffix).m4a"))
         }
+        let cue = try #require(Bundle.main.url(forResource: "nexttime-xiaoyi-contract-3s", withExtension: "m4a"))
+        try FileManager.default.copyItem(at: cue, to: folder.appendingPathComponent(cue.lastPathComponent))
         return (try #require(Bundle(url: folder)), folder)
     }
 

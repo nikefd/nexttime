@@ -163,10 +163,12 @@ if ENV['STORE_MODE'] == 'review_evidence'
   detail = api('get', "/v1/appStoreVersions/#{version_id}/appStoreReviewDetail").fetch('data')
   detail_id = detail.fetch('id')
   notes = File.read('idvault-source/review-evidence/notes.txt')
-  raise 'Review notes missing evidence' unless notes.include?('02-Pro-Family-Members')
+  raise 'Review notes missing evidence' unless notes.include?('PageKeep-Review-Demo.mp4')
   files = Dir.glob('idvault-source/review-evidence/*.mp4').sort
-  raise 'Expected two physical-device recordings' unless files.length == 2
+  raise 'Expected combined physical-device recording' unless files.length == 1
   existing = all("/v1/appStoreReviewDetails/#{detail_id}/appStoreReviewAttachments")
+  previous = existing.find { |item| item.dig('attributes', 'fileName') == '01-Document-Workflow.mp4' }
+  api('delete', "/v1/appStoreReviewAttachments/#{previous['id']}") if previous
   files.each do |file|
     name = File.basename(file)
     upload = existing.find { |item| item.dig('attributes', 'fileName') == name }
@@ -191,6 +193,16 @@ if ENV['STORE_MODE'] == 'review_evidence'
     next unless items.any? { |item| item.dig('relationships','appStoreVersion','data','id') == version_id }
     puts "Existing submission #{submission['id']}: #{submission.dig('attributes','state')}"
     items.each { |item| puts "Review item #{item['id']}: #{item.dig('attributes','state')}; app=#{!!item.dig('relationships','appStoreVersion','data')}; purchase=#{!!item.dig('relationships','inAppPurchaseVersion','data')}" }
+    state = submission.dig('attributes','state')
+    next unless %w[UNRESOLVED_ISSUES READY_FOR_REVIEW].include?(state)
+    raise 'Expected app and Pro purchase together' unless items.any? { |i| i.dig('relationships','inAppPurchaseVersion','data') }
+    items.select { |i| i.dig('attributes','state') == 'REJECTED' }.each do |item|
+      api('patch', "/v1/reviewSubmissionItems/#{item['id']}", {data: {type: 'reviewSubmissionItems', id: item['id'], attributes: {resolved: true}}})
+    end
+    result = api('patch', "/v1/reviewSubmissions/#{submission['id']}", {data: {type: 'reviewSubmissions', id: submission['id'], attributes: {submitted: true}}})
+    puts "Resubmission state: #{result.dig('data','attributes','state')}"
+    puts "App state after resubmission: #{api('get', "/v1/appStoreVersions/#{version_id}").dig('data','attributes','appStoreState')}"
+    exit
   end
   exit
 end

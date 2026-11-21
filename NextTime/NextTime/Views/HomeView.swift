@@ -90,7 +90,7 @@ struct HomeView: View {
 
                 HStack(spacing: 16) {
                     Label(SpeechService.shared.formattedDuration(for: program), systemImage: "clock")
-                    Label(String(localized: SpeechService.shared.recordedLesson(for: program) != nil ? "stageOne.structure" : "curriculum.structure"), systemImage: "list.number")
+                    Label(PracticeCurriculum.structure(for: program), systemImage: "list.number")
 
                 }
                 .font(.caption)

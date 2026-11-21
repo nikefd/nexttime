@@ -112,7 +112,7 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
                 activeSteps = lesson.steps
             } catch { recordedPlaybackFailed = true }
         }
-        if recordedLessonsEnabled, speechService.isEnabled, !program.localizedNameKey.hasPrefix("curriculum.followUp."), let stage = curriculumStage, stage != .awareness, let voice {
+        if recordedLessonsEnabled, speechService.isEnabled, let stage = curriculumStage, program.id == stage.program.id, stage != .awareness, let voice {
             do { curriculumNarration = try CurriculumNarration.load(stage: stage, voice: voice, bundle: narrationBundle) }
             catch { recordedPlaybackFailed = true }
         }
@@ -393,7 +393,12 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             progress.currentRepetition = activeSteps.prefix(progress.currentStepIndex).filter {
                 $0.kind == .relax && PracticeCurriculum.repetition(for: $0) != nil
             }.count
-            progress.currentSetIndex = progress.currentRepetition / 3
+            var remaining = progress.currentRepetition
+            progress.currentSetIndex = program.sets.prefix { set in
+                guard remaining >= set.repetitions else { return false }
+                remaining -= set.repetitions
+                return true
+            }.count
             return
         }
         let fraction = Double(progress.currentStepIndex) / Double(progress.totalSteps)
@@ -431,7 +436,7 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             pathID: pathContext?.pathID, pathStage: pathContext?.stage,
             lessonVersion: recordedLesson != nil ? StageOneLesson.version : curriculumStage.map(PracticeCurriculum.version(for:)),
             completedRepetitions: (recordedLesson != nil || curriculumStage != nil) ? progress.currentRepetition : nil,
-            totalRepetitions: (recordedLesson != nil || curriculumStage != nil) ? 6 : nil
+            totalRepetitions: (recordedLesson != nil || curriculumStage != nil) ? (recordedLesson != nil ? 6 : program.totalRepetitions) : nil
         )
         if allowsDiscreetBackgroundAudio && UIApplication.shared.applicationState == .background {
             pendingRecord = record
@@ -548,11 +553,11 @@ final class TrainingManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         if let lesson = recordedLesson, lesson.timeline.sections.indices.contains(progress.currentStepIndex) {
             return lesson.timeline.sections[progress.currentStepIndex].title
         }
-        if curriculumStage != nil, let step = currentStep {
+        if curriculumStage != nil, let step = currentStep, let program = currentProgram {
             if let repetition = PracticeCurriculum.repetition(for: step) {
-                return String(localized: "curriculum.repetition \(repetition) \(6)")
+                return String(localized: "curriculum.repetition \(repetition) \(program.totalRepetitions)")
             }
-            return String(localized: "curriculum.completed \(progress.currentRepetition) \(6)")
+            return String(localized: "curriculum.completed \(progress.currentRepetition) \(program.totalRepetitions)")
         }
         return String(localized: "guided.progress \(min(progress.currentStepIndex + 1, progress.totalSteps)) \(progress.totalSteps)")
     }

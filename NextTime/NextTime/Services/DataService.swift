@@ -125,11 +125,15 @@ class DataService {
         )
         guard advice.kind == .onPlan else { throw PracticePathError.reviewRequired }
         state.reviews.append(review)
-        if state.isFollowUp == true, let next = state.currentStage.next {
+        if state.lessonIndex + 1 < PracticeCurriculum.lessonsPerStage {
+            state.savedLessonIndex = state.lessonIndex + 1
+            state.isFollowUp = state.savedLessonIndex == 1
+            state.isAdvanced = state.savedLessonIndex == 2
+        } else if let next = state.currentStage.next {
             state.currentStage = next
+            state.savedLessonIndex = 0
             state.isFollowUp = false
-        } else {
-            state.isFollowUp = true
+            state.isAdvanced = false
         }
         state.stageEnteredAt = now
         try protectedStore.save(state, forKey: ProtectedKey.practicePath)

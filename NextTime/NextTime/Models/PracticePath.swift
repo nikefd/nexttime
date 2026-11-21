@@ -32,13 +32,15 @@ struct PracticePathState: Codable {
     var currentStage: PracticeStage
     var stageEnteredAt: Date
     var isFollowUp: Bool?
-    var program: TrainingProgram {
-        isFollowUp == true ? PracticeCurriculum.followUp(for: currentStage) : currentStage.program
-    }
+    var isAdvanced: Bool?
+    var savedLessonIndex: Int?
+    var lessonIndex: Int { savedLessonIndex ?? (isAdvanced == true ? 2 : (isFollowUp == true ? 1 : 0)) }
+    var program: TrainingProgram { PracticeCurriculum.lessons(for: currentStage)[lessonIndex] }
     var nextProgram: TrainingProgram? {
-        isFollowUp == true ? currentStage.next?.program : PracticeCurriculum.followUp(for: currentStage)
+        let lessons = PracticeCurriculum.lessons(for: currentStage)
+        return lessonIndex + 1 < lessons.count ? lessons[lessonIndex + 1] : currentStage.next?.program
     }
-    var lessonNumber: Int { (currentStage.rawValue - 1) * 2 + (isFollowUp == true ? 2 : 1) }
+    var lessonNumber: Int { (currentStage.rawValue - 1) * PracticeCurriculum.lessonsPerStage + lessonIndex + 1 }
     var reviews: [PracticeStageReview]
 
     init(id: UUID = UUID(), now: Date = Date()) {

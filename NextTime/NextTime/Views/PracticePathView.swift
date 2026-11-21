@@ -61,10 +61,11 @@ struct PracticePathView: View {
                         Text(selectedStage.detail)
                         Label(NSLocalizedString(selectedStage.program.localizedNameKey, comment: ""), systemImage: "figure.mind.and.body")
                         Text(NSLocalizedString(selectedStage.program.localizedDescriptionKey, comment: ""))
-                        Text(String(localized: SpeechService.shared.recordedLesson(for: selectedStage.program) != nil ? "stageOne.structure" : "curriculum.structure"))
+                        Text(PracticeCurriculum.structure(for: selectedStage.program))
                             .font(.subheadline).foregroundStyle(.secondary)
-                        let followUp = PracticeCurriculum.followUp(for: selectedStage)
-                        Label(NSLocalizedString(followUp.localizedNameKey, comment: ""), systemImage: "figure.mind.and.body")
+                        ForEach(PracticeCurriculum.lessons(for: selectedStage).dropFirst()) { lesson in
+                            Label(NSLocalizedString(lesson.localizedNameKey, comment: ""), systemImage: "figure.mind.and.body")
+                        }
                         if isCurrent { Text(String(localized: "lesson.position \(state.lessonNumber)")) }
                         Text(selectedStage.checkpoint).foregroundStyle(.secondary)
                         if isCurrent {

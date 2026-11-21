@@ -81,13 +81,13 @@ struct NextTimeTests {
         #expect(service.loadPracticePath()?.isFollowUp == true)
     }
 
-    @Test func eightLessonsAdvanceInOrderWithoutReusingPriorRecords() throws {
+    @Test func twentyFourLessonsAdvanceInOrderWithoutReusingPriorRecords() throws {
         let (service, defaults, suite) = try pathService()
         defer { defaults.removePersistentDomain(forName: suite) }
         let now = Date()
         var path = try service.startPracticePathIfNeeded(now: now.addingTimeInterval(-1))
         var ids = Set<UUID>()
-        for lesson in 1...8 {
+        for lesson in 1...24 {
             #expect(path.lessonNumber == lesson)
             #expect(ids.insert(path.program.id).inserted)
             #expect(path.completedRecords(in: service.loadRecords(), now: now).isEmpty)
@@ -96,7 +96,7 @@ struct NextTimeTests {
             try service.saveSessionFeedback(recordID: record.id, outcome: .comfortable, now: now)
             let review = PracticeStageReview(stage: path.currentStage, recordID: record.id,
                 confirmedAt: now, breathingComfortable: true, fullyReleased: true, noDiscomfort: true)
-            if lesson < 8 {
+            if lesson < 24 {
                 path = try service.advancePracticePath(review, now: now)
             } else {
                 #expect(path.nextProgram == nil)
@@ -804,6 +804,26 @@ struct NextTimeTests {
             #expect(program.guidedSteps.filter { $0.kind == .instruction }.count == 2)
         }
         #expect(PracticeCurriculum.stage(for: TrainingData.relaxationBreathing) == nil)
+    }
+
+    @Test func largerFollowUpTracksActualRepetitionsAndSetBoundaries() throws {
+        let (service, defaults, suite) = try pathService()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let program = PracticeCurriculum.followUp(for: .integration)
+        let manager = TrainingManager(dataService: service, recordedLessonsEnabled: false)
+        defer { manager.resetState() }
+        manager.startTraining(program: program)
+        #expect(program.guidedSteps.filter { $0.kind == .contract }.compactMap(\.duration) ==
+                Array(repeating: 3, count: 5) + Array(repeating: 2, count: 5))
+        while manager.progress.currentRepetition < 5 && manager.isRunning { manager.advanceStep() }
+        #expect(manager.progress.currentRepetition == 5)
+        #expect(manager.progress.currentSetIndex == 1)
+        manager.progress.elapsedTime = program.totalDuration
+        while manager.isRunning { manager.advanceStep() }
+        let record = try #require(service.loadRecords().first)
+        #expect(record.totalRepetitions == 10)
+        #expect(record.completedRepetitions == 10)
+        #expect(record.completedSets == 2)
     }
 
     @Test func newCurriculumCountsAfterReleaseAndRequiresItsOwnFeedback() throws {

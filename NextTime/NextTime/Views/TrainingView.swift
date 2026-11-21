@@ -165,7 +165,15 @@ struct TrainingView: View {
                         .lineSpacing(5)
                         .padding(.horizontal)
 
-                    if let stage = trainingManager.curriculumStage, stage != .awareness, step.kind == .reflection {
+                    if step.kind == .instruction, step.id.contains("-prepare"),
+                       trainingManager.curriculumStage != nil, trainingManager.recordedLesson == nil {
+                        Text(PracticeCurriculum.structure(for: program))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let stage = trainingManager.curriculumStage, stage != .awareness, step.kind == .reflection,
+                       step.guidanceKey == "curriculum.narration.reflect" {
                         Text(NSLocalizedString("curriculum.\(stage.rawValue).reflect", comment: ""))
                             .font(.subheadline).foregroundStyle(.secondary)
                             .multilineTextAlignment(.center).padding(.horizontal)

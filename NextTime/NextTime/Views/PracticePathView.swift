@@ -10,6 +10,30 @@ struct PracticePathView: View {
     @State private var release = false
     @State private var comfortable = false
     @State private var showError = false
+    @State private var replayProgram: TrainingProgram?
+    @State private var showReplayBlocked = false
+    @ObservedObject private var proManager = ProManager.shared
+
+    private func canReplay(_ lesson: TrainingProgram, in path: PracticePathState, number: Int) -> Bool {
+        number < path.lessonNumber && TrainingManager.shared.currentProgram == nil
+            && !proManager.isProgramLocked(lesson)
+            && records.contains { $0.programId == lesson.id && $0.pathID == path.id && $0.isCompleted }
+    }
+
+    private func startReplay(_ lesson: TrainingProgram) {
+        let service = DataService.shared
+        let advice = PracticeRecommendationEngine.recommend(
+            plannedProgramID: lesson.id,
+            relaxationProgramID: TrainingData.relaxationBreathing.id,
+            bodyScanProgramID: TrainingData.confidenceBodyScan.id,
+            checkIns: service.loadCheckIns(), safetyEvents: service.loadSafetyEvents()
+        )
+        guard advice.kind == .onPlan else {
+            showReplayBlocked = true
+            return
+        }
+        replayProgram = lesson
+    }
 
     private var currentRecords: [TrainingRecord] { state?.completedRecords(in: records) ?? [] }
     private var isCurrent: Bool { state?.currentStage == selectedStage }
@@ -59,12 +83,36 @@ struct PracticePathView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text(selectedStage.title).font(.title2.bold())
                         Text(selectedStage.detail)
-                        Label(NSLocalizedString(selectedStage.program.localizedNameKey, comment: ""), systemImage: "figure.mind.and.body")
-                        Text(NSLocalizedString(selectedStage.program.localizedDescriptionKey, comment: ""))
-                        Text(PracticeCurriculum.structure(for: selectedStage.program))
-                            .font(.subheadline).foregroundStyle(.secondary)
-                        ForEach(PracticeCurriculum.lessons(for: selectedStage).dropFirst()) { lesson in
-                            Label(NSLocalizedString(lesson.localizedNameKey, comment: ""), systemImage: "figure.mind.and.body")
+                        ForEach(Array(PracticeCurriculum.lessons(for: selectedStage).enumerated()), id: \.element.id) { index, lesson in
+                            let number = (selectedStage.rawValue - 1) * PracticeCurriculum.lessonsPerStage + index + 1
+                            let currentLesson = isCurrent && lesson.id == state.program.id
+                            DisclosureGroup {
+                                Text(NSLocalizedString(lesson.localizedDescriptionKey, comment: ""))
+                                    .font(.subheadline)
+                                    .padding(.top, 4)
+                                Text(SpeechService.shared.formattedDuration(for: lesson))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                if canReplay(lesson, in: state, number: number) {
+                                    Button(String(localized: "lesson.replay")) { startReplay(lesson) }
+                                        .buttonStyle(.bordered)
+                                        .accessibilityIdentifier("path.replay.\(number)")
+                                }
+                            } label: {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(NSLocalizedString(lesson.localizedNameKey, comment: ""))
+                                        .font(.subheadline.weight(currentLesson ? .semibold : .regular))
+                                    Text("\(String(localized: "lesson.position \(number)")) · \(PracticeCurriculum.structure(for: lesson))")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    if currentLesson {
+                                        Text(String(localized: "lesson.current"))
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(Color.accentColor)
+                                    }
+                                }
+                            }
+                            .accessibilityIdentifier("path.lesson.\(number)")
                         }
                         if isCurrent { Text(String(localized: "lesson.position \(state.lessonNumber)")) }
                         Text(selectedStage.checkpoint).foregroundStyle(.secondary)
@@ -111,6 +159,12 @@ struct PracticePathView: View {
             Button(String(localized: "button.done")) { dismiss() }
         } }
         .onAppear(perform: load)
+        .fullScreenCover(item: $replayProgram, onDismiss: load) { lesson in
+            TrainingView(program: lesson)
+        }
+        .alert(String(localized: "lesson.replayBlocked"), isPresented: $showReplayBlocked) {
+            Button(String(localized: "button.done"), role: .cancel) {}
+        }
         .sheet(isPresented: $showReview) {
             NavigationStack {
                 Form {

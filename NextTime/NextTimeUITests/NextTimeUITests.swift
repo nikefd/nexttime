@@ -105,12 +105,23 @@ final class NextTimeUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.buttons["home.browse-programs"].waitForExistence(timeout: 8))
         app.buttons["home.browse-programs"].tap()
-        XCTAssertTrue(app.navigationBars["我的学习路径"].waitForExistence(timeout: 5))
-        for stage in 1...4 { XCTAssertTrue(app.buttons["path.stage.\(stage)"].exists) }
+        XCTAssertTrue(app.navigationBars["课程库 · 24 节"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.staticTexts["自定义训练"].exists)
-        app.buttons["path.stage.4"].tap()
-        XCTAssertTrue(app.staticTexts["独立练习，知道如何调整"].exists)
-        XCTAssertFalse(app.buttons["home.start-today"].isHittable)
+        let lesson = app.buttons["catalog.lesson.7"]
+        for _ in 0..<5 where !lesson.isHittable { app.swipeUp() }
+        XCTAssertTrue(lesson.isHittable)
+        lesson.tap()
+        XCTAssertTrue(app.buttons["catalog.start"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.buttons["catalog.start"].label, "用 Pro 解锁本课")
+        app.terminate()
+        app.launchArguments.append("--store-screenshot-pro")
+        app.launch()
+        app.buttons["home.browse-programs"].tap()
+        for _ in 0..<5 where !lesson.isHittable { app.swipeUp() }
+        lesson.tap()
+        XCTAssertEqual(app.buttons["catalog.start"].label, "开始本课")
+        app.buttons["catalog.start"].tap()
+        XCTAssertTrue(app.buttons["training.exit"].waitForExistence(timeout: 8))
     }
 
     @MainActor
@@ -452,7 +463,7 @@ final class NextTimeUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.buttons["home.browse-programs"].waitForExistence(timeout: 8))
         app.buttons["home.browse-programs"].tap()
-        XCTAssertTrue(app.navigationBars["我的学习路径"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["课程库 · 24 节"].waitForExistence(timeout: 5))
         Thread.sleep(forTimeInterval: 1)
         snapshot("06-learning-path")
     }

@@ -32,7 +32,7 @@
 
 /* Programs */
 "programs.title" = "Training Programs";
-"program.browse" = "View the four-stage practice plan";
+"program.browse" = "Browse all 24 lessons";
 "program.optional" = "Come here when you want to choose. Otherwise, simply follow today's practice on Home.";
 "program.free" = "Free";
 "pro.comparison.title" = "Already Included for Free";
@@ -859,3 +859,17 @@
 "curriculum.extension.contract.3" = "Contract gently at the familiar pace.";
 "curriculum.extension.contract.4" = "Hold gently and let breathing continue naturally.";
 "curriculum.extension.check.final" = "Fully release before starting with the next cue.";
+
+"lesson.current" = "Current lesson";
+
+"lesson.replay" = "Repeat this lesson";
+"lesson.replayBlocked" = "Take a break today. See your recommendation on Home.";
+
+"catalog.title" = "Library · 24 Lessons";
+"catalog.all" = "All stages";
+"catalog.filter" = "Filter by stage";
+"catalog.access" = "Preview all lessons. The first stage is free. Pro can choose any of the 24 lessons. Sessions are saved in history, and your path continues from your current lesson.";
+"catalog.start" = "Start lesson";
+"catalog.details" = "Lesson details";
+
+"catalog.unlock" = "Unlock this lesson with Pro";

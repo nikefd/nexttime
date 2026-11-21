@@ -32,7 +32,7 @@
 
 /* Programs */
 "programs.title" = "训练课程";
-"program.browse" = "查看四阶段训练安排";
+"program.browse" = "浏览全部 24 节课";
 "program.optional" = "想自己选课时再来这里。平时跟着首页的今日训练即可。";
 "program.free" = "免费";
 "pro.comparison.title" = "免费版已包含";
@@ -859,3 +859,17 @@
 "curriculum.extension.contract.3" = "用熟悉的节奏轻轻收紧。";
 "curriculum.extension.contract.4" = "轻轻保持，让呼吸自然继续。";
 "curriculum.extension.check.final" = "先完全松开，再按下一组口令开始。";
+
+"lesson.current" = "当前课程";
+
+"lesson.replay" = "复习本课";
+"lesson.replayBlocked" = "今天建议先休息，返回首页查看建议。";
+
+"catalog.title" = "课程库 · 24 节";
+"catalog.all" = "所有阶段";
+"catalog.filter" = "筛选阶段";
+"catalog.access" = "全部课程均可预览。基础阶段免费，Pro 可任选全部 24 节。自由选课会保存训练记录，顺序进度从当前课继续。";
+"catalog.start" = "开始本课";
+"catalog.details" = "课程详情";
+
+"catalog.unlock" = "用 Pro 解锁本课";

@@ -51,6 +51,7 @@ final class SpeechService {
     func formattedDuration(for program: TrainingProgram) -> String {
         guard let lesson = recordedLesson(for: program) else {
             if let stage = PracticeCurriculum.stage(for: program), stage != .awareness,
+               program.id == stage.program.id,
                usesChinese, isEnabled, let voice = NarrationVoice.resolve(voiceIdentifier),
                let narration = try? CurriculumNarration.load(stage: stage, voice: voice) {
                 let total = Int(ceil(narration.duration)) + program.totalDuration

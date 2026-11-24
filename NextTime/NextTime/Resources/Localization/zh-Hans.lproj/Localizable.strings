@@ -873,3 +873,13 @@
 "catalog.details" = "课程详情";
 
 "catalog.unlock" = "用 Pro 解锁本课";
+
+"catalog.favoritesOnly" = "仅看收藏";
+"catalog.empty" = "没有符合条件的课程。试试换个关键词或阶段。";
+"catalog.search" = "搜索课程名或练习目标";
+"catalog.favorite" = "收藏本课";
+"catalog.unfavorite" = "取消收藏";
+"catalog.structure" = "本课怎么练";
+"catalog.recordedStructure" = "先听讲解，做 2 次示范，再做 6 次主练习。每次轻柔收紧 3 秒，放松 6 秒。";
+"catalog.set %lld %lld %lld %lld" = "第 %lld 组 · %lld 次 · 收紧 %lld 秒 / 放松 %lld 秒";
+"catalog.reflect" = "练后回顾";

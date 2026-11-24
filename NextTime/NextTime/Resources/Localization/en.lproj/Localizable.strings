@@ -873,3 +873,13 @@
 "catalog.details" = "Lesson details";
 
 "catalog.unlock" = "Unlock this lesson with Pro";
+
+"catalog.favoritesOnly" = "Favorites only";
+"catalog.empty" = "No matching lessons. Try another search or stage.";
+"catalog.search" = "Search lessons or goals";
+"catalog.favorite" = "Favorite lesson";
+"catalog.unfavorite" = "Remove favorite";
+"catalog.structure" = "What you’ll practice";
+"catalog.recordedStructure" = "Listen to the introduction, try 2 demonstrations, then do 6 main repetitions. Each uses a gentle 3-second contraction and 6-second release.";
+"catalog.set %lld %lld %lld %lld" = "Set %lld · %lld reps · %llds hold / %llds release";
+"catalog.reflect" = "Reflection";

@@ -61,6 +61,21 @@ app = all('/v1/apps?' + URI.encode_www_form('filter[bundleId]' => 'com.zhangyang
 raise 'IDVault App Store record not found' unless app
 app_id = app.fetch('id')
 puts "IDVault app record: #{app_id}"
+if ENV['STORE_MODE'] == 'inspect'
+  all("/v1/apps/#{app_id}/appStoreVersions").each do |version|
+    all("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations").each do |loc|
+      a = loc.fetch('attributes')
+      puts "Promo #{a['locale']}: #{a['promotionalText'].to_s.empty? ? '(empty)' : a['promotionalText']}"
+    end
+  end
+  requests = all("/v1/apps/#{app_id}/analyticsReportRequests")
+  puts "Existing analytics requests: #{requests.size}"
+  requests.each do |request|
+    reports = all("/v1/analyticsReportRequests/#{request['id']}/reports")
+    puts "Analytics report names: #{reports.map { |r| r.dig('attributes','name') }.join(', ')}"
+  end
+  exit
+end
 if ENV['STORE_MODE'] == 'diagnose'
   bundles = all('/v1/bundleIds?' + URI.encode_www_form('filter[identifier]' => 'com.zhangyangbin.idvault', 'limit' => '200'))
   bundles.each do |bundle|

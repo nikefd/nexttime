@@ -62,17 +62,24 @@ raise 'IDVault App Store record not found' unless app
 app_id = app.fetch('id')
 puts "IDVault app record: #{app_id}"
 if ENV['STORE_MODE'] == 'inspect'
-  all("/v1/apps/#{app_id}/appStoreVersions").each do |version|
-    all("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations").each do |loc|
-      a = loc.fetch('attributes')
-      puts "Promo #{a['locale']}: #{a['promotionalText'].to_s.empty? ? '(empty)' : a['promotionalText']}"
-    end
-  end
-  requests = all("/v1/apps/#{app_id}/analyticsReportRequests")
-  puts "Existing analytics requests: #{requests.size}"
-  requests.each do |request|
-    reports = all("/v1/analyticsReportRequests/#{request['id']}/reports")
-    puts "Analytics report names: #{reports.map { |r| r.dig('attributes','name') }.join(', ')}"
+  raise 'Unexpected app' unless app_id == '6824715472'
+  version = all("/v1/apps/#{app_id}/appStoreVersions").find { |v| v.dig('attributes','versionString') == '1.0' && v.dig('attributes','platform') == 'IOS' }
+  raise 'Published version missing' unless version && %w[READY_FOR_SALE READY_FOR_DISTRIBUTION].include?(version.dig('attributes','appStoreState'))
+  copy = {
+    'zh-Hans' => '护照、证书、家人的检查报告，需要时不用再翻相册。拍照或导入，在本机识别、校对并加密保存，还能设置到期提醒。免费管理 1 人、10 份资料；中国区 ¥18 一次买断解锁多人管理。',
+    'en-US' => 'Keep family documents easy to find. Scan, review and encrypt them on your device. Set expiry reminders. Free for one person and 10 documents.'
+  }
+  localizations = all("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations")
+  copy.each do |locale, promo|
+    raise 'Text exceeds 170 characters' unless promo.length <= 170
+    loc = localizations.find { |r| r.dig('attributes','locale') == locale }
+    raise "Missing locale #{locale}" unless loc
+    id = loc.fetch('id')
+    route = "/v1/appStoreVersionLocalizations/#{id}"
+    api('patch', route, {data: {type: 'appStoreVersionLocalizations', id: id, attributes: {promotionalText: promo}}})
+    saved = api('get', route).dig('data','attributes','promotionalText')
+    raise "Readback mismatch for #{locale}" unless saved == promo
+    puts "Promotion verified for #{locale}: #{saved}"
   end
   exit
 end
